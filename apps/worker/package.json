@@ -13,7 +13,8 @@
   "dependencies": {
     "@races/contracts": "workspace:*",
     "@races/core": "workspace:*",
-    "@races/db": "workspace:*"
+    "@races/db": "workspace:*",
+    "dotenv": "^18.0.9"
   },
   "devDependencies": {
     "@races/tsconfig": "workspace:*",

@@ -29,6 +29,57 @@ export const INVESTIGATION_PHASE_LABELS: Record<InvestigationPhase, string> = {
   done: 'Done',
 };
 
+export { AbortError, StubExecutor, sleep } from './stub.js';
+export { CapacityError, isCapacityError } from './runner/util.js';
+export { ScriptedExecutor } from './scripted.js';
+export { RequestTracker, type RequestCandidate } from './runner/matchers.js';
+export { redactExcerpt, redactUrl } from './runner/redact.js';
+export { launchBrowser } from './runner/browser.js';
+export {
+  executeTrial,
+  RESPONSE_EXCERPT_MAX_BYTES,
+  type TrialRequest,
+  type TrialResult,
+  type TrialStore,
+} from './runner/trial.js';
+export {
+  runExperiment,
+  type ExperimentRequest,
+  type ExperimentResult,
+  type ExperimentStore,
+  type StoredExperiment,
+  type StoredTrial,
+} from './runner/experiment.js';
+export { STALE_SEARCH_PLAN_TEMPLATE } from './plans/stale-search.js';
+export {
+  AnthropicModelClient,
+  ModelAuthError,
+  ModelError,
+  type ModelClient,
+  type ModelMessage,
+  type ModelResponse,
+  type ModelToolDefinition,
+} from './agent/model.js';
+export { ResponsesApiClient } from './agent/responses.js';
+export {
+  AGENT_TOOL_DEFINITIONS,
+  dispatchTool,
+  ExplorationPage,
+  type AgentBudgets,
+  type AgentToolDeps,
+  type AgentTrialRunner,
+  type EvidenceReader,
+} from './agent/tools.js';
+export { computeReproduced, type ReproduceVerdict } from './agent/reproduce.js';
+export {
+  AgentExecutor,
+  REAL_TRIAL_RUNNER,
+  UnavailableExecutor,
+  type AgentExecutorOptions,
+  type AgentStore,
+  type FindingStore,
+} from './agent/orchestrator.js';
+
 /** Append-only sink the executor uses to record progress. */
 export interface EventSink {
   appendEvent(

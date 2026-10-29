@@ -13,7 +13,8 @@
     "dev:worker": "pnpm --filter worker dev",
     "db:migrate": "pnpm --filter @races/contracts build && pnpm --filter @races/db migrate",
     "typecheck": "pnpm build:packages && pnpm -r --if-present typecheck",
-    "test": "pnpm build:packages && pnpm -r --if-present test",
+    "test": "pnpm build:packages && pnpm -r --if-present --filter !@races/fixture-stale-search test",
+    "test:fixture": "pnpm --filter @races/fixture-stale-search test",
     "build": "pnpm build:packages && pnpm --filter web build && pnpm --filter worker build",
     "build:packages": "pnpm --filter @races/contracts --filter @races/db --filter @races/core build",
     "postinstall": "pnpm build:packages"

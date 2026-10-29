@@ -4,17 +4,22 @@ A local developer tool for investigating race conditions in web apps.
 
 Eventually, a background agent will inspect a repository and running app, generate test cases,
 manipulate browser event timing, reproduce failures, generate source patches, and verify those
-patches. This repository currently holds the foundation: monorepo layout, Next.js interface,
-persistent run API, and shared contracts. The AI agent / execution engine is not implemented yet.
+patches. This repository currently holds the foundation (monorepo layout, Next.js interface,
+persistent run API, shared contracts) plus a working worker claim/execute/finish loop driven by
+a scripted experiment runner: versioned plans, Playwright execution with HTTP hold/release,
+baseline-vs-intervention trials, and screenshot/value evidence — driven by an autonomous
+agent loop (source/browser tools, generated plans, confirmations, findings with provenance).
+Configure `RACES_MODEL_API_KEY` (plus `RACES_MODEL_PROVIDER`/`RACES_MODEL_BASE_URL` for
+non-Anthropic endpoints) to enable it.
 
 ## Layout
 
 ```
 apps/web            Next.js App Router UI + JSON API (Node runtime, loopback only)
-apps/worker         Separate worker entry point (skeleton: no executor yet)
+apps/worker         Worker claim/execute/finish loop (agent executor + model tools)
 packages/contracts  Zod schemas + JSON-safe shared types (client-safe)
 packages/db         Drizzle + SQLite (better-sqlite3) schema, migrations, query layer
-packages/core       Server-side investigation modules (minimal: Executor interface)
+packages/core       Server-side investigation modules (Executor, trial runner, matchers)
 tooling/tsconfig    Shared strict TypeScript configs
 fixtures/           Empty: the expected stale-search fixture was absent (see below)
 .races/             Runtime data (SQLite DB + artifacts), gitignored, created on first run
@@ -35,6 +40,7 @@ Requirements: Node 22, pnpm 10.
 ```sh
 pnpm install     # installs + builds workspace packages (postinstall)
 pnpm db:migrate  # create/update .races/races.db (also runs automatically on boot)
+pnpm --filter @races/core exec playwright install chromium  # browser for trials
 ```
 
 ## Development
@@ -45,7 +51,8 @@ pnpm dev:web     # Next.js only, bound to loopback
 pnpm dev:worker  # worker skeleton only
 pnpm db:migrate  # apply pending SQLite migrations to .races/races.db
 pnpm typecheck   # strict tsc across all packages
-pnpm test        # vitest suites (isolated temp databases)
+pnpm test        # vitest suites (isolated temp databases; excludes the fixture target)
+pnpm test:fixture # stale-search fixture suite: 1 test fails by design until the race is repaired
 pnpm build       # packages + production Next.js build + worker build
 ```
 
@@ -79,19 +86,18 @@ later SSE stream.
 
 ## Current limitations
 
-- No executor: runs stay `queued` forever and the UI says the execution engine is not
-  connected. The worker skeleton only reports status counts.
+- Every run executes a live model investigation against its project target URL:
+  point the target at the fixture for meaningful results, and expect model
+  latency and token usage per run. Run one worker per database.
 - No authentication, no multi-user support — this is a single-operator local tool. Mutation
   routes reject cross-origin browser requests.
 - No findings, replay evidence, or progress reporting beyond the persisted event feed.
-- No `fixtures/stale-search`: the foundation task expected a pre-existing seeded search app to
-  preserve, but the repository contained only a README, so there was nothing to relocate and
-  no fixture verification to keep. See `fixtures/README.md`.
+- `fixtures/stale-search` is the controlled stale-results demo (buggy `/` + guarded
+  `/fixed` control). See `fixtures/stale-search/README.md`.
 
 ## Next integration step
 
-Implement an `Executor` per `packages/core/src/index.ts`, then teach `apps/worker` the
-handoff loop: `claimNextQueuedRun` (transactional) → `execute` with an `AbortSignal` wired
-to `cancelRequestedAt` → stream events/artifacts → `finishRun`. The worker must own
-browser and child-process cleanup in `finally` blocks. UI/API changes needed: none for the
-first pass — the run page already polls whatever the worker persists.
+Build isolated repair and verification (M5): freeze the reproducer, generate a
+patch in a separate checkout, and re-run the frozen test plus timing variations
+with an honest verification matrix. The agent loop, runner, and debugger stay
+as they are.

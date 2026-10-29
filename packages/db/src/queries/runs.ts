@@ -265,6 +265,84 @@ export function claimNextQueuedRun(
   });
 }
 
+export interface PhaseResult {
+  run: RunRow;
+  /** False when the call was a no-op (run already terminal). */
+  changed: boolean;
+}
+
+/**
+ * Update a run's phase and append the corresponding `run.phase` event
+ * atomically. No-op when the run is already terminal: terminal runs keep
+ * their final phase.
+ */
+export function setRunPhase(db: RacesDatabase, runId: string, phase: string): PhaseResult {
+  const current = requireRun(db, runId);
+  if (isTerminalRunStatus(current.status as RunStatus)) {
+    return { run: current, changed: false };
+  }
+  db.transaction((tx) => {
+    tx.update(runs).set({ phase }).where(eq(runs.id, runId)).run();
+    insertEvent(tx, runId, nextSequence(tx, runId), KNOWN_RUN_EVENT_KINDS.PHASE, { phase });
+  });
+  return { run: requireRun(db, runId), changed: true };
+}
+
+/**
+ * Worker acknowledgement of a running-run cancellation: transitions
+ * running -> cancelled with finishedAt and a `run.cancelled` event.
+ * Idempotent: already-terminal runs are returned unchanged.
+ */
+export function completeCancellation(db: RacesDatabase, runId: string): CancelResult {
+  const current = requireRun(db, runId);
+  if (isTerminalRunStatus(current.status as RunStatus)) {
+    return { run: current, changed: false };
+  }
+  const transitioned = db.transaction((tx) => {
+    const updated = tx
+      .update(runs)
+      .set({ status: 'cancelled', phase: 'cancelled', finishedAt: Date.now() })
+      .where(and(eq(runs.id, runId), eq(runs.status, 'running')))
+      .run();
+    if (updated.changes === 0) return false;
+    insertEvent(tx, runId, nextSequence(tx, runId), KNOWN_RUN_EVENT_KINDS.CANCELLED, {
+      reason: 'cancelled-while-running',
+    });
+    return true;
+  });
+  return { run: requireRun(db, runId), changed: transitioned };
+}
+
+/**
+ * Boot recovery for a single-worker deployment: any run still marked running
+ * when the worker starts must belong to a crashed process (this worker runs
+ * one run at a time and finishes it before claiming the next). Mark each
+ * interrupted with evidence preserved; never touch terminal runs.
+ */
+export function markAbandonedRunningInterrupted(
+  db: RacesDatabase,
+  workerId: string,
+): { runIds: string[] } {
+  const abandoned = db.select().from(runs).where(eq(runs.status, 'running')).all();
+  const runIds: string[] = [];
+  for (const run of abandoned) {
+    db.transaction((tx) => {
+      const updated = tx
+        .update(runs)
+        .set({ status: 'interrupted', phase: 'interrupted', finishedAt: Date.now() })
+        .where(and(eq(runs.id, run.id), eq(runs.status, 'running')))
+        .run();
+      if (updated.changes === 0) return;
+      insertEvent(tx, run.id, nextSequence(tx, run.id), KNOWN_RUN_EVENT_KINDS.INTERRUPTED, {
+        reason: 'worker-restarted-while-running',
+        workerId,
+      });
+      runIds.push(run.id);
+    });
+  }
+  return { runIds };
+}
+
 /** Live counts per status for worker heartbeats and ops views. */
 export function getRunStatusCounts(db: DbOrTx): Record<RunStatus, number> {
   const rows = db

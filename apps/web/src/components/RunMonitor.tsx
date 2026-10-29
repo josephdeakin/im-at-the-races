@@ -157,10 +157,11 @@ export function RunMonitor({
           aria-label="Executor notice"
           className="rounded-lg border border-stone-200 bg-white p-4 text-sm text-stone-600"
         >
-          <p className="font-medium text-stone-900">Execution engine not connected yet</p>
+          <p className="font-medium text-stone-900">Waiting for a worker to claim this run</p>
           <p className="mt-1">
-            This run will remain queued. Once the experiment engine is integrated, a worker will
-            claim it and stream progress into the activity feed below.
+            If this persists, the worker process is not running — start it with{' '}
+            <span className="font-mono">pnpm dev:worker</span> (or{' '}
+            <span className="font-mono">pnpm dev</span> for web + worker together).
           </p>
         </section>
       )}

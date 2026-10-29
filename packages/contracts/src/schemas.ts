@@ -122,5 +122,20 @@ export const ArtifactSchema = z.object({
   kind: z.string().min(1),
   relativePath: z.string().min(1),
   mimeType: z.string().min(1),
+  sizeBytes: z.number().int().min(0),
+  sha256: z.string(),
   createdAt: IsoDateTimeSchema,
+});
+
+export const ExperimentStatusSchema = z.enum(['running', 'completed', 'failed', 'interrupted']);
+
+export const ExperimentSchema = z.object({
+  id: z.string().min(1),
+  runId: z.string().min(1),
+  name: z.string(),
+  hypothesis: z.string(),
+  plan: z.record(z.string(), z.unknown()),
+  status: ExperimentStatusSchema,
+  createdAt: IsoDateTimeSchema,
+  finishedAt: IsoDateTimeSchema.nullable(),
 });

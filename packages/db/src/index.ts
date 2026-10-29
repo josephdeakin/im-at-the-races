@@ -6,3 +6,6 @@ export * from './schema.js';
 export * from './queries/projects.js';
 export * from './queries/runs.js';
 export * from './queries/artifacts.js';
+export * from './queries/experiments.js';
+export * from './queries/findings.js';
+export * from './queries/repair.js';

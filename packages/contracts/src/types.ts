@@ -4,6 +4,8 @@ import type {
   CreateProjectSchema,
   CreateRunSchema,
   EventsQuerySchema,
+  ExperimentSchema,
+  ExperimentStatusSchema,
   ProjectSchema,
   RunEventSchema,
   RunLimitsSchema,
@@ -22,6 +24,8 @@ export type Project = z.infer<typeof ProjectSchema>;
 export type Run = z.infer<typeof RunSchema>;
 export type RunEvent = z.infer<typeof RunEventSchema>;
 export type Artifact = z.infer<typeof ArtifactSchema>;
+export type ExperimentStatus = z.infer<typeof ExperimentStatusSchema>;
+export type Experiment = z.infer<typeof ExperimentSchema>;
 
 export const TERMINAL_RUN_STATUSES: readonly RunStatus[] = [
   'completed',
@@ -54,8 +58,8 @@ export const DEFAULT_RUN_TASK =
 
 export const DEFAULT_RUN_LIMITS: RunLimits = {
   durationMs: 10 * 60 * 1000,
-  modelCalls: 50,
-  experiments: 20,
+  modelCalls: 30,
+  experiments: 6,
 };
 
 /** Phase assigned to a freshly queued run. */
@@ -77,6 +81,21 @@ export const KNOWN_RUN_EVENT_KINDS = {
   FAILED: 'run.failed',
   INTERRUPTED: 'run.interrupted',
   ARTIFACT_ADDED: 'artifact.added',
+  EXPERIMENT_STARTED: 'experiment.started',
+  EXPERIMENT_COMPLETED: 'experiment.completed',
+  TRIAL_STARTED: 'trial.started',
+  TRIAL_COMPLETED: 'trial.completed',
+  ACTION_PERFORMED: 'action.performed',
+  REQUEST_STARTED: 'request.started',
+  REQUEST_CAPTURED: 'request.captured',
+  REQUEST_HELD: 'request.held',
+  REQUEST_RELEASED: 'request.released',
+  TRIGGER_SATISFIED: 'trigger.satisfied',
+  SCREENSHOT_CAPTURED: 'screenshot.captured',
+  VALUES_CAPTURED: 'values.captured',
+  ASSERTION_EVALUATED: 'assertion.evaluated',
+  FINDING_RECORDED: 'finding.recorded',
+  EVIDENCE_SKIPPED: 'evidence.skipped',
 } as const;
 
 export type KnownRunEventKind =

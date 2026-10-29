@@ -1,14 +1,43 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getProject, getRun, listArtifactsByRun, listEvents } from '@races/db';
+import {
+  getProject,
+  getRun,
+  listArtifactsByRun,
+  listEvents,
+  listExperimentsByRun,
+  listFindingsByRun,
+  listRepairAttemptsByRun,
+  listReproducersByRun,
+  listTrialsByExperiment,
+  listVerificationChecksByRun,
+} from '@races/db';
 import { RUN_MODE_LABELS } from '@races/contracts';
 import { getDb } from '@/lib/server/db';
-import { toProjectJson, toRunEventJson, toRunJson } from '@/lib/server/serializers';
+import {
+  toArtifactJson,
+  toExperimentJson,
+  toFindingJson,
+  toProjectJson,
+  toRepairAttemptJson,
+  toReproducerJson,
+  toRunEventJson,
+  toRunJson,
+  toTrialJson,
+  toVerificationCheckJson,
+} from '@/lib/server/serializers';
 import { formatDateTime, formatDurationMs } from '@/lib/format';
-import { RunMonitor } from '@/components/RunMonitor';
+import { RunWorkspace } from '@/components/RunWorkspace';
 
-export default async function RunPage({ params }: { params: Promise<{ runId: string }> }) {
+export default async function RunPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ runId: string }>;
+  searchParams: Promise<{ trial?: string }>;
+}) {
   const { runId } = await params;
+  const { trial: trialParam } = await searchParams;
   const db = getDb();
   const runRow = getRun(db, runId);
   if (!runRow) notFound();
@@ -18,6 +47,19 @@ export default async function RunPage({ params }: { params: Promise<{ runId: str
   const events = listEvents(db, runId, -1).map(toRunEventJson);
   const nextAfter = events.length > 0 ? events[events.length - 1].sequence : -1;
   const artifacts = listArtifactsByRun(db, runId);
+  const experiments = listExperimentsByRun(db, runId).map((row) => ({
+    ...toExperimentJson(row),
+    trials: listTrialsByExperiment(db, row.id).map(toTrialJson),
+  }));
+  const findings = listFindingsByRun(db, runId).map(toFindingJson);
+  const initialRepair = {
+    reproducers: listReproducersByRun(db, runId).map(toReproducerJson),
+    attempts: listRepairAttemptsByRun(db, runId).map(toRepairAttemptJson),
+    checks: listVerificationChecksByRun(db, runId).map(toVerificationCheckJson),
+    reproArtifacts: artifacts
+      .filter((artifact) => artifact.kind.startsWith('repro-'))
+      .map(toArtifactJson),
+  };
 
   return (
     <div className="space-y-8">
@@ -83,23 +125,59 @@ export default async function RunPage({ params }: { params: Promise<{ runId: str
         </dl>
       </section>
 
-      <RunMonitor initialRun={run} initialEvents={events} initialNextAfter={nextAfter} />
+      <RunWorkspace
+        initialRun={run}
+        initialEvents={events}
+        initialNextAfter={nextAfter}
+        experiments={experiments}
+        findings={findings}
+        initialTrialId={typeof trialParam === 'string' ? trialParam : null}
+        initialRepair={initialRepair}
+      />
 
-      <section aria-label="Findings and replay evidence">
-        <h2 className="text-sm font-semibold text-stone-900">Findings &amp; replay evidence</h2>
+      <section aria-label="Run artifacts">
+        <h2 className="text-sm font-semibold text-stone-900">Run artifacts</h2>
         {artifacts.length === 0 ? (
           <div className="mt-2 rounded-lg border border-dashed border-stone-300 bg-white px-6 py-10 text-center">
             <p className="text-sm font-medium text-stone-900">Nothing here yet</p>
             <p className="mx-auto mt-1 max-w-md text-sm text-stone-600">
-              Confirmed race conditions, timing evidence and replay artifacts will appear here once
-              the experiment engine executes this run.
+              Screenshots and recorded values will appear here once the run executes trials.
             </p>
           </div>
         ) : (
-          <ul className="mt-2 divide-y divide-stone-200 rounded-lg border border-stone-200 bg-white">
+          <ul className="mt-2 grid grid-cols-1 gap-4 sm:grid-cols-2">
             {artifacts.map((artifact) => (
-              <li key={artifact.id} className="px-4 py-3 font-mono text-xs text-stone-700">
-                {artifact.kind} · {artifact.relativePath} · {artifact.mimeType}
+              <li
+                key={artifact.id}
+                className="overflow-hidden rounded-lg border border-stone-200 bg-white"
+              >
+                {artifact.mimeType.startsWith('image/') ? (
+                  <a
+                    href={`/api/artifacts/${artifact.id}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700"
+                  >
+                    {/* Plain img: artifact bytes are local evidence, not optimized assets. */}
+                    <img
+                      src={`/api/artifacts/${artifact.id}`}
+                      alt={`${artifact.kind} evidence: ${artifact.relativePath}`}
+                      className="aspect-video w-full object-cover object-top"
+                    />
+                  </a>
+                ) : (
+                  <a
+                    href={`/api/artifacts/${artifact.id}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="block px-4 py-6 text-center text-sm text-sky-700 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700"
+                  >
+                    Open {artifact.kind} ({artifact.mimeType})
+                  </a>
+                )}
+                <p className="border-t border-stone-200 px-4 py-2 font-mono text-xs text-stone-500">
+                  {artifact.kind} · {artifact.relativePath}
+                </p>
               </li>
             ))}
           </ul>
