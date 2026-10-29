@@ -1,0 +1,40 @@
+# Dependencies.
+node_modules/
+
+# Build outputs.
+dist/
+build/
+.next/
+out/
+*.tsbuildinfo
+
+# Test outputs.
+coverage/
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# Runtime data for the local tool (SQLite DB, artifacts).
+.races/
+
+# Local env overrides. .env.example stays committed as documentation.
+.env*
+!.env.example
+
+# Deploy previews (unused by this local tool; kept out if ever generated).
+.vercel/
+
+# Logs.
+*.log
+logs/
+
+# OS noise.
+.DS_Store
+Thumbs.db
+
+# Editor noise.
+.idea/
+*.swp
+*.swo
+*~
