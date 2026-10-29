@@ -1,0 +1,31 @@
+{
+  "name": "im-at-the-races",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@10.15.1",
+  "engines": {
+    "node": ">=20.19.0 <23",
+    "pnpm": ">=10"
+  },
+  "scripts": {
+    "dev": "pnpm build:packages && concurrently --kill-others --names web,worker \"pnpm dev:web\" \"pnpm dev:worker\"",
+    "dev:web": "pnpm --filter web dev",
+    "dev:worker": "pnpm --filter worker dev",
+    "db:migrate": "pnpm --filter @races/contracts build && pnpm --filter @races/db migrate",
+    "typecheck": "pnpm build:packages && pnpm -r --if-present typecheck",
+    "test": "pnpm build:packages && pnpm -r --if-present test",
+    "build": "pnpm build:packages && pnpm --filter web build && pnpm --filter worker build",
+    "build:packages": "pnpm --filter @races/contracts --filter @races/db --filter @races/core build",
+    "postinstall": "pnpm build:packages"
+  },
+  "devDependencies": {
+    "concurrently": "10.0.6",
+    "typescript": "5.9.3"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "better-sqlite3",
+      "esbuild"
+    ]
+  }
+}
