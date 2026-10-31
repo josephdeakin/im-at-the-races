@@ -13,7 +13,11 @@ import {
 import type { ExecutionContext, ExecutionOutcome, Executor } from '../index.js';
 import type { Browser } from 'playwright';
 import { runReproSpec } from '../repro/run.js';
-import { runRepairAttempt, type RepairBudgets } from '../repair/agent.js';
+import {
+  runRepairAttempt,
+  type RepairAttemptOutcome,
+  type RepairBudgets,
+} from '../repair/agent.js';
 import {
   compareProjectCheck,
   freezeReproducer,
@@ -27,7 +31,9 @@ import {
   diffWorkspace,
   installWorkspace,
   packageScriptNames,
+  removeRepairWorkspace,
   RepairUnavailableError,
+  type RepairWorkspace,
   runPackageScript,
   servePackage,
 } from '../repair/workspace.js';
@@ -286,7 +292,7 @@ export class AgentExecutor implements Executor {
         message: [
           `Agent investigation finished (${stopReason}).`,
           `Summary: ${args.summary}`,
-          `Coverage: ${args.coverage.experimentsRun} experiments, ${args.coverage.workflowsTested.length} workflows tested.`,
+          `Coverage: ${budgets.plansUsed} experiments, ${args.coverage.workflowsTested.length} workflows tested.`,
           `Findings: ${created.length === 0 ? 'none' : created.map((f) => `${f.id} (${f.status})`).join(', ')}.`,
           args.unresolvedSuspicions.length > 0
             ? `Unresolved: ${args.unresolvedSuspicions.join(' | ')}`
@@ -310,6 +316,22 @@ export class AgentExecutor implements Executor {
         usage: { inputTokens, outputTokens },
       });
     };
+
+    const finishInvalidCap = (): Promise<ExecutionOutcome> =>
+      finishRun(
+        {
+          summary: 'Too many invalid tool calls.',
+          coverage: {
+            pagesVisited: [],
+            workflowsTested: [],
+            experimentsRun: budgets.plansUsed,
+          },
+          unresolvedSuspicions: [],
+          limitations: ['Too many invalid tool calls; stopped to preserve budget.'],
+          findings: [],
+        },
+        'invalid tool-call cap exceeded',
+      );
 
     try {
       for (;;) {
@@ -349,9 +371,21 @@ export class AgentExecutor implements Executor {
 
         let response;
         try {
-          response = await this.options.model.complete(messages, AGENT_TOOL_DEFINITIONS, SYSTEM_PROMPT);
+          response = await this.options.model.complete(messages, AGENT_TOOL_DEFINITIONS, SYSTEM_PROMPT, {
+            signal: AbortSignal.any([
+              ctx.signal,
+              AbortSignal.timeout(Math.max(1000, deadline - Date.now())),
+            ]),
+          });
           repairBudgets.modelCalls += 1;
         } catch (err) {
+          if (
+            !ctx.signal.aborted &&
+            err instanceof Error &&
+            (err.name === 'AbortError' || err.name === 'TimeoutError')
+          ) {
+            continue;
+          }
           if (err instanceof ModelAuthError) {
             return { status: 'failed', errorCode: 'MODEL_UNAVAILABLE', errorMessage: err.message };
           }
@@ -415,6 +449,7 @@ export class AgentExecutor implements Executor {
             const parsed = FinishArgsSchema.safeParse(call.input);
             if (!parsed.success) {
               invalidCalls += 1;
+              if (invalidCalls > MAX_INVALID_TOOL_CALLS) return finishInvalidCap();
               results.push({
                 type: 'tool_result',
                 tool_use_id: call.id,
@@ -428,6 +463,7 @@ export class AgentExecutor implements Executor {
             );
             if (unknown.length > 0) {
               invalidCalls += 1;
+              if (invalidCalls > MAX_INVALID_TOOL_CALLS) return finishInvalidCap();
               results.push({
                 type: 'tool_result',
                 tool_use_id: call.id,
@@ -442,23 +478,13 @@ export class AgentExecutor implements Executor {
             return finishRun(parsed.data, 'agent finished');
           }
           const outcome = await dispatchTool(call.name, call.input, deps, exploration);
-          if (!outcome.ok && outcome.error.startsWith('Invalid ')) invalidCalls += 1;
-          if (invalidCalls > MAX_INVALID_TOOL_CALLS) {
-            return finishRun(
-              {
-                summary: 'Too many invalid tool calls.',
-                coverage: {
-                  pagesVisited: [],
-                  workflowsTested: [],
-                  experimentsRun: budgets.plansUsed,
-                },
-                unresolvedSuspicions: [],
-                limitations: ['Too many invalid tool calls; stopped to preserve budget.'],
-                findings: [],
-              },
-              'invalid tool-call cap exceeded',
-            );
+          if (
+            !outcome.ok &&
+            (outcome.error.startsWith('Invalid ') || outcome.error.startsWith('Unknown tool'))
+          ) {
+            invalidCalls += 1;
           }
+          if (invalidCalls > MAX_INVALID_TOOL_CALLS) return finishInvalidCap();
           results.push({
             type: 'tool_result',
             tool_use_id: call.id,
@@ -588,6 +614,32 @@ export class AgentExecutor implements Executor {
     }
     await log(`Repair workspace ready at ${workspace.worktreePath} (source ${workspace.sourceIdentity}).`);
 
+    // The isolated checkout (repo copy + node_modules) is scratch: the patch
+    // diff is persisted, so every exit path removes it.
+    try {
+      return await this.repairInWorkspace({ ...args, workspace, log, limit });
+    } finally {
+      await removeRepairWorkspace(workspace).catch(() => {});
+    }
+  }
+
+  private async repairInWorkspace(args: {
+    ctx: ExecutionContext;
+    browser: Browser;
+    trialRunner: AgentTrialRunner;
+    budgets: RepairBudgets;
+    finding: CreatedFinding;
+    usage: ModelUsage;
+    workspace: RepairWorkspace;
+    log: (message: string) => Promise<void>;
+    limit: (detail: string) => Promise<{ verified: boolean; attempts: number; detail: string }>;
+  }): Promise<{ verified: boolean; attempts: number; detail: string }> {
+    const { ctx, finding } = args;
+    const store = this.options.store;
+    const workspace = args.workspace;
+    const log = args.log;
+    const limit = args.limit;
+
     const install = await installWorkspace(workspace.worktreePath);
     if (install.exitCode !== 0) {
       return limit(`dependency install failed in the isolated workspace: ${install.output.slice(-500)}`);
@@ -662,7 +714,12 @@ export class AgentExecutor implements Executor {
     const baselineChecks = new Map<string, { exitCode: number | null; output: string }>();
     for (const name of ['build', 'typecheck', 'test'] as const) {
       if (!scripts.has(name)) continue;
-      const result = await runPackageScript(workspace.packageDir, name);
+      const result = await runPackageScript(
+        workspace.packageDir,
+        name,
+        undefined,
+        args.budgets.deadline - Date.now(),
+      );
       baselineChecks.set(name, { exitCode: result.exitCode, output: result.output });
       store.createVerificationCheck({
         runId: ctx.run.id,
@@ -695,28 +752,37 @@ export class AgentExecutor implements Executor {
         sourceIdentity: workspace.sourceIdentity,
       });
       await log(`Repair attempt ${attempt}: agent editing the isolated package.`);
-      const repairOutcome = await runRepairAttempt({
-        model: this.options.model,
-        workspace,
-        finding: {
-          title: finding.title,
-          explanation: finding.explanation,
-          implicatedCode: finding.implicatedCode.map((pathText) => ({ path: pathText })),
-        },
-        frozenCheck: { checkId, specPath: bundle.specPath, specContent },
-        previousFailures,
-        budgets: args.budgets,
-        signal: ctx.signal,
-        onToolCall: (name, summary) => {
-          void ctx.events.appendEvent(ctx.run.id, KNOWN_RUN_EVENT_KINDS.LOG, {
-            message: `repair: ${name}${summary === '' ? '' : ` (${summary})`}`,
-          });
-        },
-      });
+      let repairOutcome: RepairAttemptOutcome;
+      try {
+        repairOutcome = await runRepairAttempt({
+          model: this.options.model,
+          workspace,
+          finding: {
+            title: finding.title,
+            explanation: finding.explanation,
+            implicatedCode: finding.implicatedCode.map((pathText) => ({ path: pathText })),
+          },
+          frozenCheck: { checkId, specPath: bundle.specPath, specContent },
+          previousFailures,
+          budgets: args.budgets,
+          signal: ctx.signal,
+          onToolCall: (name, summary) => {
+            void ctx.events.appendEvent(ctx.run.id, KNOWN_RUN_EVENT_KINDS.LOG, {
+              message: `repair: ${name}${summary === '' ? '' : ` (${summary})`}`,
+            });
+          },
+        });
+      } catch (err) {
+        store.finishRepairAttempt(row.id, { diff: '', status: 'failed' });
+        throw err;
+      }
       this.addUsage(args.usage, repairOutcome.usage);
       await log(`Repair attempt ${attempt} ${repairOutcome.stopReason}: ${repairOutcome.summary}`);
       const diff = await diffWorkspace(workspace);
-      store.finishRepairAttempt(row.id, { diff, status: 'completed' });
+      store.finishRepairAttempt(row.id, {
+        diff,
+        status: repairOutcome.stopReason === 'finished' ? 'completed' : 'failed',
+      });
       if (diff.trim() === '') {
         store.createVerificationCheck({
           runId: ctx.run.id,
@@ -742,7 +808,12 @@ export class AgentExecutor implements Executor {
         return limit('the frozen reproducer changed during repair; refusing to verify against a tampered check.');
       }
       if (scripts.has('build')) {
-        const build = await runPackageScript(workspace.packageDir, 'build');
+        const build = await runPackageScript(
+          workspace.packageDir,
+          'build',
+          undefined,
+          args.budgets.deadline - Date.now(),
+        );
         const baseline = baselineChecks.get('build');
         const compared = compareProjectCheck(build, baseline);
         store.createVerificationCheck({
@@ -758,10 +829,24 @@ export class AgentExecutor implements Executor {
             ...(compared.note ? { note: compared.note } : {}),
           },
         });
-        if (build.exitCode !== 0) {
+        if (compared.status === 'fail') {
           previousFailures = [`The patched build failed (exit ${build.exitCode}): ${build.output.slice(-800)}`];
           continue;
         }
+        if (compared.status === 'incomplete') {
+          previousFailures = [`The patched build did not finish: ${build.output.slice(-800)}`];
+          continue;
+        }
+        // 'pass', or 'skipped' (no worse than the pristine snapshot): verify on.
+      } else {
+        store.createVerificationCheck({
+          runId: ctx.run.id,
+          reproducerId: bundle.reproducerId,
+          repairAttemptId: row.id,
+          name: 'project-build',
+          status: 'skipped',
+          detail: { note: 'no build script in package.json' },
+        });
       }
       let app;
       try {
@@ -790,9 +875,23 @@ export class AgentExecutor implements Executor {
       // Fresh browser per attempt: the investigation browser sits idle through
       // installs, baseline checks, and repair model calls, and a dead handle
       // must never poison verification. Closed with the app below.
-      const attemptBrowser = await launchBrowser().catch((err: unknown) => {
-        throw new Error(err instanceof Error ? err.message : String(err));
-      });
+      let attemptBrowser;
+      try {
+        attemptBrowser = await launchBrowser();
+      } catch (err) {
+        await app.stop();
+        const message = err instanceof Error ? err.message : String(err);
+        store.createVerificationCheck({
+          runId: ctx.run.id,
+          reproducerId: bundle.reproducerId,
+          repairAttemptId: row.id,
+          name: 'patched-app-serves',
+          status: 'incomplete',
+          detail: { error: `verification browser failed to launch: ${message}` },
+        });
+        previousFailures = [`Verification browser failed to launch: ${message}`];
+        continue;
+      }
       try {
         const result = await verifyPatchedApp({
           trialRunner: args.trialRunner,
@@ -808,7 +907,13 @@ export class AgentExecutor implements Executor {
           reproducerId: bundle.reproducerId,
           repairAttemptId: row.id,
           repairStore: store,
-          runCheck: (name) => runPackageScript(workspace.packageDir, name),
+          runCheck: (name) =>
+            runPackageScript(
+              workspace.packageDir,
+              name,
+              undefined,
+              args.budgets.deadline - Date.now(),
+            ),
           baselineChecks,
           scriptsPresent: scripts,
         });

@@ -2,8 +2,6 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { isTerminalRunStatus, type Run, type RunEvent, type RunStatus } from '@races/contracts';
-import { Banner } from '@astryxdesign/core/Banner';
-import { Button } from '@astryxdesign/core/Button';
 import { Card } from '@astryxdesign/core/Card';
 import { CodeBlock } from '@astryxdesign/core/CodeBlock';
 import { Collapsible } from '@astryxdesign/core/Collapsible';
@@ -13,7 +11,6 @@ import { List, ListItem } from '@astryxdesign/core/List';
 import { Text } from '@astryxdesign/core/Text';
 import { VStack } from '@astryxdesign/core/VStack';
 import { formatDateTime, shortId } from '@/lib/format';
-import { StatusBadge } from './StatusBadge';
 
 const POLL_INTERVAL_MS = 1500;
 
@@ -40,17 +37,13 @@ export function RunMonitor({
   initialEvents: RunEvent[];
   initialNextAfter: number;
 }) {
-  const [run, setRun] = useState(initialRun);
   const [events, setEvents] = useState<RunEvent[]>(initialEvents);
   const [pollError, setPollError] = useState<string | null>(null);
-  const [cancelling, setCancelling] = useState(false);
-  const [cancelError, setCancelError] = useState<string | null>(null);
 
   const seenRef = useRef<Set<number>>(new Set(initialEvents.map((e) => e.sequence)));
   const afterRef = useRef<number>(initialNextAfter);
   const inFlightRef = useRef(false);
   const statusRef = useRef<RunStatus>(initialRun.status);
-  statusRef.current = run.status;
 
   const fetchPage = useCallback(async (): Promise<boolean> => {
     const res = await fetch(`/api/runs/${initialRun.id}/events?after=${afterRef.current}`, {
@@ -69,11 +62,7 @@ export function RunMonitor({
       );
     }
     afterRef.current = data.nextAfter;
-    setRun((prev) =>
-      prev.status === data.status && prev.phase === data.phase
-        ? prev
-        : { ...prev, status: data.status, phase: data.phase },
-    );
+    statusRef.current = data.status;
     return isTerminalRunStatus(data.status);
   }, [initialRun.id]);
 
@@ -104,76 +93,8 @@ export function RunMonitor({
     };
   }, [fetchPage]);
 
-  async function onCancel() {
-    setCancelling(true);
-    setCancelError(null);
-    try {
-      const res = await fetch(`/api/runs/${initialRun.id}/cancel`, { method: 'POST' });
-      const body = (await res.json().catch(() => null)) as { run?: Run } | null;
-      if (!res.ok || !body?.run) {
-        setCancelError('Cancellation failed. Please try again.');
-        return;
-      }
-      setRun(body.run);
-      try {
-        await fetchPage();
-      } catch {
-        // Non-fatal: the next poll (or reload) picks the event up.
-      }
-    } catch {
-      setCancelError('Could not reach the server.');
-    } finally {
-      setCancelling(false);
-    }
-  }
-
-  const terminal = isTerminalRunStatus(run.status);
-
   return (
     <VStack gap={4}>
-      <Card>
-        <HStack gap={3} justify="between" wrap="wrap">
-          <HStack gap={3}>
-            <StatusBadge status={run.status} />
-            <Text>
-              Phase <Text type="code">{run.phase}</Text>
-            </Text>
-          </HStack>
-          {!terminal && (
-            <HStack gap={3}>
-              {cancelError && (
-                <Text type="supporting">
-                  <span role="alert">{cancelError}</span>
-                </Text>
-              )}
-              <Button
-                variant="destructive"
-                label={cancelling ? 'Cancelling run' : 'Cancel run'}
-                onClick={onCancel}
-                isLoading={cancelling}
-              />
-            </HStack>
-          )}
-          {terminal && run.status === 'cancelled' && (
-            <Text type="supporting">This run was cancelled.</Text>
-          )}
-        </HStack>
-      </Card>
-
-      {run.status === 'queued' && (
-        <Banner
-          status="info"
-          title="Waiting for a worker to claim this run"
-          description={
-            <>
-              If this persists, the worker process is not running. Start it with{' '}
-              <Text type="code">pnpm dev:worker</Text> (or <Text type="code">pnpm dev</Text> for
-              web and worker together).
-            </>
-          }
-        />
-      )}
-
       <VStack gap={2}>
         <Heading level={2}>Activity</Heading>
         {pollError && (

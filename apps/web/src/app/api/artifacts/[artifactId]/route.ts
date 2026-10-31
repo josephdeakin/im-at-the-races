@@ -1,10 +1,11 @@
+import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { getArtifact, resolveRacesDir } from '@races/db';
 import { getDb } from '@/lib/server/db';
-import { guard, notFoundError } from '@/lib/server/http';
+import { apiError, guard, notFoundError } from '@/lib/server/http';
 
 export const runtime = 'nodejs';
 
@@ -37,6 +38,14 @@ export async function GET(
       data = fs.readFileSync(real);
     } catch {
       return notFoundError(`Artifact file missing: ${artifactId}`);
+    }
+    // Rows recorded before hash accounting carry an empty hash; verify the rest.
+    if (artifact.sha256 !== '' && createHash('sha256').update(data).digest('hex') !== artifact.sha256) {
+      return apiError(
+        'INTERNAL_ERROR',
+        `Artifact bytes do not match the recorded hash: ${artifactId}`,
+        500,
+      );
     }
     return new NextResponse(new Uint8Array(data), {
       status: 200,

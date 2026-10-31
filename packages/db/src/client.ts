@@ -38,6 +38,15 @@ export function openDatabase(dbPath?: string): OpenDatabaseResult {
 
 let shared: OpenDatabaseResult | null = null;
 
+/**
+ * Run a unit of work that reads before it writes. IMMEDIATE takes the write
+ * lock up front, so concurrent web/worker writers serialize instead of one
+ * failing with SQLITE_BUSY_SNAPSHOT (which busy_timeout does not retry).
+ */
+export function writeTransaction<T>(db: RacesDatabase, work: (tx: RacesTransaction) => T): T {
+  return db.transaction(work, { behavior: 'immediate' });
+}
+
 /** Per-process singleton for long-lived servers (Next.js, worker). */
 export function getSharedDatabase(dbPath?: string): OpenDatabaseResult {
   const resolved = dbPath ?? resolveDatabasePath();

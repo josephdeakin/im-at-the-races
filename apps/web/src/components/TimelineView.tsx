@@ -8,7 +8,6 @@ import {
   type RunEvent,
   type Trial,
 } from '@races/contracts';
-import { Badge } from '@astryxdesign/core/Badge';
 import { Banner } from '@astryxdesign/core/Banner';
 import { Button } from '@astryxdesign/core/Button';
 import { Card } from '@astryxdesign/core/Card';
@@ -26,8 +25,9 @@ import { Slider } from '@astryxdesign/core/Slider';
 import { Text } from '@astryxdesign/core/Text';
 import { VStack } from '@astryxdesign/core/VStack';
 import { formatDateTime } from '@/lib/format';
-import { buildTrialLanes, type Lane, type LaneMarker } from '@/lib/timeline';
+import { buildTrialLanes, type Lane } from '@/lib/timeline';
 import { explainTrial } from '@/lib/explain';
+import { LaneTrack, toneBadge } from './TrialRail';
 
 export interface ExperimentWithTrials extends Experiment {
   trials: Trial[];
@@ -47,18 +47,6 @@ interface ExperimentsResponse {
 }
 
 const POLL_INTERVAL_MS = 1500;
-
-const TONE_VARIANTS = {
-  accent: 'info',
-  bad: 'error',
-  good: 'success',
-  muted: 'neutral',
-} as const;
-
-function toneBadge(tone: string, glyph: string, label: string): React.ReactNode {
-  const variant = TONE_VARIANTS[tone as keyof typeof TONE_VARIANTS] ?? 'neutral';
-  return <Badge variant={variant} label={label} icon={<span aria-hidden="true">{glyph}</span>} />;
-}
 
 function trialLabel(experiment: Experiment, trial: Trial): string {
   const attempt = trial.attempt === 0 ? 'initial' : `confirm ${trial.attempt}`;
@@ -105,6 +93,7 @@ export function TimelineView({
     return defaultTrialId(initialExperiments);
   });
   const [selectedSequence, setSelectedSequence] = useState<number | null>(null);
+  const [pollError, setPollError] = useState<string | null>(null);
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState(1);
 
@@ -112,6 +101,7 @@ export function TimelineView({
   const afterRef = useRef<number>(
     initialEvents.length > 0 ? initialEvents[initialEvents.length - 1].sequence : -1,
   );
+  const experimentsJsonRef = useRef<string>(JSON.stringify(initialExperiments));
 
   // Live runs keep the timeline fed without a reload.
   useEffect(() => {
@@ -141,10 +131,23 @@ export function TimelineView({
         }
         if (experimentsRes.ok) {
           const data = (await experimentsRes.json()) as ExperimentsResponse;
-          setExperiments(data.experiments);
+          const serialized = JSON.stringify(data.experiments);
+          if (serialized !== experimentsJsonRef.current) {
+            experimentsJsonRef.current = serialized;
+            setExperiments(data.experiments);
+          }
+        }
+        if (!stopped) {
+          setPollError(
+            eventsRes.ok && experimentsRes.ok
+              ? null
+              : 'Live updates paused: server error. Retrying…',
+          );
         }
       } catch {
-        // Transient: retry on the next tick.
+        if (!stopped) {
+          setPollError('Live updates paused: could not reach the server. Retrying…');
+        }
       }
       if (!stopped) timer = setTimeout(poll, POLL_INTERVAL_MS);
     };
@@ -202,11 +205,9 @@ export function TimelineView({
     return { min: Math.min(...times), max: Math.max(...times) };
   }, [lanes]);
 
-  const position = (at: number): number => {
-    if (!timeBounds || timeBounds.max === timeBounds.min) return EDGE_CLAMP_PCT;
-    const pct = ((at - timeBounds.min) / (timeBounds.max - timeBounds.min)) * 100;
-    // Keep edge markers readable inside the track; interior positions exact.
-    return Math.min(100 - EDGE_CLAMP_PCT, Math.max(EDGE_CLAMP_PCT, pct));
+  const fraction = (at: number): number => {
+    if (!timeBounds || timeBounds.max === timeBounds.min) return 0.5;
+    return (at - timeBounds.min) / (timeBounds.max - timeBounds.min);
   };
 
   // Recorded playback: selection walks saved evidence, never re-executes.
@@ -285,7 +286,7 @@ export function TimelineView({
         />
         {!isTerminal && (
           <Text type="supporting">
-            <span role="status">Updating live</span>
+            <span role="status">{pollError ?? 'Updating live'}</span>
           </Text>
         )}
       </HStack>
@@ -318,7 +319,7 @@ export function TimelineView({
         />
       )}
 
-      <Grid columns={{ minWidth: 420, max: 2 }} gap={4}>
+      <Grid columns={{ minWidth: 300, max: 2 }} gap={4}>
         <VStack gap={4}>
           <Card>
             <VStack gap={3}>
@@ -335,7 +336,8 @@ export function TimelineView({
                       </HStack>
                       <LaneTrack
                         lane={lane}
-                        position={position}
+                        fraction={fraction}
+                        t0={timeBounds?.min ?? null}
                         selectedSequence={selectedSequence}
                         onSelect={(sequence) => {
                           setSelectedSequence(sequence);
@@ -349,8 +351,8 @@ export function TimelineView({
               {timeBounds && (
                 <Text type="supporting">
                   {((timeBounds.max - timeBounds.min) / 1000).toFixed(1)}s of recorded events on
-                  a shared relative time scale. Markers at the extreme edges are nudged inward
-                  to stay readable.
+                  a shared relative time scale. Rows read top to bottom in time order; dots
+                  mark each event on that scale with its offset at right.
                 </Text>
               )}
             </VStack>
@@ -465,96 +467,6 @@ export function TimelineView({
         </VStack>
       </Grid>
     </VStack>
-  );
-}
-
-const ROW_MIN_GAP_PCT = 9;
-const ROW_HEIGHT_PX = 26;
-const EDGE_CLAMP_PCT = 7;
-
-function assignRows(markers: LaneMarker[], position: (at: number) => number): LaneMarker[][] {
-  const rows: LaneMarker[][] = [];
-  const ordered = [...markers].sort((a, b) => a.at - b.at || a.sequence - b.sequence);
-  for (const marker of ordered) {
-    const pct = position(marker.at);
-    let placed = false;
-    for (const row of rows) {
-      const last = row[row.length - 1];
-      if (pct - position(last.at) >= ROW_MIN_GAP_PCT) {
-        row.push(marker);
-        placed = true;
-        break;
-      }
-    }
-    if (!placed) rows.push([marker]);
-  }
-  return rows;
-}
-
-function LaneTrack({
-  lane,
-  position,
-  selectedSequence,
-  onSelect,
-}: {
-  lane: Lane;
-  position: (at: number) => number;
-  selectedSequence: number | null;
-  onSelect: (sequence: number) => void;
-}) {
-  const rows = assignRows(lane.markers, position);
-  return (
-    <div
-      className="relative rounded-md bg-surface"
-      style={{ height: `${Math.max(1, rows.length) * ROW_HEIGHT_PX + 8}px` }}
-    >
-      {lane.spans.map((span) => (
-        <Span key={`${span.fromSequence}-${span.toSequence ?? 'end'}`} lane={lane} span={span} position={position} />
-      ))}
-      {rows.map((row, rowIndex) =>
-        row.map((marker) => (
-          <button
-            key={marker.sequence}
-            type="button"
-            title={`#${marker.sequence} ${marker.label}`}
-            aria-label={`Select event #${marker.sequence}: ${marker.label}`}
-            aria-current={marker.sequence === selectedSequence}
-            onClick={() => onSelect(marker.sequence)}
-            style={{ left: `${position(marker.at)}%`, top: `${4 + rowIndex * ROW_HEIGHT_PX}px` }}
-            className={`absolute max-w-44 -translate-x-1/2 focus-visible:outline-2 focus-visible:outline-offset-2 ${
-              marker.sequence === selectedSequence ? 'rounded-md ring-2 ring-offset-1' : ''
-            }`}
-          >
-            {toneBadge(marker.tone, marker.glyph, marker.label)}
-          </button>
-        )),
-      )}
-    </div>
-  );
-}
-
-function Span({
-  lane,
-  span,
-  position,
-}: {
-  lane: Lane;
-  span: { fromSequence: number; toSequence: number | null; label: string };
-  position: (at: number) => number;
-}) {
-  const fromMarker = lane.markers.find((m) => m.sequence === span.fromSequence);
-  const toMarker =
-    span.toSequence === null ? null : lane.markers.find((m) => m.sequence === span.toSequence);
-  if (!fromMarker) return null;
-  const fromPct = position(fromMarker.at);
-  const toPct = toMarker ? position(toMarker.at) : 100;
-  return (
-    <div
-      aria-hidden="true"
-      title={span.label}
-      style={{ left: `${fromPct}%`, width: `${Math.max(1, toPct - fromPct)}%` }}
-      className="absolute inset-y-1 rounded bg-info opacity-40"
-    />
   );
 }
 

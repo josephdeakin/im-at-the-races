@@ -7,9 +7,10 @@ import { Button } from '@astryxdesign/core/Button';
 import { HStack } from '@astryxdesign/core/HStack';
 import { Text } from '@astryxdesign/core/Text';
 
-export function RerunButton({ runId }: { runId: string }) {
+export function RerunButton({ runId, disabled }: { runId: string; disabled?: boolean }) {
   const router = useRouter();
   const [pending, setPending] = useState(false);
+  const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function onRerun() {
@@ -28,7 +29,28 @@ export function RerunButton({ runId }: { runId: string }) {
       setError('Could not reach the server.');
     } finally {
       setPending(false);
+      setConfirming(false);
     }
+  }
+
+  if (confirming) {
+    return (
+      <HStack gap={2}>
+        <Text type="supporting">Start a fresh run with the same task?</Text>
+        <Button
+          variant="primary"
+          label={pending ? 'Starting rerun' : 'Start rerun'}
+          onClick={onRerun}
+          isLoading={pending}
+        />
+        <Button
+          variant="secondary"
+          label="Keep this run"
+          onClick={() => setConfirming(false)}
+          isDisabled={pending}
+        />
+      </HStack>
+    );
   }
 
   return (
@@ -40,10 +62,14 @@ export function RerunButton({ runId }: { runId: string }) {
       )}
       <Button
         variant="secondary"
-        label={pending ? 'Starting rerun' : 'Rerun investigation'}
-        tooltip="Start a fresh investigation run with the same task. Recorded evidence is never modified."
-        onClick={onRerun}
-        isLoading={pending}
+        label="Rerun investigation"
+        tooltip={
+          disabled
+            ? 'Wait for this run to finish before rerunning it.'
+            : 'Start a fresh investigation run with the same task. Recorded evidence is never modified.'
+        }
+        onClick={() => setConfirming(true)}
+        isDisabled={disabled || pending}
       />
     </HStack>
   );

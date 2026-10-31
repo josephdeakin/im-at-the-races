@@ -5,7 +5,9 @@ export function formatDateTime(iso: string | null): string {
   if (!iso) return '—';
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return iso;
-  return date.toLocaleString();
+  // Pinned locale: the server and the browser must render byte-identical
+  // text or React hydration fails on every machine with a non-US locale.
+  return date.toLocaleString('en-US');
 }
 
 export function formatDurationMs(ms: number): string {

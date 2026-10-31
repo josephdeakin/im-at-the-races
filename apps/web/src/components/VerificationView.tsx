@@ -10,7 +10,10 @@ import type {
 } from '@races/contracts';
 import { formatDateTime } from '@/lib/format';
 import { checkLabel, checkOneLiner, summarizeAttemptChecks, summarizeRepair } from '@/lib/repair';
+import { selectCompareAttempt, selectComparisonPair } from '@/lib/evidence-compare';
 import { AttemptVerdictBadge } from './PatchView';
+import { EvidenceCompare } from './EvidenceCompare';
+import type { ExperimentWithTrials } from './TimelineView';
 import { Badge, type BadgeVariant } from '@astryxdesign/core/Badge';
 import { Banner } from '@astryxdesign/core/Banner';
 import { Card } from '@astryxdesign/core/Card';
@@ -84,21 +87,27 @@ function CheckMatrix({ checks }: { checks: VerificationCheck[] }) {
 }
 
 export function VerificationView({
+  runId,
   reproducers,
   attempts,
   checks,
   reproArtifacts,
   findings,
+  experiments,
   runMode,
   runStatus,
+  onOpenTrial,
 }: {
+  runId: string;
   reproducers: Reproducer[];
   attempts: RepairAttempt[];
   checks: VerificationCheck[];
   reproArtifacts: Artifact[];
   findings: Finding[];
+  experiments: ExperimentWithTrials[];
   runMode: string;
   runStatus: string;
+  onOpenTrial: (trialId: string) => void;
 }) {
   const summary = summarizeRepair(attempts, checks);
   const reproducer = reproducers[0] ?? null;
@@ -122,9 +131,24 @@ export function VerificationView({
   }
 
   const verified = summary.verdict === 'verified' && summary.verifiedAttempt !== null;
+  const compareAttempt = selectCompareAttempt(attempts, checks);
+  const pair =
+    compareAttempt && reproducer
+      ? selectComparisonPair(compareAttempt, reproducer, checks, experiments)
+      : null;
 
   return (
     <VStack gap={4}>
+      {compareAttempt && pair && (
+        <EvidenceCompare
+          runId={runId}
+          attempt={compareAttempt}
+          before={pair.before}
+          after={pair.after}
+          onOpenTrial={onOpenTrial}
+        />
+      )}
+
       <Banner
         status={verified ? 'success' : summary.verdict === 'unverified' ? 'error' : 'info'}
         title={

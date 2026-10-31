@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ExperimentPlanSchema } from './plans.js';
 
 /**
  * Run lifecycle status. Kept separate from the investigation phase: status
@@ -14,9 +15,6 @@ export const RunStatusSchema = z.enum([
 ]);
 
 export const RunModeSchema = z.enum(['investigate', 'investigate-repair']);
-
-/** Investigation phase is free-form so the worker can add phases without a contract change. */
-export const RunPhaseSchema = z.string().trim().min(1).max(100);
 
 export const RunLimitsSchema = z.object({
   durationMs: z.number().int().min(1000).max(86_400_000),
@@ -80,7 +78,7 @@ export const EventsQuerySchema = z.object({
   after: z.coerce.number().int().min(-1).max(Number.MAX_SAFE_INTEGER).optional().default(-1),
 });
 
-export const IsoDateTimeSchema = z.string().min(1).max(100);
+export const IsoDateTimeSchema = z.iso.datetime();
 
 export const ProjectSchema = z.object({
   id: z.string().min(1),
@@ -125,7 +123,7 @@ export const ExperimentSchema = z.object({
   runId: z.string().min(1),
   name: z.string(),
   hypothesis: z.string(),
-  plan: z.record(z.string(), z.unknown()),
+  plan: ExperimentPlanSchema,
   status: ExperimentStatusSchema,
   createdAt: IsoDateTimeSchema,
   finishedAt: IsoDateTimeSchema.nullable(),

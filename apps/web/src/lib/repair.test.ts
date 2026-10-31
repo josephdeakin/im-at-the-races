@@ -35,16 +35,34 @@ function attempt(attempt: number, id = `att-${attempt}`): RepairAttempt {
   };
 }
 
+const passingGates = () => [
+  check('patch-nonempty', 'pass'),
+  check('reproducer-intact', 'pass'),
+  check('frozen-rep-1', 'pass'),
+  check('normal-workflow', 'pass'),
+];
+
 describe('summarizeAttemptChecks', () => {
   it('fails on any fail, reports incompletes, and never lets skips imply a pass', () => {
     expect(summarizeAttemptChecks([]).verdict).toBe('no-checks');
     expect(
-      summarizeAttemptChecks([check('a', 'pass'), check('b', 'skipped')]).verdict,
+      summarizeAttemptChecks([...passingGates(), check('project-test', 'skipped')]).verdict,
     ).toBe('verified');
-    const failed = summarizeAttemptChecks([check('a', 'pass'), check('b', 'fail')]);
+    const failed = summarizeAttemptChecks([...passingGates(), check('b', 'fail')]);
     expect(failed.verdict).toBe('failed');
     expect(failed.problems).toEqual(['b']);
     expect(summarizeAttemptChecks([check('a', 'incomplete')]).verdict).toBe('incomplete');
+  });
+
+  it('never verifies when required gates skipped or never ran', () => {
+    expect(summarizeAttemptChecks([check('project-test', 'skipped')]).verdict).toBe('incomplete');
+    expect(summarizeAttemptChecks([check('project-test', 'pass')]).verdict).toBe('incomplete');
+    const skippedRequired = summarizeAttemptChecks([
+      ...passingGates().slice(0, 3),
+      check('normal-workflow', 'skipped'),
+    ]);
+    expect(skippedRequired.verdict).toBe('incomplete');
+    expect(skippedRequired.problems).toEqual(['normal-workflow (skipped)']);
   });
 });
 
@@ -54,7 +72,10 @@ describe('summarizeRepair', () => {
     const first = attempt(1);
     const second = attempt(2);
     expect(
-      summarizeRepair([first, second], [check('a', 'pass', first.id), check('b', 'fail', second.id)]),
+      summarizeRepair([first, second], [
+        ...passingGates().map((c) => ({ ...c, repairAttemptId: first.id })),
+        check('frozen-rep-1', 'fail', second.id),
+      ]),
     ).toEqual({ verdict: 'verified', verifiedAttempt: 1, attempts: 2 });
     expect(
       summarizeRepair([first], [check('a', 'fail', first.id)]).verdict,

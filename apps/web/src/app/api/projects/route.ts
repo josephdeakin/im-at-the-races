@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import path from 'node:path';
 import type { NextRequest } from 'next/server';
 import { CreateProjectSchema } from '@races/contracts';
@@ -31,6 +32,25 @@ export async function POST(req: NextRequest) {
     // run in any JS runtime; re-check with the real platform semantics here.
     if (!path.isAbsolute(body.data.repositoryPath)) {
       return validationError('Repository path must be an absolute path', null);
+    }
+    // Fail fast on a path the worker could never read, instead of at run time.
+    let stat: fs.Stats | null = null;
+    try {
+      stat = fs.statSync(body.data.repositoryPath);
+    } catch {
+      stat = null;
+    }
+    if (!stat) {
+      return validationError(
+        `Repository path does not exist: ${body.data.repositoryPath}`,
+        null,
+      );
+    }
+    if (!stat.isDirectory()) {
+      return validationError(
+        `Repository path is not a directory: ${body.data.repositoryPath}`,
+        null,
+      );
     }
     const project = toProjectJson(createProject(getDb(), body.data));
     return created({ project });

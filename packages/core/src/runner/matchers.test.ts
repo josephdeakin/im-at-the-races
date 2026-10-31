@@ -58,6 +58,18 @@ describe('RequestTracker', () => {
     expect(tracker.observe(candidate)).toBe('reqA');
   });
 
+  it('binds sequential occurrences of identical matchers in request order', () => {
+    const tracker = new RequestTracker([
+      matcher({ id: 'first-request', occurrence: 1 }),
+      matcher({ id: 'second-request', occurrence: 2 }),
+    ]);
+    const candidate = { method: 'GET', url: 'http://x/api/search?q=1', body: null };
+    expect(tracker.observe(candidate)).toBe('first-request');
+    expect(tracker.observe(candidate)).toBe('second-request');
+    expect(tracker.observe(candidate)).toBeNull();
+    expect(tracker.unmatched()).toEqual([]);
+  });
+
   it('matches request bodies and binds each candidate once', () => {
     const tracker = new RequestTracker([
       matcher({ id: 'first', method: 'POST', bodyContains: 'hello' }),

@@ -8,8 +8,9 @@ import {
   listFindingsByRun,
   listRepairAttemptsByRun,
   listReproducersByRun,
-  listTrialsByExperiment,
+  listTrialsByRun,
   listVerificationChecksByRun,
+  type TrialRow,
 } from '@races/db';
 import { RUN_MODE_LABELS } from '@races/contracts';
 import { Card } from '@astryxdesign/core/Card';
@@ -28,7 +29,7 @@ import {
   toProjectJson,
   toRepairAttemptJson,
   toReproducerJson,
-  toRunEventJson,
+  toRunEventJsonSafe,
   toRunJson,
   toTrialJson,
   toVerificationCheckJson,
@@ -51,12 +52,18 @@ export default async function RunPage({
   const run = toRunJson(runRow);
   const projectRow = getProject(db, run.projectId);
   const project = projectRow ? toProjectJson(projectRow) : null;
-  const events = listEvents(db, runId, -1).map(toRunEventJson);
+  const events = listEvents(db, runId, -1).map(toRunEventJsonSafe);
   const nextAfter = events.length > 0 ? events[events.length - 1].sequence : -1;
   const artifacts = listArtifactsByRun(db, runId);
+  const trialsByExperiment = new Map<string, TrialRow[]>();
+  for (const trial of listTrialsByRun(db, runId)) {
+    const list = trialsByExperiment.get(trial.experimentId) ?? [];
+    list.push(trial);
+    trialsByExperiment.set(trial.experimentId, list);
+  }
   const experiments = listExperimentsByRun(db, runId).map((row) => ({
     ...toExperimentJson(row),
-    trials: listTrialsByExperiment(db, row.id).map(toTrialJson),
+    trials: (trialsByExperiment.get(row.id) ?? []).map(toTrialJson),
   }));
   const findings = listFindingsByRun(db, runId).map(toFindingJson);
   const initialRepair = {
@@ -118,10 +125,11 @@ export default async function RunPage({
         initialRun={run}
         initialEvents={events}
         initialNextAfter={nextAfter}
-        experiments={experiments}
-        findings={findings}
+        initialExperiments={experiments}
+        initialFindings={findings}
         initialTrialId={typeof trialParam === 'string' ? trialParam : null}
         initialRepair={initialRepair}
+        repositoryPath={project?.repositoryPath ?? null}
       />
 
       <VStack gap={2}>

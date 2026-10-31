@@ -10,9 +10,11 @@ export const API_ERROR_CODES = {
 
 export type ApiErrorCode = (typeof API_ERROR_CODES)[keyof typeof API_ERROR_CODES];
 
+export const ApiErrorCodeSchema = z.enum(API_ERROR_CODES);
+
 export const ApiErrorSchema = z.object({
   error: z.object({
-    code: z.string().min(1),
+    code: ApiErrorCodeSchema,
     message: z.string().min(1),
     details: z.unknown().optional(),
   }),

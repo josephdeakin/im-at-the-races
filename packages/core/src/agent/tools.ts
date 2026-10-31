@@ -287,7 +287,7 @@ async function executeExplorePlan(
   if (deps.budgets.plansUsed >= deps.budgets.planBudget) {
     return {
       ok: false,
-      error: `Plan budget exhausted (${deps.budgets.plansUsed}/${deps.budgets.planBudget} used). Confirm an existing experiment or finish.`,
+      error: `Plan budget exhausted (${deps.budgets.plansUsed}/${deps.budgets.planBudget} used). Finish with the evidence already gathered.`,
     };
   }
   if (!sameOrigin(plan.startUrl, deps.targetUrl)) {
@@ -329,10 +329,17 @@ async function executeConfirmExperiment(
   attempts: number,
   deps: AgentToolDeps,
 ): Promise<ToolOutcome> {
+  if (deps.budgets.plansUsed >= deps.budgets.planBudget) {
+    return {
+      ok: false,
+      error: `Plan budget exhausted (${deps.budgets.plansUsed}/${deps.budgets.planBudget} used). Finish with the evidence already gathered.`,
+    };
+  }
   const stored = deps.experiments.getExperiment(experimentId);
   if (!stored || stored.runId !== deps.runId) {
     return { ok: false, error: `Unknown experiment for this run: ${experimentId}` };
   }
+  deps.budgets.plansUsed += 1;
   const parsed = ExperimentPlanSchema.safeParse(stored.plan);
   if (!parsed.success) {
     return { ok: false, error: `Stored plan for ${experimentId} no longer validates.` };

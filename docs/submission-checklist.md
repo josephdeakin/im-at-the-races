@@ -2,7 +2,10 @@
 
 ## Done in repo
 
-- [x] `pnpm typecheck`, `pnpm test`, `pnpm build` green from the root.
+- [x] `pnpm typecheck`, `pnpm test`, `pnpm build` green from the root
+      (re-verified 2026-10-31 after the CODE_REVIEW.md fix pass:
+      127 tests across contracts/db/core/web/worker; fixture suite shows
+      only its labelled FAIL_TO_PASS red, by design).
 - [x] AT01–AT06 exercised live (see milestone notes): claim/cancel/crash,
       scripted pair, autonomous discovery, verified repair, fixed control,
       and the failure matrix.

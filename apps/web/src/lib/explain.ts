@@ -1,4 +1,9 @@
-import { requestIdOf, type RunEvent, type Trial } from '@races/contracts';
+import {
+  computeConfirmationVerdict,
+  requestIdOf,
+  type RunEvent,
+  type Trial,
+} from '@races/contracts';
 
 export interface ExplanationLink {
   label: string;
@@ -112,48 +117,16 @@ export interface ConfirmationTally {
 }
 
 /**
- * Display tally mirroring the FI02 rule: confirmation attempts (numbered 1..N
- * past discovery) where the baseline passed and the intervention violated the
- * same check that discovery violated. The recorded finding status stays
- * authoritative; this only renders the count.
+ * Display tally for the FI02 rule (single implementation:
+ * computeConfirmationVerdict in @races/contracts). The recorded finding
+ * status stays authoritative; this only renders the count.
  */
 export function tallyConfirmations(trials: Trial[]): ConfirmationTally {
-  const empty: ConfirmationTally = { attempts: 0, violations: 0, text: 'unconfirmed' };
-  const baseline = trials.find((t) => t.kind === 'baseline' && t.attempt === 0);
-  const intervention = trials.find((t) => t.kind === 'intervention' && t.attempt === 0);
-  if (!baseline || !intervention) return empty;
-  if (baseline.outcome !== 'pass' || intervention.outcome !== 'violation') return empty;
-  const passed = new Set(
-    (baseline.detail?.assertions ?? []).filter((a) => a.passed).map((a) => a.id),
-  );
-  const candidates = new Set(
-    (intervention.detail?.assertions ?? [])
-      .filter((a) => !a.passed && passed.has(a.id))
-      .map((a) => a.id),
-  );
-  if (candidates.size === 0) return empty;
-  const byAttempt = new Map<number, { baseline?: Trial; intervention?: Trial }>();
-  for (const trial of trials) {
-    if (trial.attempt < 1 || !trial.outcome) continue;
-    const group = byAttempt.get(trial.attempt) ?? {};
-    if (trial.kind === 'baseline') group.baseline = trial;
-    if (trial.kind === 'intervention') group.intervention = trial;
-    byAttempt.set(trial.attempt, group);
-  }
-  let attempts = 0;
-  let violations = 0;
-  for (const group of byAttempt.values()) {
-    if (!group.baseline?.outcome || !group.intervention?.outcome) continue;
-    attempts += 1;
-    if (group.baseline.outcome !== 'pass' || group.intervention.outcome !== 'violation') continue;
-    const groupPassed = new Set(
-      (group.baseline.detail?.assertions ?? []).filter((a) => a.passed).map((a) => a.id),
-    );
-    const same = (group.intervention.detail?.assertions ?? []).some(
-      (a) => !a.passed && candidates.has(a.id) && groupPassed.has(a.id),
-    );
-    if (same) violations += 1;
-  }
-  if (attempts === 0) return empty;
-  return { attempts, violations, text: `${violations} of ${attempts}` };
+  const verdict = computeConfirmationVerdict(trials);
+  if (verdict.attempts === 0) return { attempts: 0, violations: 0, text: 'unconfirmed' };
+  return {
+    attempts: verdict.attempts,
+    violations: verdict.violations,
+    text: `${verdict.violations} of ${verdict.attempts}`,
+  };
 }

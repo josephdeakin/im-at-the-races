@@ -124,6 +124,9 @@ export function RunForm({ projectId }: { projectId: string }) {
                 value={durationMinutes}
                 onChange={setDurationMinutes}
                 htmlName="durationMinutes"
+                min={1}
+                max={1440}
+                description="minutes"
                 isDisabled={saving}
               />
               <NumberInput
@@ -131,6 +134,9 @@ export function RunForm({ projectId }: { projectId: string }) {
                 value={modelCalls}
                 onChange={setModelCalls}
                 htmlName="modelCalls"
+                min={0}
+                max={100000}
+                description="calls per run"
                 isDisabled={saving}
               />
               <NumberInput
@@ -138,6 +144,9 @@ export function RunForm({ projectId }: { projectId: string }) {
                 value={experiments}
                 onChange={setExperiments}
                 htmlName="experiments"
+                min={0}
+                max={1000}
+                description="plans per run"
                 isDisabled={saving}
               />
             </FormLayout>

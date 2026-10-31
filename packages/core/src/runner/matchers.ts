@@ -39,16 +39,21 @@ export class RequestTracker {
   }
 
   observe(candidate: RequestCandidate): string | null {
+    // Every matching candidate counts toward every unbound matcher first;
+    // only then does the first matcher (plan order) whose own occurrence has
+    // been reached claim the candidate. Counting after a bind decision would
+    // make occurrence plan-order dependent.
+    let bindId: string | null = null;
     for (const entry of this.compiled) {
       if (entry.bound) continue;
       if (!this.predicatesMatch(entry, candidate)) continue;
       entry.seen += 1;
-      if (entry.seen === entry.def.occurrence) {
+      if (bindId === null && entry.seen >= entry.def.occurrence) {
         entry.bound = true;
-        return entry.def.id;
+        bindId = entry.def.id;
       }
     }
-    return null;
+    return bindId;
   }
 
   /** Logical IDs that never bound to a request. */

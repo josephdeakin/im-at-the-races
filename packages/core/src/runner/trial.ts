@@ -16,7 +16,7 @@ import { RequestTracker } from './matchers.js';
 import { redactExcerpt, redactUrl } from './redact.js';
 import { AbortError, isAbortError, isCapacityError, pollFor, sleep } from './util.js';
 
-export const RESPONSE_EXCERPT_MAX_BYTES = 64 * 1024;
+export const RESPONSE_EXCERPT_MAX_BYTES = 8 * 1024;
 const OBSERVED_TEXT_MAX_CHARS = 2000;
 const VIEWPORT = { width: 1280, height: 800 };
 

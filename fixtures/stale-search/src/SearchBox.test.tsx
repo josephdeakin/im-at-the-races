@@ -65,7 +65,7 @@ describe('stale overwrite', () => {
   // Regression test for the stale-search race: fails on the vulnerable code
   // (buggy mode shows alpha) and passes once the race is repaired. This is
   // the FAIL_TO_PASS gate the repair verification relies on.
-  test('late earlier response never overwrites newer results, in either mode', async () => {
+  test('FAIL_TO_PASS (expected red on vulnerable code): late earlier response never overwrites newer results, in either mode', async () => {
     for (const mode of ['buggy', 'fixed'] as const) {
       const net = stubFetch();
       const { unmount } = render(<SearchBox mode={mode} />);

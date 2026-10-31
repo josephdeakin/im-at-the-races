@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { RunModeSchema } from '@races/contracts';
-import { appendEvent, createRun, getRun } from '@races/db';
+import { createRun, getRun } from '@races/db';
 import { getDb } from '@/lib/server/db';
 import {
   accepted,
@@ -38,9 +38,6 @@ export async function POST(
       task: source.task,
       mode: mode.data,
       limits: source.limits,
-    });
-    appendEvent(db, run.id, 'run.log', {
-      message: `Rerun of investigation ${runId}: same task, mode, and limits; fresh trials.`,
       rerunOf: runId,
     });
     return accepted({ runId: run.id, run: toRunJson(run) });

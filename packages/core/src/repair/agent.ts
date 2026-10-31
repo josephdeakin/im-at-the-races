@@ -1,4 +1,7 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import {
+  CreateFileArgsSchema,
   EditFileArgsSchema,
   FinishRepairArgsSchema,
   ListFilesArgsSchema,
@@ -39,7 +42,7 @@ const REPAIR_SYSTEM_PROMPT = `You repair a confirmed timing bug in an isolated c
 
 Rules:
 - Read the implicated code and the frozen test first. Make the smallest change that fixes the root cause (for example, ignore stale responses instead of applying them).
-- You may edit any file under the package copy. Prefer editing the implicated files.
+- You may edit files or create new ones (createFile) under the package copy. Prefer editing the implicated files.
 - Validate with runCheck (build, then typecheck/test when available) before finishing.
 - Never edit test expectations to make them pass, never delete tests, and never substitute a different implementation for the buggy one: repair the code in place.
 - When the fix is in place and checks pass, call finishRepair with a summary.
@@ -99,6 +102,19 @@ const REPAIR_TOOL_DEFINITIONS: ModelToolDefinition[] = [
     },
   },
   {
+    name: 'createFile',
+    description:
+      'Create a new file that does not exist yet. Fails if the file already exists; use editFile for changes.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        path: { type: 'string' },
+        content: { type: 'string' },
+      },
+      required: ['path', 'content'],
+    },
+  },
+  {
     name: 'runCheck',
     description:
       'Run one package check by script name (build, typecheck, or test) and return its exit code and output tail.',
@@ -124,10 +140,28 @@ const REPAIR_TOOL_DEFINITIONS: ModelToolDefinition[] = [
 
 type RepairOutcome = { ok: true; data: Record<string, unknown> } | { ok: false; error: string };
 
+/** Containment check for a file that does not exist yet (resolveRepoPath needs existence). */
+function resolveNewFilePath(root: string, relative: string): string {
+  const rootAbs = path.resolve(root);
+  const absolute = path.resolve(rootAbs, relative);
+  if (absolute !== rootAbs && !absolute.startsWith(`${rootAbs}${path.sep}`)) {
+    throw new Error(`Path escapes the repository: ${JSON.stringify(relative)}`);
+  }
+  let ancestor = path.dirname(absolute);
+  while (!fs.existsSync(ancestor) && ancestor !== rootAbs) ancestor = path.dirname(ancestor);
+  const realAncestor = fs.realpathSync(ancestor);
+  const realRoot = fs.realpathSync(rootAbs);
+  if (realAncestor !== realRoot && !realAncestor.startsWith(`${realRoot}${path.sep}`)) {
+    throw new Error(`Path escapes the repository: ${JSON.stringify(relative)}`);
+  }
+  return absolute;
+}
+
 export async function dispatchRepairTool(
   name: string,
   input: Record<string, unknown>,
   workspace: RepairWorkspace,
+  options?: { remainingMs?: number },
 ): Promise<RepairOutcome> {
   const root = workspace.packageDir;
   try {
@@ -222,13 +256,40 @@ export async function dispatchRepairTool(
             error: `Find text occurs ${occurrences} times; include more surrounding context to make it unique.`,
           };
         }
-        writeFileSync(absolute, text.replace(parsed.data.find, parsed.data.replace));
+        writeFileSync(absolute, text.replace(parsed.data.find, () => parsed.data.replace));
         return { ok: true, data: { replaced: true, path: parsed.data.path } };
+      }
+      case 'createFile': {
+        const parsed = CreateFileArgsSchema.safeParse(input);
+        if (!parsed.success) return { ok: false, error: `Invalid args: ${parsed.error.message}` };
+        if (parsed.data.path.includes('..') || parsed.data.path.startsWith('/')) {
+          return { ok: false, error: 'Path must be relative to the package root.' };
+        }
+        let absolute: string;
+        try {
+          absolute = resolveNewFilePath(root, parsed.data.path);
+        } catch (err) {
+          return { ok: false, error: err instanceof Error ? err.message : String(err) };
+        }
+        if (fs.existsSync(absolute)) {
+          return {
+            ok: false,
+            error: `File already exists: ${parsed.data.path}. Use editFile to change it.`,
+          };
+        }
+        fs.mkdirSync(path.dirname(absolute), { recursive: true });
+        fs.writeFileSync(absolute, parsed.data.content);
+        return { ok: true, data: { created: true, path: parsed.data.path } };
       }
       case 'runCheck': {
         const parsed = RunCheckArgsSchema.safeParse(input);
         if (!parsed.success) return { ok: false, error: `Invalid args: ${parsed.error.message}` };
-        const result = await runPackageScript(root, parsed.data.name);
+        const result = await runPackageScript(
+          root,
+          parsed.data.name,
+          undefined,
+          options?.remainingMs,
+        );
         return {
           ok: true,
           data: {
@@ -304,7 +365,12 @@ export async function runRepairAttempt(input: RepairAttemptInput): Promise<Repai
     }
     let response;
     try {
-      response = await input.model.complete(messages, REPAIR_TOOL_DEFINITIONS, REPAIR_SYSTEM_PROMPT);
+      response = await input.model.complete(messages, REPAIR_TOOL_DEFINITIONS, REPAIR_SYSTEM_PROMPT, {
+        signal: AbortSignal.any([
+          input.signal,
+          AbortSignal.timeout(Math.max(1000, input.budgets.deadline - Date.now())),
+        ]),
+      });
       input.budgets.modelCalls += 1;
       if (response.usage.inputTokens !== null && inputTokens !== null) {
         inputTokens += response.usage.inputTokens;
@@ -358,7 +424,9 @@ export async function runRepairAttempt(input: RepairAttemptInput): Promise<Repai
           usage: usage(),
         };
       }
-      const outcome = await dispatchRepairTool(call.name, call.input, input.workspace);
+      const outcome = await dispatchRepairTool(call.name, call.input, input.workspace, {
+        remainingMs: input.budgets.deadline - Date.now(),
+      });
       results.push({
         type: 'tool_result',
         tool_use_id: call.id,

@@ -14,9 +14,17 @@ export interface AttemptSummary {
   problems: string[];
 }
 
-/** Verdict for one attempt's gate set: any fail fails, else any incomplete
- * leaves it incomplete, otherwise it verified for the tested cases. Skipped
- * gates are reported separately and never imply a pass. */
+/** Gates that must run and pass for a verified verdict; advisory gates
+ * (variations, project scripts with no command) may skip. */
+const REQUIRED_CHECK_NAMES = new Set(['patch-nonempty', 'reproducer-intact', 'normal-workflow']);
+
+function isRequiredCheck(name: string): boolean {
+  return REQUIRED_CHECK_NAMES.has(name) || name.startsWith('frozen-rep-');
+}
+
+/** Verdict for one attempt's gate set: any fail fails, any incomplete leaves
+ * it incomplete, and verified requires the gate set to have actually run and
+ * passed. Skipped required gates never imply a pass. */
 export function summarizeAttemptChecks(checks: VerificationCheck[]): AttemptSummary {
   const summary: AttemptSummary = {
     verdict: 'no-checks',
@@ -27,7 +35,17 @@ export function summarizeAttemptChecks(checks: VerificationCheck[]): AttemptSumm
     problems: [],
   };
   if (checks.length === 0) return summary;
+  let sawRequired = false;
+  let sawFrozen = false;
+  let sawNormal = false;
+  let skippedRequired = false;
   for (const check of checks) {
+    const required = isRequiredCheck(check.name);
+    if (required) {
+      sawRequired = true;
+      if (check.name.startsWith('frozen-rep-')) sawFrozen = true;
+      if (check.name === 'normal-workflow') sawNormal = true;
+    }
     if (check.status === 'pass') summary.passed += 1;
     else if (check.status === 'fail') {
       summary.failed += 1;
@@ -37,9 +55,17 @@ export function summarizeAttemptChecks(checks: VerificationCheck[]): AttemptSumm
       summary.problems.push(check.name);
     } else {
       summary.skipped += 1;
+      if (required) {
+        skippedRequired = true;
+        summary.problems.push(`${check.name} (skipped)`);
+      }
     }
   }
-  summary.verdict = summary.failed > 0 ? 'failed' : summary.incomplete > 0 ? 'incomplete' : 'verified';
+  if (summary.failed > 0) summary.verdict = 'failed';
+  else if (summary.incomplete > 0) summary.verdict = 'incomplete';
+  else if (!sawRequired || !sawFrozen || !sawNormal || skippedRequired || summary.passed === 0) {
+    summary.verdict = 'incomplete';
+  } else summary.verdict = 'verified';
   return summary;
 }
 

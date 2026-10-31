@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import net from 'node:net';
 import path from 'node:path';
 import { promisify } from 'node:util';
+import { readTextFile } from '../agent/tools.js';
 
 const execFileAsync = promisify(execFile);
 
@@ -168,7 +169,13 @@ export async function diffWorkspace(workspace: RepairWorkspace): Promise<string>
   for (const line of fresh.split('\n').map((l) => l.trim()).filter((l) => l !== '')) {
     if (carriedSet.has(line)) continue;
     if (line === '.git') continue;
-    sections.push(`new file: ${line}`);
+    const text = readTextFile(path.join(workspace.worktreePath, line));
+    if (text === null) {
+      sections.push(`new file: ${line} (binary or unreadable)`);
+    } else {
+      const body = text.length > 20_000 ? `${text.slice(0, 20_000)}\n... (truncated)` : text;
+      sections.push([`new file: ${line}`, ...body.split('\n').map((l) => `+${l}`)].join('\n'));
+    }
   }
   return sections.join('\n\n');
 }
@@ -187,6 +194,22 @@ export interface CommandResult {
   durationMs: number;
 }
 
+function killProcessTree(child: ChildProcess, signal: NodeJS.Signals): void {
+  if (child.pid !== undefined) {
+    try {
+      process.kill(-child.pid, signal);
+      return;
+    } catch {
+      // No process group (or already gone): fall through to the child.
+    }
+  }
+  try {
+    child.kill(signal);
+  } catch {
+    // Already gone.
+  }
+}
+
 async function runCommand(
   command: string,
   args: string[],
@@ -196,7 +219,11 @@ async function runCommand(
 ): Promise<CommandResult> {
   const started = Date.now();
   return new Promise((resolve) => {
-    const child = spawn(command, args, { cwd, env: { ...process.env, ...env } });
+    const child = spawn(command, args, {
+      cwd,
+      detached: true,
+      env: { ...process.env, ...env },
+    });
     const chunks: Buffer[] = [];
     const cap = 64 * 1024;
     const collect = (data: Buffer): void => {
@@ -205,6 +232,7 @@ async function runCommand(
     child.stdout.on('data', collect);
     child.stderr.on('data', collect);
     let finished = false;
+    let timedOut = false;
     const finish = (exitCode: number | null): void => {
       if (finished) return;
       finished = true;
@@ -216,12 +244,15 @@ async function runCommand(
       });
     };
     const timer = setTimeout(() => {
-      child.kill('SIGTERM');
-      setTimeout(() => child.kill('SIGKILL'), 5000);
-      finish(null);
+      timedOut = true;
+      killProcessTree(child, 'SIGTERM');
+      setTimeout(() => {
+        killProcessTree(child, 'SIGKILL');
+        setTimeout(() => finish(null), 2000);
+      }, 5000);
     }, timeoutMs);
     child.on('error', () => finish(null));
-    child.on('close', (code) => finish(code));
+    child.on('close', (code) => finish(timedOut ? null : code));
   });
 }
 
@@ -252,8 +283,11 @@ export async function runPackageScript(
   packageDir: string,
   name: string,
   timeoutMs = 180_000,
+  remainingMs?: number,
 ): Promise<CommandResult> {
-  return runCommand('pnpm', ['--dir', packageDir, name], packageDir, {}, timeoutMs);
+  const effective =
+    remainingMs !== undefined ? Math.max(1000, Math.min(timeoutMs, remainingMs)) : timeoutMs;
+  return runCommand('pnpm', ['--dir', packageDir, name], packageDir, {}, effective);
 }
 
 export async function isPortFree(port: number): Promise<boolean> {
@@ -326,16 +360,32 @@ export async function servePackage(
     throw new RepairUnavailableError('Failed to spawn the isolated app.');
   }
   child.unref();
+  // Identity guard: if our process died (e.g. the port was already bound),
+  // whatever answers on the port is a foreign process and must not be
+  // mistaken for the patched app.
+  let exitCode: number | null | undefined;
+  child.on('exit', (code) => {
+    exitCode = code;
+  });
   const url = `http://127.0.0.1:${port}/`;
-  try {
-    await waitForHttp(url, readyTimeoutMs);
-  } catch (err) {
+  const stopChild = (): void => {
     try {
-      process.kill(-child.pid, 'SIGKILL');
+      process.kill(-(child.pid as number), 'SIGKILL');
     } catch {
       // Already gone.
     }
+  };
+  try {
+    await waitForHttp(url, readyTimeoutMs);
+  } catch (err) {
+    stopChild();
     throw err;
+  }
+  if (exitCode !== undefined) {
+    stopChild();
+    throw new RepairUnavailableError(
+      `Isolated app exited (code ${exitCode ?? 'unknown'}) before serving; refusing to verify against whatever owns port ${port}.`,
+    );
   }
   const pid = child.pid;
   return {

@@ -139,6 +139,52 @@ function makeSinks() {
   return { sink, artifacts, events };
 }
 
+function makeOutcomePlan(): ExperimentPlan {
+  return {
+    schemaVersion: 1,
+    id: 'outcome-probe',
+    hypothesis: 'A late stale response overwrites newer results.',
+    startUrl: `${baseUrl}/`,
+    actions: [
+      { id: 'a1', kind: 'fill', testId: 'search-input', value: 'alpha' },
+      { id: 'a2', kind: 'fill', testId: 'search-input', value: 'beta' },
+    ],
+    requests: [
+      {
+        id: 'reqA',
+        method: 'GET',
+        urlPattern: '/api/search',
+        query: { q: 'alpha' },
+        occurrence: 1,
+        afterAction: 'a1',
+      },
+      {
+        id: 'reqB',
+        method: 'GET',
+        urlPattern: '/api/search',
+        query: { q: 'beta' },
+        occurrence: 1,
+        afterAction: 'a2',
+      },
+    ],
+    schedule: {
+      hold: ['reqA'],
+      releases: [{ request: 'reqA', afterResponse: 'reqB', settleMs: 50, timeoutMs: 5000 }],
+    },
+    assertions: [
+      {
+        id: 'latest-wins',
+        description: 'Results reflect the latest query.',
+        type: 'textContains',
+        testId: 'results-for',
+        expected: 'Showing results for beta',
+      },
+    ],
+    timeouts: { ...DEFAULT_PLAN_TIMEOUTS },
+    requiredCapabilities: [RUNNER_CAPABILITIES.HTTP_HOLD_RELEASE],
+  };
+}
+
 function makePlan(): ExperimentPlan {
   return {
     schemaVersion: 1,
@@ -198,5 +244,33 @@ describe('experiment abort (live browser)', () => {
     expect([...experiments.values()].map((e) => e.status)).toEqual(['interrupted']);
     expect(events.map((e) => e.kind)).toContain('trial.completed');
     expect(events.map((e) => e.kind)).toContain('experiment.completed');
+  }, 60_000);
+});
+
+describe('experiment outcomes (live browser)', () => {
+  it('passes the baseline and flags the held stale delivery as a violation', async () => {
+    const { store, experiments, trials } = makeStore();
+    const { sink, artifacts, events } = makeSinks();
+    const result = await runExperiment({
+      plan: makeOutcomePlan(),
+      runId: 'run-1',
+      browser,
+      signal: new AbortController().signal,
+      events: sink,
+      artifacts,
+      store,
+    });
+
+    expect(result.baseline.outcome).toBe('pass');
+    expect(result.intervention?.outcome).toBe('violation');
+    expect([...experiments.values()].map((e) => e.status)).toEqual(['completed']);
+    expect([...trials.values()].map((t) => `${t.kind}:${t.outcome}`)).toEqual([
+      'baseline:pass',
+      'intervention:violation',
+    ]);
+    const failedAssertion = events.find(
+      (e) => e.kind === 'assertion.evaluated' && e.payload.passed === false,
+    );
+    expect(failedAssertion).toBeDefined();
   }, 60_000);
 });

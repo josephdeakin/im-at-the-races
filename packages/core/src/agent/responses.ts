@@ -1,4 +1,5 @@
 import {
+  finiteTokenCount,
   ModelAuthError,
   ModelError,
   type ModelClient,
@@ -116,8 +117,8 @@ export function fromResponseOutput(payload: ResponsesApiPayload): ModelResponse 
     toolCalls,
     stopReason,
     usage: {
-      inputTokens: payload.usage?.input_tokens ?? null,
-      outputTokens: payload.usage?.output_tokens ?? null,
+      inputTokens: finiteTokenCount(payload.usage?.input_tokens),
+      outputTokens: finiteTokenCount(payload.usage?.output_tokens),
     },
   };
 }
@@ -158,6 +159,7 @@ export class ResponsesApiClient implements ModelClient {
     messages: ModelMessage[],
     tools: ModelToolDefinition[],
     system: string,
+    options?: { signal?: AbortSignal },
   ): Promise<ModelResponse> {
     const body = {
       model: this.model,
@@ -186,9 +188,12 @@ export class ResponsesApiClient implements ModelClient {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify(body),
-          signal: AbortSignal.timeout(this.timeoutMs),
+          signal: options?.signal
+            ? AbortSignal.any([AbortSignal.timeout(this.timeoutMs), options.signal])
+            : AbortSignal.timeout(this.timeoutMs),
         });
       } catch (err) {
+        if (options?.signal?.aborted) throw err;
         lastError = err instanceof Error ? err.message : String(err);
         continue;
       }

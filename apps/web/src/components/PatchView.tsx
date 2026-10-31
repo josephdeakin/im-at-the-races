@@ -15,6 +15,7 @@ import { List, ListItem } from '@astryxdesign/core/List';
 import { MetadataList, MetadataListItem } from '@astryxdesign/core/MetadataList';
 import { Text } from '@astryxdesign/core/Text';
 import { VStack } from '@astryxdesign/core/VStack';
+import { PatchActions } from './PatchActions';
 
 const VERDICT_BADGE: Record<
   AttemptVerdict,
@@ -32,9 +33,13 @@ export function AttemptVerdictBadge({ verdict }: { verdict: AttemptVerdict }) {
 }
 
 export function PatchView({
+  runId,
+  repositoryPath,
   attempts,
   checks,
 }: {
+  runId: string;
+  repositoryPath: string | null;
   attempts: RepairAttempt[];
   checks: VerificationCheck[];
 }) {
@@ -99,6 +104,16 @@ export function PatchView({
               <MetadataListItem label="Workspace">{selected.workspacePath}</MetadataListItem>
               <MetadataListItem label="Source">{selected.sourceIdentity}</MetadataListItem>
             </MetadataList>
+
+            {selected.diff.trim() !== '' && (
+              <PatchActions
+                runId={runId}
+                attemptId={selected.id}
+                attemptNumber={selected.attempt}
+                verdict={summary.verdict}
+                repositoryPath={repositoryPath}
+              />
+            )}
 
             <VStack gap={1}>
               <Heading level={4}>Unified diff vs snapshot</Heading>

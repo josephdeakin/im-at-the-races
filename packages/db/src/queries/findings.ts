@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { asc, eq } from 'drizzle-orm';
 import type { FindingStatus } from '@races/contracts';
+import { writeTransaction } from '../client.js';
 import type { DbOrTx, RacesDatabase } from '../client.js';
 import { NotFoundError } from '../errors.js';
 import { experiments, findings, runs, type FindingRow } from '../schema.js';
@@ -17,15 +18,17 @@ export interface CreateFindingInput {
 }
 
 export function createFinding(db: RacesDatabase, input: CreateFindingInput): FindingRow {
-  return db.transaction((tx) => {
+  return writeTransaction(db, (tx) => {
     const run = tx.select({ id: runs.id }).from(runs).where(eq(runs.id, input.runId)).get();
     if (!run) throw new NotFoundError('run', input.runId);
     const experiment = tx
-      .select({ id: experiments.id })
+      .select({ id: experiments.id, runId: experiments.runId })
       .from(experiments)
       .where(eq(experiments.id, input.experimentId))
       .get();
-    if (!experiment) throw new NotFoundError('experiment', input.experimentId);
+    if (!experiment || experiment.runId !== input.runId) {
+      throw new NotFoundError('experiment', input.experimentId);
+    }
     return tx
       .insert(findings)
       .values({

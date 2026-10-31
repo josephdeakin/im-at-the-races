@@ -1,7 +1,9 @@
 // Import a run bundle (see export-run.cjs) into the RACES_DIR database,
 // preserving every ID so the recorded run browses exactly as exported.
 // Usage: RACES_DIR=/tmp/races-demo node scripts/import-run.cjs <bundleDir>
-// Refuses to overwrite an existing run with the same ID.
+// Refuses to overwrite an existing run with the same ID. Files are copied
+// before the insert transaction, and removed again if the insert fails, so
+// a failed import leaves no half-imported run behind.
 const fs = require('node:fs');
 const path = require('node:path');
 const db = require('../packages/db/dist/index.js');
@@ -25,8 +27,9 @@ if (manifest.bundleVersion !== 1) {
 
 const handle = db.openDatabase(path.join(racesDir, 'races.db'));
 db.migrate(handle.sqlite);
-const existing = handle.sqlite.prepare('SELECT id FROM runs WHERE id = ?').get(manifest.runId);
-if (existing) {
+const runExists = () =>
+  handle.sqlite.prepare('SELECT id FROM runs WHERE id = ?').get(manifest.runId) !== undefined;
+if (runExists()) {
   console.error(`Run ${manifest.runId} already exists in ${racesDir}; refusing to overwrite.`);
   process.exit(1);
 }
@@ -53,7 +56,26 @@ for (const artifact of bundle.artifacts) {
   if (artifact.sha256 === undefined || artifact.sha256 === null) artifact.sha256 = '';
 }
 
+// Copy artifact bytes first; the database insert below is the commit point.
+const copied = [];
+try {
+  for (const artifact of bundle.artifacts) {
+    const src = path.join(bundleDir, 'files', artifact.relative_path);
+    if (!fs.existsSync(src)) continue;
+    const dest = path.join(racesDir, artifact.relative_path);
+    fs.mkdirSync(path.dirname(dest), { recursive: true });
+    fs.copyFileSync(src, dest);
+    copied.push(dest);
+  }
+} catch (err) {
+  for (const dest of copied) fs.rmSync(dest, { force: true });
+  console.error(`Import failed while copying artifact files: ${err.message}`);
+  process.exit(1);
+}
+
 const insertAll = handle.sqlite.transaction(() => {
+  // Re-check inside the transaction: the check above is only a fast path.
+  if (runExists()) throw new Error(`Run ${manifest.runId} already exists`);
   for (const [table, rows, columns] of [
     ['projects', bundle.projects, ['id', 'name', 'repository_path', 'target_url', 'created_at', 'updated_at']],
     ['runs', bundle.runs, ['id', 'project_id', 'task', 'mode', 'status', 'phase', 'limits', 'cancel_requested_at', 'created_at', 'started_at', 'finished_at', 'error_code', 'error_message']],
@@ -68,20 +90,18 @@ const insertAll = handle.sqlite.transaction(() => {
   ]) {
     if (rows.length === 0) continue;
     const placeholders = columns.map(() => '?').join(', ');
-    const stmt = handle.sqlite.prepare(`INSERT INTO ${table} (${columns.join(', ')}) VALUES (${placeholders})`);
+    // A second run of an already-imported project must not fail on its PK.
+    const verb = table === 'projects' ? 'INSERT OR IGNORE' : 'INSERT';
+    const stmt = handle.sqlite.prepare(`${verb} INTO ${table} (${columns.join(', ')}) VALUES (${placeholders})`);
     for (const row of rows) stmt.run(...columns.map((c) => row[c] ?? null));
   }
 });
-insertAll();
-
-let filesCopied = 0;
-for (const artifact of bundle.artifacts) {
-  const src = path.join(bundleDir, 'files', artifact.relative_path);
-  if (!fs.existsSync(src)) continue;
-  const dest = path.join(racesDir, artifact.relative_path);
-  fs.mkdirSync(path.dirname(dest), { recursive: true });
-  fs.copyFileSync(src, dest);
-  filesCopied += 1;
+try {
+  insertAll();
+} catch (err) {
+  for (const dest of copied) fs.rmSync(dest, { force: true });
+  console.error(`Import failed; rolled back and removed copied files: ${err.message}`);
+  process.exit(1);
 }
 handle.sqlite.close();
-console.log(`Imported run ${manifest.runId} into ${racesDir}: ${bundle.runEvents.length} events, ${filesCopied} files.`);
+console.log(`Imported run ${manifest.runId} into ${racesDir}: ${bundle.runEvents.length} events, ${copied.length} files.`);

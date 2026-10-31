@@ -84,6 +84,24 @@ export function toRunEventJson(row: RunEventRow): RunEvent {
   });
 }
 
+/** List rendering must survive one corrupt stored row: degrade it in place. */
+export function toRunEventJsonSafe(row: RunEventRow): RunEvent {
+  try {
+    return toRunEventJson(row);
+  } catch {
+    return {
+      id: row.id,
+      runId: row.runId,
+      sequence: row.sequence,
+      kind: 'run.log',
+      payload: {
+        message: `Event ${row.sequence} (${row.kind}) could not be parsed; the stored payload is corrupt.`,
+      },
+      createdAt: iso(row.createdAt),
+    };
+  }
+}
+
 export function toArtifactJson(row: ArtifactRow): Artifact {
   return ArtifactSchema.parse({
     id: row.id,

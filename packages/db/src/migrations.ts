@@ -160,30 +160,43 @@ ALTER TABLE artifacts ADD COLUMN size_bytes INTEGER NOT NULL DEFAULT 0;
 ALTER TABLE artifacts ADD COLUMN sha256 TEXT NOT NULL DEFAULT '';
 `.trim(),
   },
+  {
+    id: '0006',
+    name: 'index runs by status for claim polling',
+    sql: `
+CREATE INDEX runs_status_created_idx ON runs(status, created_at);
+`.trim(),
+  },
 ];
 
-/** Apply pending migrations. Idempotent; safe to call on every boot. */
+/**
+ * Apply pending migrations in one immediate transaction: the done-set is
+ * re-read inside the transaction, so two processes booting together
+ * converge on the lock instead of colliding on DDL. Idempotent; safe to
+ * call on every boot.
+ */
 export function migrate(sqlite: Database.Database): { applied: string[] } {
-  sqlite.exec(
-    `CREATE TABLE IF NOT EXISTS _migrations (
-      id TEXT PRIMARY KEY,
-      name TEXT NOT NULL,
-      applied_at INTEGER NOT NULL
-    )`,
-  );
-  const rows = sqlite.prepare('SELECT id FROM _migrations').all() as { id: string }[];
-  const done = new Set(rows.map((row) => row.id));
   const applied: string[] = [];
-  const apply = sqlite.transaction((migration: Migration) => {
-    sqlite.exec(migration.sql);
-    sqlite
-      .prepare('INSERT INTO _migrations (id, name, applied_at) VALUES (?, ?, ?)')
-      .run(migration.id, migration.name, Date.now());
-  });
-  for (const migration of MIGRATIONS) {
-    if (done.has(migration.id)) continue;
-    apply(migration);
-    applied.push(migration.id);
-  }
+  sqlite
+    .transaction(() => {
+      sqlite.exec(
+        `CREATE TABLE IF NOT EXISTS _migrations (
+          id TEXT PRIMARY KEY,
+          name TEXT NOT NULL,
+          applied_at INTEGER NOT NULL
+        )`,
+      );
+      const rows = sqlite.prepare('SELECT id FROM _migrations').all() as { id: string }[];
+      const done = new Set(rows.map((row) => row.id));
+      for (const migration of MIGRATIONS) {
+        if (done.has(migration.id)) continue;
+        sqlite.exec(migration.sql);
+        sqlite
+          .prepare('INSERT INTO _migrations (id, name, applied_at) VALUES (?, ?, ?)')
+          .run(migration.id, migration.name, Date.now());
+        applied.push(migration.id);
+      }
+    })
+    .immediate();
   return { applied };
 }

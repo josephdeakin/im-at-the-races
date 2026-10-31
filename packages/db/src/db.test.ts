@@ -31,6 +31,7 @@ import {
   listReproducersByRun,
   listRunsByProject,
   listTrialsByExperiment,
+  listTrialsByRun,
   listVerificationChecksByRun,
   markAbandonedRunningInterrupted,
   migrate,
@@ -112,6 +113,23 @@ describe('createRun', () => {
     expect(run.limits).toEqual({ ...DEFAULT_RUN_LIMITS, modelCalls: 7 });
     expect(event).toMatchObject({ runId: run.id, sequence: 0, kind: 'run.created' });
     expect(listEvents(db, run.id, -1)).toHaveLength(1);
+  });
+
+  it('writes the rerun-of log event in the same transaction when rerunOf is set', () => {
+    const { db } = openIsolatedDb();
+    const project = seedProject(db);
+    const source = seedRun(db, project.id);
+    const { run } = createRun(db, {
+      projectId: project.id,
+      task: 'Find races',
+      mode: 'investigate',
+      limits: { ...DEFAULT_RUN_LIMITS },
+      rerunOf: source.id,
+    });
+    const events = listEvents(db, run.id, -1);
+    expect(events).toHaveLength(2);
+    expect(events[1]).toMatchObject({ sequence: 1, kind: 'run.log' });
+    expect(events[1].payload).toMatchObject({ rerunOf: source.id });
   });
 
   it('persists nothing when the project does not exist', () => {
@@ -355,6 +373,23 @@ describe('experiments and trials', () => {
       'pass',
       'violation',
     ]);
+    const second = createExperiment(db, {
+      runId: run.id,
+      name: 'stale-search-v2',
+      hypothesis: 'Second experiment.',
+      plan: { schemaVersion: 1 },
+    });
+    createTrial(db, second.id, 'baseline');
+    expect(listTrialsByRun(db, run.id).map((t) => t.experimentId)).toEqual([
+      experiment.id,
+      experiment.id,
+      second.id,
+    ]);
+    expect(listTrialsByRun(db, 'other-run')).toEqual([]);
+    // A second finish cannot overwrite the first terminal result.
+    const refetched = finishTrial(db, baseline.id, 'violation', { outcome: 'violation' });
+    expect(refetched.outcome).toBe('pass');
+    expect(finishExperiment(db, experiment.id, 'failed').status).toBe('completed');
 
     const abandoned = createExperiment(db, {
       runId: run.id,

@@ -1,6 +1,26 @@
 # Demo guide (3 minutes + recorded fallback)
 
-## Setup (rehearsed on macOS, Node 22.19, pnpm 10.15)
+## One-click demo
+
+```sh
+pnpm install
+cp .env.example .env   # add RACES_MODEL_API_KEY (worker-only)
+pnpm --filter @races/core exec playwright install chromium
+pnpm demo
+```
+
+`pnpm demo` (scripts/demo.cjs) prepares a fresh stale-search checkout at
+/tmp/races-demo-target, starts the fixture (:4100), web (:3100), and worker
+under /tmp/races-demo-live, queues the canonical investigate-repair run, and
+opens the run page when the first finding lands. Logs live in
+/tmp/races-demo-live/logs/; `pnpm demo:stop` stops everything. Flags:
+`-- --setup-only` (start + seed, no wait), `-- --no-open` (no browser),
+`-- --keep` (reuse state), `-- --timeout-mins N` (finding wait, default 20),
+`-- --fixture-port N` / `-- --web-port N` (defaults 4100/3100).
+
+The empty projects page advertises the same command for new users.
+
+## Manual setup (rehearsed on macOS, Node 22.19, pnpm 10.15)
 
 ```sh
 pnpm install

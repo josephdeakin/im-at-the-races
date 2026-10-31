@@ -36,6 +36,16 @@ import {
   type VerificationCheckStatus,
 } from '@races/contracts';
 import { CapacityError } from '@races/core';
+
+export const DEFAULT_ARTIFACT_CAP_MB = 250;
+
+/** Strict: only a bare non-negative integer counts; anything else → default. */
+export function parseArtifactCapMb(raw: string | undefined): number {
+  if (raw === undefined) return DEFAULT_ARTIFACT_CAP_MB;
+  const trimmed = raw.trim();
+  if (!/^\d+$/.test(trimmed)) return DEFAULT_ARTIFACT_CAP_MB;
+  return Number.parseInt(trimmed, 10);
+}
 import type {
   AgentStore,
   ArtifactStore,
@@ -96,8 +106,7 @@ export class FsArtifactStore implements ArtifactStore {
       throw new Error(`unsafe artifact filename: ${JSON.stringify(input.filename)}`);
     }
     const sizeBytes = input.data.length;
-    const capMb = Number.parseInt(process.env.RACES_ARTIFACT_CAP_MB ?? '', 10);
-    const capBytes = (Number.isFinite(capMb) && capMb >= 0 ? capMb : 250) * 1024 * 1024;
+    const capBytes = parseArtifactCapMb(process.env.RACES_ARTIFACT_CAP_MB) * 1024 * 1024;
     const used = sumArtifactBytesByRun(this.db, input.runId);
     if (used + sizeBytes > capBytes) {
       throw new CapacityError(

@@ -17,6 +17,8 @@
     "test:fixture": "pnpm --filter @races/fixture-stale-search test",
     "export-run": "node scripts/export-run.cjs",
     "import-run": "node scripts/import-run.cjs",
+    "demo": "node scripts/demo.cjs",
+    "demo:stop": "node scripts/demo.cjs --stop",
     "build": "pnpm build:packages && pnpm --filter web build && pnpm --filter worker build",
     "build:packages": "pnpm --filter @races/contracts --filter @races/db --filter @races/core build",
     "postinstall": "pnpm build:packages"

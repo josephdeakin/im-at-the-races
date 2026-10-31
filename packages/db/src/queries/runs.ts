@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { and, asc, count, desc, eq, gt, isNull } from 'drizzle-orm';
+import { and, asc, count, desc, eq, gt, isNull, sql } from 'drizzle-orm';
 import {
   INITIAL_RUN_PHASE,
   KNOWN_RUN_EVENT_KINDS,
@@ -10,6 +10,7 @@ import {
   type RunMode,
   type RunStatus,
 } from '@races/contracts';
+import { writeTransaction } from '../client.js';
 import type { DbOrTx, RacesDatabase } from '../client.js';
 import { NotFoundError } from '../errors.js';
 import { projects, runEvents, runs, type RunEventRow, type RunRow } from '../schema.js';
@@ -19,6 +20,8 @@ export interface CreateRunInput {
   task: string;
   mode: RunMode;
   limits: RunLimits;
+  /** When set, a rerun-of log event is written in the same transaction. */
+  rerunOf?: string;
 }
 
 function requireRun(db: DbOrTx, runId: string): RunRow {
@@ -68,7 +71,7 @@ export function createRun(
   db: RacesDatabase,
   input: CreateRunInput,
 ): { run: RunRow; event: RunEventRow } {
-  return db.transaction((tx) => {
+  return writeTransaction(db, (tx) => {
     const project = tx.select().from(projects).where(eq(projects.id, input.projectId)).get();
     if (!project) throw new NotFoundError('project', input.projectId);
     const now = Date.now();
@@ -96,6 +99,12 @@ export function createRun(
       mode: input.mode,
       limits: input.limits,
     });
+    if (input.rerunOf !== undefined) {
+      insertEvent(tx, run.id, 1, KNOWN_RUN_EVENT_KINDS.LOG, {
+        message: `Rerun of investigation ${input.rerunOf}: same task, mode, and limits; fresh trials.`,
+        rerunOf: input.rerunOf,
+      });
+    }
     return { run, event };
   });
 }
@@ -120,7 +129,7 @@ export function appendEvent<K extends RunEventKind>(
   kind: K,
   payload: RunEventPayloadMap[K],
 ): RunEventRow {
-  return db.transaction((tx) => {
+  return writeTransaction(db, (tx) => {
     requireRun(tx, runId);
     return insertEvent(tx, runId, nextSequence(tx, runId), kind, payload);
   });
@@ -161,7 +170,7 @@ export function cancelRun(db: RacesDatabase, runId: string): CancelResult {
   }
 
   if (current.status === 'queued') {
-    const transitioned = db.transaction((tx) => {
+    const transitioned = writeTransaction(db, (tx) => {
       const updated = tx
         .update(runs)
         .set({ status: 'cancelled', phase: 'cancelled', finishedAt: Date.now() })
@@ -176,7 +185,7 @@ export function cancelRun(db: RacesDatabase, runId: string): CancelResult {
     return { run: requireRun(db, runId), changed: transitioned };
   }
 
-  const requested = db.transaction((tx) => {
+  const requested = writeTransaction(db, (tx) => {
     const updated = tx
       .update(runs)
       .set({ cancelRequestedAt: Date.now() })
@@ -205,17 +214,17 @@ export function finishRun(
   runId: string,
   outcome: FinishRunOutcome,
 ): { run: RunRow; changed: boolean } {
-  const current = requireRun(db, runId);
-  if (isTerminalRunStatus(current.status as RunStatus)) {
-    return { run: current, changed: false };
-  }
   const kind =
     outcome.status === 'completed'
       ? KNOWN_RUN_EVENT_KINDS.COMPLETED
       : outcome.status === 'failed'
         ? KNOWN_RUN_EVENT_KINDS.FAILED
         : KNOWN_RUN_EVENT_KINDS.INTERRUPTED;
-  const finished = db.transaction((tx) => {
+  return writeTransaction(db, (tx) => {
+    const current = requireRun(tx, runId);
+    if (isTerminalRunStatus(current.status as RunStatus)) {
+      return { run: current, changed: false };
+    }
     tx.update(runs)
       .set({
         status: outcome.status,
@@ -230,9 +239,8 @@ export function finishRun(
       ...(outcome.errorCode ? { errorCode: outcome.errorCode } : {}),
       ...(outcome.errorMessage ? { errorMessage: outcome.errorMessage } : {}),
     });
-    return true;
+    return { run: requireRun(tx, runId), changed: true };
   });
-  return { run: requireRun(db, runId), changed: finished };
 }
 
 /**
@@ -243,12 +251,12 @@ export function claimNextQueuedRun(
   db: RacesDatabase,
   workerId: string,
 ): RunRow | null {
-  return db.transaction((tx) => {
+  return writeTransaction(db, (tx) => {
     const candidate = tx
       .select()
       .from(runs)
       .where(eq(runs.status, 'queued'))
-      .orderBy(asc(runs.createdAt))
+      .orderBy(asc(runs.createdAt), asc(sql`rowid`))
       .limit(1)
       .get();
     if (!candidate) return null;
@@ -278,15 +286,15 @@ export interface PhaseResult {
  * their final phase.
  */
 export function setRunPhase(db: RacesDatabase, runId: string, phase: string): PhaseResult {
-  const current = requireRun(db, runId);
-  if (isTerminalRunStatus(current.status as RunStatus)) {
-    return { run: current, changed: false };
-  }
-  db.transaction((tx) => {
+  return writeTransaction(db, (tx) => {
+    const current = requireRun(tx, runId);
+    if (isTerminalRunStatus(current.status as RunStatus)) {
+      return { run: current, changed: false };
+    }
     tx.update(runs).set({ phase }).where(eq(runs.id, runId)).run();
     insertEvent(tx, runId, nextSequence(tx, runId), KNOWN_RUN_EVENT_KINDS.PHASE, { phase });
+    return { run: requireRun(tx, runId), changed: true };
   });
-  return { run: requireRun(db, runId), changed: true };
 }
 
 /**
@@ -299,7 +307,7 @@ export function completeCancellation(db: RacesDatabase, runId: string): CancelRe
   if (isTerminalRunStatus(current.status as RunStatus)) {
     return { run: current, changed: false };
   }
-  const transitioned = db.transaction((tx) => {
+  const transitioned = writeTransaction(db, (tx) => {
     const updated = tx
       .update(runs)
       .set({ status: 'cancelled', phase: 'cancelled', finishedAt: Date.now() })
@@ -327,7 +335,7 @@ export function markAbandonedRunningInterrupted(
   const abandoned = db.select().from(runs).where(eq(runs.status, 'running')).all();
   const runIds: string[] = [];
   for (const run of abandoned) {
-    db.transaction((tx) => {
+    writeTransaction(db, (tx) => {
       const updated = tx
         .update(runs)
         .set({ status: 'interrupted', phase: 'interrupted', finishedAt: Date.now() })

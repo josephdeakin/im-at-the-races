@@ -187,15 +187,19 @@ function pairStatus(outcome: PairOutcome): VerificationCheckStatus {
 /**
  * No-worse-than-baseline rule for the project's own scripts: green is a pass,
  * a byte-identical pre-existing failure is skipped (never a pass), anything
- * else fails.
+ * else fails. A check that did not finish proves nothing either way.
  */
 export function compareProjectCheck(
   result: { exitCode: number | null; output: string },
   baseline: { exitCode: number | null; output: string } | undefined,
 ): { status: VerificationCheckStatus; note: string | null } {
   if (result.exitCode === 0) return { status: 'pass', note: null };
+  if (result.exitCode === null) {
+    return { status: 'incomplete', note: 'did not finish (timeout or spawn error)' };
+  }
   if (
     baseline &&
+    baseline.exitCode !== null &&
     baseline.exitCode !== 0 &&
     baseline.exitCode === result.exitCode &&
     baseline.output === result.output
@@ -352,6 +356,8 @@ export async function verifyPatchedApp(input: VerificationInput): Promise<Verifi
     const { status, note: noteText } = compareProjectCheck(result, baseline);
     if (status === 'fail') {
       note(`project ${name} exited ${result.exitCode}`);
+    } else if (status === 'incomplete') {
+      note(`project ${name} did not finish`);
     } else if (status === 'skipped') {
       skips.push(`project-${name}`);
     }

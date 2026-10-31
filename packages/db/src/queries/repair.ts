@@ -1,10 +1,11 @@
 import { randomUUID } from 'node:crypto';
-import { asc, eq } from 'drizzle-orm';
+import { and, asc, eq } from 'drizzle-orm';
 import type {
   RepairAttemptStatus,
   VerificationCheckDetail,
   VerificationCheckStatus,
 } from '@races/contracts';
+import { writeTransaction } from '../client.js';
 import type { DbOrTx, RacesDatabase } from '../client.js';
 import { NotFoundError } from '../errors.js';
 import {
@@ -31,7 +32,7 @@ export interface CreateReproducerInput {
 }
 
 export function createReproducer(db: RacesDatabase, input: CreateReproducerInput): ReproducerRow {
-  return db.transaction((tx) => {
+  return writeTransaction(db, (tx) => {
     const run = tx.select({ id: runs.id }).from(runs).where(eq(runs.id, input.runId)).get();
     if (!run) throw new NotFoundError('run', input.runId);
     const finding = tx
@@ -75,13 +76,15 @@ export function createRepairAttempt(
   db: RacesDatabase,
   input: CreateRepairAttemptInput,
 ): RepairAttemptRow {
-  return db.transaction((tx) => {
+  return writeTransaction(db, (tx) => {
     const reproducer = tx
-      .select({ id: reproducers.id })
+      .select({ id: reproducers.id, runId: reproducers.runId })
       .from(reproducers)
       .where(eq(reproducers.id, input.reproducerId))
       .get();
-    if (!reproducer) throw new NotFoundError('reproducer', input.reproducerId);
+    if (!reproducer || reproducer.runId !== input.runId) {
+      throw new NotFoundError('reproducer', input.reproducerId);
+    }
     return tx
       .insert(repairAttempts)
       .values({
@@ -106,20 +109,25 @@ export function finishRepairAttempt(
   attemptId: string,
   input: { diff: string; status: RepairAttemptStatus },
 ): RepairAttemptRow {
-  return db.transaction((tx) => {
+  return writeTransaction(db, (tx) => {
     const existing = tx
       .select()
       .from(repairAttempts)
       .where(eq(repairAttempts.id, attemptId))
       .get();
     if (!existing) throw new NotFoundError('repair-attempt', attemptId);
+    if (existing.status !== 'running') return existing;
     return tx
       .update(repairAttempts)
       .set({ diff: input.diff, status: input.status, finishedAt: Date.now() })
-      .where(eq(repairAttempts.id, attemptId))
+      .where(and(eq(repairAttempts.id, attemptId), eq(repairAttempts.status, 'running')))
       .returning()
       .get();
   });
+}
+
+export function getRepairAttempt(db: DbOrTx, attemptId: string): RepairAttemptRow | undefined {
+  return db.select().from(repairAttempts).where(eq(repairAttempts.id, attemptId)).get();
 }
 
 export function listRepairAttemptsByRun(db: DbOrTx, runId: string): RepairAttemptRow[] {
@@ -144,20 +152,24 @@ export function createVerificationCheck(
   db: RacesDatabase,
   input: CreateVerificationCheckInput,
 ): VerificationCheckRow {
-  return db.transaction((tx) => {
+  return writeTransaction(db, (tx) => {
     const reproducer = tx
-      .select({ id: reproducers.id })
+      .select({ id: reproducers.id, runId: reproducers.runId })
       .from(reproducers)
       .where(eq(reproducers.id, input.reproducerId))
       .get();
-    if (!reproducer) throw new NotFoundError('reproducer', input.reproducerId);
+    if (!reproducer || reproducer.runId !== input.runId) {
+      throw new NotFoundError('reproducer', input.reproducerId);
+    }
     if (input.repairAttemptId) {
       const attempt = tx
-        .select({ id: repairAttempts.id })
+        .select({ id: repairAttempts.id, reproducerId: repairAttempts.reproducerId, runId: repairAttempts.runId })
         .from(repairAttempts)
         .where(eq(repairAttempts.id, input.repairAttemptId))
         .get();
-      if (!attempt) throw new NotFoundError('repair-attempt', input.repairAttemptId);
+      if (!attempt || attempt.reproducerId !== input.reproducerId || attempt.runId !== input.runId) {
+        throw new NotFoundError('repair-attempt', input.repairAttemptId);
+      }
     }
     return tx
       .insert(verificationChecks)

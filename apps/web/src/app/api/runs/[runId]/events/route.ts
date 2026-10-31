@@ -3,7 +3,7 @@ import { EventsQuerySchema } from '@races/contracts';
 import { getRun, listEvents } from '@races/db';
 import { getDb } from '@/lib/server/db';
 import { guard, notFoundError, ok, validationError } from '@/lib/server/http';
-import { toRunEventJson } from '@/lib/server/serializers';
+import { toRunEventJsonSafe } from '@/lib/server/serializers';
 
 export const runtime = 'nodejs';
 
@@ -25,7 +25,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ runI
     if (!parsed.success) {
       return validationError('Invalid cursor', parsed.error.issues);
     }
-    const events = listEvents(db, runId, parsed.data.after).map(toRunEventJson);
+    const events = listEvents(db, runId, parsed.data.after).map(toRunEventJsonSafe);
     const nextAfter =
       events.length > 0 ? events[events.length - 1].sequence : parsed.data.after;
     return ok({

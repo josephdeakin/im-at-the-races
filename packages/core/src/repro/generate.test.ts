@@ -32,15 +32,29 @@ function samplePlan(): ExperimentPlan {
   };
 }
 
+function extractConst(spec: string, name: string): unknown {
+  const match = new RegExp(`const ${name} = (.+);$`, 'm').exec(spec);
+  if (!match) throw new Error(`generated spec is missing ${name}`);
+  return JSON.parse(match[1]);
+}
+
 describe('generateReproBundle', () => {
   it('emits a spec that mirrors the plan semantics', () => {
+    const plan = samplePlan();
     const bundle = generateReproBundle({
-      plan: samplePlan(),
+      plan,
       checkId: 'final',
       targetUrl: 'http://127.0.0.1:4100/',
       findingTitle: 'Stale overwrite',
       sourceIdentity: 'git:abc:clean',
     });
+    // The spec must carry the plan's semantics verbatim, not just keywords.
+    expect(JSON.parse(bundle.planJson)).toEqual(plan);
+    expect(extractConst(bundle.spec, 'ACTIONS')).toEqual(plan.actions);
+    expect(extractConst(bundle.spec, 'MATCHERS')).toEqual(plan.requests);
+    expect(extractConst(bundle.spec, 'SCHEDULE')).toEqual(plan.schedule);
+    expect(extractConst(bundle.spec, 'ASSERTIONS')).toEqual(plan.assertions);
+    expect(extractConst(bundle.spec, 'TIMEOUTS')).toEqual(plan.timeouts);
     expect(bundle.spec).toContain("from 'playwright/test'");
     expect(bundle.spec).toContain('process.env.REPRO_TARGET_URL');
     expect(bundle.spec).toContain('http://127.0.0.1:4100/');

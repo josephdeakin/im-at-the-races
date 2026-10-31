@@ -36,9 +36,7 @@ export const INVESTIGATION_PHASE_LABELS: Record<InvestigationPhase, string> = {
   done: 'Done',
 };
 
-export { AbortError, StubExecutor, sleep } from './stub.js';
-export { CapacityError, isCapacityError } from './runner/util.js';
-export { ScriptedExecutor } from './scripted.js';
+export { AbortError, CapacityError, isCapacityError, sleep } from './runner/util.js';
 export { RequestTracker, type RequestCandidate } from './runner/matchers.js';
 export { redactExcerpt, redactUrl } from './runner/redact.js';
 export { launchBrowser } from './runner/browser.js';

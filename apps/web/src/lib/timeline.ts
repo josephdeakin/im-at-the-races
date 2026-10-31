@@ -126,7 +126,7 @@ export function buildTrialLanes(events: RunEvent[], detail: TrialDetail | null):
     checks.push({
       sequence: event.sequence,
       at: at(event),
-      label: `${passed ? '✓' : '✗'} ${event.payload.assertionId}`,
+      label: event.payload.assertionId,
       glyph: passed ? '✓' : '✗',
       tone: passed ? 'good' : 'bad',
     });

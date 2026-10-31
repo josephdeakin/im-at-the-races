@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { Finding } from '@races/contracts';
 import { Badge } from '@astryxdesign/core/Badge';
 import { Button } from '@astryxdesign/core/Button';
@@ -29,6 +29,13 @@ export function FindingsView({
   onOpenTrial: (trialId: string) => void;
 }) {
   const [selectedId, setSelectedId] = useState<string | null>(findings[0]?.id ?? null);
+  // Findings arrive live: select the first once they land, without
+  // disturbing an explicit user selection.
+  useEffect(() => {
+    if (selectedId === null && findings.length > 0) {
+      setSelectedId(findings[0].id);
+    }
+  }, [findings, selectedId]);
   const selected = findings.find((f) => f.id === selectedId) ?? null;
 
   if (findings.length === 0) {

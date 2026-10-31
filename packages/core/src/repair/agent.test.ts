@@ -55,6 +55,46 @@ describe('dispatchRepairTool editFile', () => {
   });
 });
 
+describe('dispatchRepairTool editFile replacement text', () => {
+  it('keeps $ sequences in the replacement literal', async () => {
+    const { workspace, dir } = makeWorkspace();
+    try {
+      const result = await dispatchRepairTool(
+        'editFile',
+        { path: 'app.ts', find: 'const b = 2;', replace: 'const b = "$&-$1-$$";' },
+        workspace,
+      );
+      expect(result).toMatchObject({ ok: true });
+      expect(fs.readFileSync(path.join(dir, 'app.ts'), 'utf8')).toContain('const b = "$&-$1-$$";');
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});
+
+describe('dispatchRepairTool createFile', () => {
+  it('creates nested files and refuses overwrite and escapes', async () => {
+    const { workspace, dir } = makeWorkspace();
+    try {
+      const created = await dispatchRepairTool(
+        'createFile',
+        { path: 'lib/new.ts', content: 'export const x = 1;\n' },
+        workspace,
+      );
+      expect(created).toMatchObject({ ok: true });
+      expect(fs.readFileSync(path.join(dir, 'lib/new.ts'), 'utf8')).toBe('export const x = 1;\n');
+      expect(
+        await dispatchRepairTool('createFile', { path: 'app.ts', content: 'x' }, workspace),
+      ).toMatchObject({ ok: false });
+      expect(
+        await dispatchRepairTool('createFile', { path: '../escape.ts', content: 'x' }, workspace),
+      ).toMatchObject({ ok: false });
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});
+
 describe('dispatchRepairTool runCheck', () => {
   it('runs the named package script and reports its exit code', async () => {
     const { workspace, dir } = makeWorkspace();

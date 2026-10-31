@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { asc, eq, sum } from 'drizzle-orm';
+import { writeTransaction } from '../client.js';
 import type { DbOrTx, RacesDatabase } from '../client.js';
 import { NotFoundError } from '../errors.js';
 import { artifacts, runs, type ArtifactRow } from '../schema.js';
@@ -15,7 +16,7 @@ export interface CreateArtifactInput {
 
 /** Record an artifact produced by a run (trace, screenshot, patch diff...). */
 export function createArtifact(db: RacesDatabase, input: CreateArtifactInput): ArtifactRow {
-  return db.transaction((tx) => {
+  return writeTransaction(db, (tx) => {
     const run = tx.select({ id: runs.id }).from(runs).where(eq(runs.id, input.runId)).get();
     if (!run) throw new NotFoundError('run', input.runId);
     return tx

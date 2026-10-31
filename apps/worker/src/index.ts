@@ -6,6 +6,7 @@
  * at boot belonged to a crashed worker and is marked interrupted.
  */
 import { randomUUID } from 'node:crypto';
+import fs from 'node:fs';
 import path from 'node:path';
 import dotenv from 'dotenv';
 import {
@@ -50,6 +51,54 @@ const DEFAULT_MODEL = 'claude-sonnet-4-5-20250929';
 
 const workerId = `worker-${randomUUID().slice(0, 8)}`;
 let executor: Executor | null = null;
+
+/**
+ * Single-worker lock. Boot recovery assumes it owns every `running` run, so
+ * only one worker may ever hold it: the file carries the owner pid, and a
+ * lock left by a dead process is reclaimed.
+ */
+function acquireWorkerLock(lockPath: string): void {
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      const fd = fs.openSync(lockPath, 'wx');
+      fs.writeFileSync(fd, JSON.stringify({ pid: process.pid, workerId }));
+      fs.closeSync(fd);
+      return;
+    } catch (err) {
+      if ((err as NodeJS.ErrnoException).code !== 'EEXIST') throw err;
+      let ownerPid: number | null = null;
+      try {
+        const parsed = JSON.parse(fs.readFileSync(lockPath, 'utf8')) as { pid?: unknown };
+        if (typeof parsed.pid === 'number') ownerPid = parsed.pid;
+      } catch {
+        ownerPid = null;
+      }
+      if (ownerPid !== null && ownerPid !== process.pid) {
+        try {
+          process.kill(ownerPid, 0);
+          console.error(
+            `[worker] another worker (pid ${ownerPid}) already holds ${lockPath}; refusing to start`,
+          );
+          process.exit(1);
+        } catch {
+          // Owner is gone: fall through and reclaim.
+        }
+      }
+      fs.rmSync(lockPath, { force: true });
+    }
+  }
+  console.error(`[worker] could not acquire ${lockPath}`);
+  process.exit(1);
+}
+
+function releaseWorkerLock(lockPath: string): void {
+  try {
+    const parsed = JSON.parse(fs.readFileSync(lockPath, 'utf8')) as { pid?: unknown };
+    if (parsed.pid === process.pid) fs.rmSync(lockPath, { force: true });
+  } catch {
+    // Already gone (or unreadable): nothing to release.
+  }
+}
 
 function getExecutor(db: RacesDatabase): Executor {
   if (executor) return executor;
@@ -214,6 +263,10 @@ function boot(): void {
   const dbPath = resolveDatabasePath();
   console.log(`[worker] starting (${workerId})`);
   console.log(`[worker] database: ${dbPath}`);
+
+  const lockPath = path.join(path.dirname(dbPath), 'worker.lock');
+  acquireWorkerLock(lockPath);
+  process.on('exit', () => releaseWorkerLock(lockPath));
 
   const { db, sqlite } = getSharedDatabase();
   const { applied } = migrate(sqlite);

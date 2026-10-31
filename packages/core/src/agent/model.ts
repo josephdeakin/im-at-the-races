@@ -42,7 +42,12 @@ export interface ModelClient {
     messages: ModelMessage[],
     tools: ModelToolDefinition[],
     system: string,
+    options?: { signal?: AbortSignal },
   ): Promise<ModelResponse>;
+}
+
+export function finiteTokenCount(value: number | null | undefined): number | null {
+  return typeof value === 'number' && Number.isFinite(value) ? value : null;
 }
 
 export class ModelAuthError extends Error {
@@ -90,6 +95,7 @@ export class AnthropicModelClient implements ModelClient {
     messages: ModelMessage[],
     tools: ModelToolDefinition[],
     system: string,
+    options?: { signal?: AbortSignal },
   ): Promise<ModelResponse> {
     const apiMessages: Anthropic.MessageParam[] = messages.map((message) => ({
       role: message.role,
@@ -108,17 +114,20 @@ export class AnthropicModelClient implements ModelClient {
     }));
     let response: Anthropic.Message;
     try {
-      response = await this.client.messages.create({
-        model: this.model,
-        max_tokens: this.maxTokens,
-        system,
-        tools: tools.map((tool) => ({
-          name: tool.name,
-          description: tool.description,
-          input_schema: tool.input_schema as Anthropic.Tool.InputSchema,
-        })),
-        messages: apiMessages,
-      });
+      response = await this.client.messages.create(
+        {
+          model: this.model,
+          max_tokens: this.maxTokens,
+          system,
+          tools: tools.map((tool) => ({
+            name: tool.name,
+            description: tool.description,
+            input_schema: tool.input_schema as Anthropic.Tool.InputSchema,
+          })),
+          messages: apiMessages,
+        },
+        { signal: options?.signal },
+      );
     } catch (err) {
       if (err instanceof Anthropic.AuthenticationError) {
         throw new ModelAuthError(
@@ -146,8 +155,8 @@ export class AnthropicModelClient implements ModelClient {
       })),
       stopReason: response.stop_reason,
       usage: {
-        inputTokens: response.usage?.input_tokens ?? null,
-        outputTokens: response.usage?.output_tokens ?? null,
+        inputTokens: finiteTokenCount(response.usage?.input_tokens),
+        outputTokens: finiteTokenCount(response.usage?.output_tokens),
       },
     };
   }

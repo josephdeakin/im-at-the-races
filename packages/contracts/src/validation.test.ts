@@ -7,7 +7,9 @@ import {
   DEFAULT_RUN_TASK,
   EventsQuerySchema,
   isTerminalRunStatus,
+  IsoDateTimeSchema,
   resolveRunInput,
+  RunEventSchema,
   RunLimitsSchema,
 } from './index.js';
 
@@ -166,5 +168,52 @@ describe('ApiErrorSchema', () => {
         .success,
     ).toBe(true);
     expect(ApiErrorSchema.safeParse({ code: 'NOT_FOUND' }).success).toBe(false);
+  });
+
+  it('rejects codes outside the closed enum', () => {
+    expect(
+      ApiErrorSchema.safeParse({ error: { code: 'TEAPOT', message: 'Nope' } }).success,
+    ).toBe(false);
+    expect(ApiErrorSchema.safeParse({ error: { code: '', message: 'Nope' } }).success).toBe(false);
+  });
+});
+
+describe('IsoDateTimeSchema', () => {
+  it('accepts ISO timestamps and rejects plain strings', () => {
+    expect(IsoDateTimeSchema.safeParse('2026-10-31T14:32:21.000Z').success).toBe(true);
+    expect(IsoDateTimeSchema.safeParse('not-a-date').success).toBe(false);
+    expect(IsoDateTimeSchema.safeParse('2026-10-31').success).toBe(false);
+    expect(IsoDateTimeSchema.safeParse('').success).toBe(false);
+  });
+});
+
+describe('RunEventSchema negatives', () => {
+  const base = {
+    id: 'evt-1',
+    runId: 'run-1',
+    sequence: 0,
+    createdAt: '2026-10-31T14:32:21.000Z',
+  };
+
+  it('rejects unknown kinds and payloads that do not match the kind', () => {
+    expect(RunEventSchema.safeParse({ ...base, kind: 'run.exploded', payload: {} }).success).toBe(
+      false,
+    );
+    expect(
+      RunEventSchema.safeParse({ ...base, kind: 'run.created', payload: { message: 'hi' } })
+        .success,
+    ).toBe(false);
+    expect(
+      RunEventSchema.safeParse({ ...base, kind: 'run.log', payload: { message: 42 } }).success,
+    ).toBe(false);
+    expect(RunEventSchema.safeParse({ ...base, kind: 'run.log', payload: {} }).success).toBe(
+      false,
+    );
+  });
+
+  it('accepts a well-formed event', () => {
+    expect(
+      RunEventSchema.safeParse({ ...base, kind: 'run.log', payload: { message: 'hello' } }).success,
+    ).toBe(true);
   });
 });

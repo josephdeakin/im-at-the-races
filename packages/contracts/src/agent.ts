@@ -131,6 +131,12 @@ export const EditFileArgsSchema = z.object({
   replace: z.string().max(20_000),
 });
 
+export const CreateFileArgsSchema = z.object({
+  path: RepoPathSchema,
+  /** Full contents for a new file; the file must not exist yet. */
+  content: z.string().max(50_000),
+});
+
 export const RunCheckArgsSchema = z.object({
   name: z.enum(['build', 'typecheck', 'test']),
 });
@@ -141,6 +147,7 @@ export const FinishRepairArgsSchema = z.object({
 });
 
 export type EditFileArgs = z.infer<typeof EditFileArgsSchema>;
+export type CreateFileArgs = z.infer<typeof CreateFileArgsSchema>;
 export type RunCheckArgs = z.infer<typeof RunCheckArgsSchema>;
 export type FinishRepairArgs = z.infer<typeof FinishRepairArgsSchema>;
 export type CoverageRecord = z.infer<typeof CoverageRecordSchema>;
