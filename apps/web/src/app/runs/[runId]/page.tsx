@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import {
   getProject,
@@ -13,6 +12,14 @@ import {
   listVerificationChecksByRun,
 } from '@races/db';
 import { RUN_MODE_LABELS } from '@races/contracts';
+import { Card } from '@astryxdesign/core/Card';
+import { EmptyState } from '@astryxdesign/core/EmptyState';
+import { Grid } from '@astryxdesign/core/Grid';
+import { Heading } from '@astryxdesign/core/Heading';
+import { Link } from '@astryxdesign/core/Link';
+import { MetadataList, MetadataListItem } from '@astryxdesign/core/MetadataList';
+import { Text } from '@astryxdesign/core/Text';
+import { VStack } from '@astryxdesign/core/VStack';
 import { getDb } from '@/lib/server/db';
 import {
   toArtifactJson,
@@ -62,68 +69,50 @@ export default async function RunPage({
   };
 
   return (
-    <div className="space-y-8">
-      <div>
+    <VStack gap={5}>
+      <VStack gap={2}>
         {project && (
-          <Link
-            href={`/projects/${project.id}`}
-            className="text-sm text-sky-700 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700"
-          >
+          <Link href={`/projects/${project.id}`} isStandalone>
             ← {project.name}
           </Link>
         )}
-        <h1 className="mt-2 text-xl font-semibold tracking-tight text-stone-900">Run</h1>
-        <p className="mt-1 font-mono text-xs text-stone-500">{run.id}</p>
-      </div>
+        <Heading level={1}>Run</Heading>
+        <Text type="code">{run.id}</Text>
+      </VStack>
 
-      <section
-        aria-label="Run details"
-        className="rounded-lg border border-stone-200 bg-white p-5"
-      >
-        <dl className="grid grid-cols-1 gap-x-8 gap-y-4 text-sm sm:grid-cols-2">
-          <div className="sm:col-span-2">
-            <dt className="font-medium text-stone-800">Task</dt>
-            <dd className="mt-0.5 text-stone-600">{run.task}</dd>
-          </div>
-          <div>
-            <dt className="font-medium text-stone-800">Mode</dt>
-            <dd className="mt-0.5 text-stone-600">
-              {RUN_MODE_LABELS[run.mode]} <span className="text-stone-400">(stored intent)</span>
-            </dd>
-          </div>
-          <div>
-            <dt className="font-medium text-stone-800">Phase</dt>
-            <dd className="mt-0.5 font-mono text-xs leading-5 text-stone-600">{run.phase}</dd>
-          </div>
-          <div>
-            <dt className="font-medium text-stone-800">Limits</dt>
-            <dd className="mt-0.5 text-stone-600">
-              {formatDurationMs(run.limits.durationMs)} · {run.limits.modelCalls} model calls ·{' '}
-              {run.limits.experiments} experiments
-            </dd>
-          </div>
-          <div>
-            <dt className="font-medium text-stone-800">Timestamps</dt>
-            <dd className="mt-0.5 space-y-0.5 text-stone-600">
-              <p>Created: {formatDateTime(run.createdAt)}</p>
-              <p>Started: {formatDateTime(run.startedAt)}</p>
-              <p>Finished: {formatDateTime(run.finishedAt)}</p>
+      <Card>
+        <MetadataList title="Run details" columns={2}>
+          <MetadataListItem label="Task">{run.task}</MetadataListItem>
+          <MetadataListItem label="Mode">
+            {RUN_MODE_LABELS[run.mode]} <Text type="supporting">(stored intent)</Text>
+          </MetadataListItem>
+          <MetadataListItem label="Phase">
+            <Text type="code">{run.phase}</Text>
+          </MetadataListItem>
+          <MetadataListItem label="Limits">
+            {formatDurationMs(run.limits.durationMs)} · {run.limits.modelCalls} model calls ·{' '}
+            {run.limits.experiments} experiments
+          </MetadataListItem>
+          <MetadataListItem label="Timestamps">
+            <VStack gap={0}>
+              <Text>Created: {formatDateTime(run.createdAt)}</Text>
+              <Text>Started: {formatDateTime(run.startedAt)}</Text>
+              <Text>Finished: {formatDateTime(run.finishedAt)}</Text>
               {run.cancelRequestedAt && (
-                <p>Cancellation requested: {formatDateTime(run.cancelRequestedAt)}</p>
+                <Text>Cancellation requested: {formatDateTime(run.cancelRequestedAt)}</Text>
               )}
-            </dd>
-          </div>
+            </VStack>
+          </MetadataListItem>
           {run.errorMessage && (
-            <div className="sm:col-span-2">
-              <dt className="font-medium text-stone-800">Error</dt>
-              <dd className="mt-0.5 font-mono text-xs text-red-700">
+            <MetadataListItem label="Error">
+              <Text type="code">
                 {run.errorCode ? `${run.errorCode}: ` : ''}
                 {run.errorMessage}
-              </dd>
-            </div>
+              </Text>
+            </MetadataListItem>
           )}
-        </dl>
-      </section>
+        </MetadataList>
+      </Card>
 
       <RunWorkspace
         initialRun={run}
@@ -135,54 +124,45 @@ export default async function RunPage({
         initialRepair={initialRepair}
       />
 
-      <section aria-label="Run artifacts">
-        <h2 className="text-sm font-semibold text-stone-900">Run artifacts</h2>
+      <VStack gap={2}>
+        <Heading level={2}>Run artifacts</Heading>
         {artifacts.length === 0 ? (
-          <div className="mt-2 rounded-lg border border-dashed border-stone-300 bg-white px-6 py-10 text-center">
-            <p className="text-sm font-medium text-stone-900">Nothing here yet</p>
-            <p className="mx-auto mt-1 max-w-md text-sm text-stone-600">
-              Screenshots and recorded values will appear here once the run executes trials.
-            </p>
-          </div>
+          <EmptyState
+            title="Nothing here yet"
+            description="Screenshots and recorded values will appear here once the run executes trials."
+          />
         ) : (
-          <ul className="mt-2 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <Grid columns={{ minWidth: 300, max: 2 }} gap={4}>
             {artifacts.map((artifact) => (
-              <li
-                key={artifact.id}
-                className="overflow-hidden rounded-lg border border-stone-200 bg-white"
-              >
-                {artifact.mimeType.startsWith('image/') ? (
-                  <a
-                    href={`/api/artifacts/${artifact.id}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700"
-                  >
-                    {/* Plain img: artifact bytes are local evidence, not optimized assets. */}
-                    <img
-                      src={`/api/artifacts/${artifact.id}`}
-                      alt={`${artifact.kind} evidence: ${artifact.relativePath}`}
-                      className="aspect-video w-full object-cover object-top"
-                    />
-                  </a>
-                ) : (
-                  <a
-                    href={`/api/artifacts/${artifact.id}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="block px-4 py-6 text-center text-sm text-sky-700 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700"
-                  >
-                    Open {artifact.kind} ({artifact.mimeType})
-                  </a>
-                )}
-                <p className="border-t border-stone-200 px-4 py-2 font-mono text-xs text-stone-500">
-                  {artifact.kind} · {artifact.relativePath}
-                </p>
-              </li>
+              <Card key={artifact.id}>
+                <VStack gap={2}>
+                  {artifact.mimeType.startsWith('image/') ? (
+                    <a href={`/api/artifacts/${artifact.id}`} target="_blank" rel="noreferrer">
+                      {/* Plain img: artifact bytes are local evidence, not optimized assets. */}
+                      <img
+                        src={`/api/artifacts/${artifact.id}`}
+                        alt={`${artifact.kind} evidence: ${artifact.relativePath}`}
+                        className="aspect-video w-full rounded-md object-cover object-top"
+                      />
+                    </a>
+                  ) : (
+                    <Link
+                      href={`/api/artifacts/${artifact.id}`}
+                      target="_blank"
+                      isStandalone
+                    >
+                      Open {artifact.kind} ({artifact.mimeType})
+                    </Link>
+                  )}
+                  <Text type="code">
+                    {artifact.kind} · {artifact.relativePath}
+                  </Text>
+                </VStack>
+              </Card>
             ))}
-          </ul>
+          </Grid>
         )}
-      </section>
-    </div>
+      </VStack>
+    </VStack>
   );
 }

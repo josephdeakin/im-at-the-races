@@ -2,8 +2,15 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Button } from '@astryxdesign/core/Button';
+import { Card } from '@astryxdesign/core/Card';
+import { FormLayout } from '@astryxdesign/core/FormLayout';
+import { Heading } from '@astryxdesign/core/Heading';
+import { HStack } from '@astryxdesign/core/HStack';
+import { TextInput } from '@astryxdesign/core/TextInput';
+import { VStack } from '@astryxdesign/core/VStack';
 import { extractApiMessage } from '@/lib/format';
-import { FormError, hintClassName, inputClassName, labelClassName, primaryButtonClassName } from './form';
+import { FormError } from './form';
 
 export function ProjectForm() {
   const router = useRouter();
@@ -43,71 +50,57 @@ export function ProjectForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4 rounded-lg border border-stone-200 bg-white p-5">
-      <h2 className="text-sm font-semibold text-stone-900">New project</h2>
-      <div>
-        <label htmlFor="project-name" className={labelClassName}>
-          Name
-        </label>
-        <input
-          id="project-name"
-          name="name"
-          type="text"
-          required
-          maxLength={200}
-          autoComplete="off"
-          className={`${inputClassName} mt-1`}
-          placeholder="e.g. Checkout app"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          disabled={saving}
-        />
-      </div>
-      <div>
-        <label htmlFor="project-repo" className={labelClassName}>
-          Local repository path
-        </label>
-        <input
-          id="project-repo"
-          name="repositoryPath"
-          type="text"
-          required
-          autoComplete="off"
-          spellCheck={false}
-          className={`${inputClassName} mt-1 font-mono`}
-          placeholder="/absolute/path/to/repo"
-          value={repositoryPath}
-          onChange={(e) => setRepositoryPath(e.target.value)}
-          disabled={saving}
-        />
-        <p className={hintClassName}>
-          Must be an absolute path on the machine running this tool — the same machine that serves
-          this page.
-        </p>
-      </div>
-      <div>
-        <label htmlFor="project-url" className={labelClassName}>
-          Target URL
-        </label>
-        <input
-          id="project-url"
-          name="targetUrl"
-          type="url"
-          required
-          autoComplete="off"
-          spellCheck={false}
-          className={`${inputClassName} mt-1 font-mono`}
-          placeholder="http://127.0.0.1:3000"
-          value={targetUrl}
-          onChange={(e) => setTargetUrl(e.target.value)}
-          disabled={saving}
-        />
-        <p className={hintClassName}>The running app under investigation. Must be an http(s) URL.</p>
-      </div>
-      <FormError message={error} />
-      <button type="submit" className={primaryButtonClassName} disabled={saving}>
-        {saving ? 'Creating…' : 'Create project'}
-      </button>
-    </form>
+    <Card>
+      <VStack gap={4}>
+        <Heading level={2}>New project</Heading>
+        <form onSubmit={onSubmit}>
+          <VStack gap={4}>
+            <FormLayout defaultOptionality="required">
+              <TextInput
+                label="Name"
+                placeholder="e.g. Checkout app"
+                value={name}
+                onChange={setName}
+                htmlName="name"
+                autoComplete="off"
+                isDisabled={saving}
+                isRequired
+              />
+              <TextInput
+                label="Local repository path"
+                description="An absolute path on the machine running this tool."
+                placeholder="/absolute/path/to/repo"
+                value={repositoryPath}
+                onChange={setRepositoryPath}
+                htmlName="repositoryPath"
+                autoComplete="off"
+                isDisabled={saving}
+                isRequired
+              />
+              <TextInput
+                label="Target URL"
+                description="The running app under investigation. Must be an http(s) URL."
+                placeholder="http://127.0.0.1:3000"
+                value={targetUrl}
+                onChange={setTargetUrl}
+                htmlName="targetUrl"
+                autoComplete="off"
+                isDisabled={saving}
+                isRequired
+              />
+            </FormLayout>
+            <FormError message={error} />
+            <HStack>
+              <Button
+                type="submit"
+                variant="primary"
+                label={saving ? 'Creating project' : 'Create project'}
+                isLoading={saving}
+              />
+            </HStack>
+          </VStack>
+        </form>
+      </VStack>
+    </Card>
   );
 }

@@ -1,0 +1,2 @@
+/* Cascade-layer order, imported first so it wins over hoisted CSS imports. */
+@layer reset, theme, base, astryx-base, astryx-theme, components, utilities;

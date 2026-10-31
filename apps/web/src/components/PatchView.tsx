@@ -4,39 +4,31 @@ import { useState } from 'react';
 import type { RepairAttempt, VerificationCheck } from '@races/contracts';
 import { formatDateTime } from '@/lib/format';
 import { summarizeAttemptChecks, type AttemptVerdict } from '@/lib/repair';
+import { Badge, type BadgeVariant } from '@astryxdesign/core/Badge';
+import { Card } from '@astryxdesign/core/Card';
+import { CodeBlock } from '@astryxdesign/core/CodeBlock';
+import { EmptyState } from '@astryxdesign/core/EmptyState';
+import { Grid } from '@astryxdesign/core/Grid';
+import { Heading } from '@astryxdesign/core/Heading';
+import { HStack } from '@astryxdesign/core/HStack';
+import { List, ListItem } from '@astryxdesign/core/List';
+import { MetadataList, MetadataListItem } from '@astryxdesign/core/MetadataList';
+import { Text } from '@astryxdesign/core/Text';
+import { VStack } from '@astryxdesign/core/VStack';
 
-const VERDICT_STYLE: Record<AttemptVerdict, { glyph: string; label: string; className: string }> = {
-  verified: {
-    glyph: '✓',
-    label: 'Verified for the tested cases',
-    className: 'bg-green-700 text-white',
-  },
-  failed: { glyph: '✗', label: 'Verification failed', className: 'bg-red-700 text-white' },
-  incomplete: {
-    glyph: '?',
-    label: 'Verification incomplete',
-    className: 'bg-amber-100 text-amber-900',
-  },
-  'no-checks': { glyph: '○', label: 'No checks recorded', className: 'bg-stone-200 text-stone-800' },
+const VERDICT_BADGE: Record<
+  AttemptVerdict,
+  { variant: BadgeVariant; label: string; shortLabel: string }
+> = {
+  verified: { variant: 'success', label: 'Verified for the tested cases', shortLabel: 'Verified' },
+  failed: { variant: 'error', label: 'Verification failed', shortLabel: 'Failed' },
+  incomplete: { variant: 'warning', label: 'Verification incomplete', shortLabel: 'Incomplete' },
+  'no-checks': { variant: 'neutral', label: 'No checks recorded', shortLabel: 'No checks' },
 };
 
 export function AttemptVerdictBadge({ verdict }: { verdict: AttemptVerdict }) {
-  const style = VERDICT_STYLE[verdict];
-  return (
-    <span
-      className={`inline-flex items-center gap-1 rounded px-2 py-1 text-xs font-semibold ${style.className}`}
-    >
-      <span aria-hidden="true">{style.glyph}</span>
-      {style.label}
-    </span>
-  );
-}
-
-function diffLineClass(line: string): string {
-  if (line.startsWith('+') && !line.startsWith('+++')) return 'bg-green-50 text-green-900';
-  if (line.startsWith('-') && !line.startsWith('---')) return 'bg-red-50 text-red-900';
-  if (line.startsWith('@@')) return 'bg-sky-50 text-sky-900';
-  return '';
+  const badge = VERDICT_BADGE[verdict];
+  return <Badge variant={badge.variant} label={badge.label} />;
 }
 
 export function PatchView({
@@ -54,13 +46,10 @@ export function PatchView({
 
   if (ordered.length === 0) {
     return (
-      <div className="rounded-lg border border-dashed border-stone-300 bg-white px-6 py-10 text-center">
-        <p className="text-sm font-medium text-stone-900">No patch attempts</p>
-        <p className="mx-auto mt-1 max-w-md text-sm text-stone-600">
-          Repair runs after a reproduced finding on investigate-with-repair runs. The latest
-          patch attempt will appear here with its diff.
-        </p>
-      </div>
+      <EmptyState
+        title="No patch attempts"
+        description="Repair runs after a reproduced finding on investigate-with-repair runs. The latest patch attempt will appear here with its diff."
+      />
     );
   }
 
@@ -68,92 +57,70 @@ export function PatchView({
   const summary = summarizeAttemptChecks(selectedChecks);
 
   return (
-    <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
-      <div className="lg:col-span-4">
-        <ol className="divide-y divide-stone-200 rounded-lg border border-stone-200 bg-white">
+    <Grid columns={{ minWidth: 300, max: 2 }} gap={4}>
+      <Card>
+        <List hasDividers edge="bleed" aria-label="Patch attempts">
           {ordered.map((attempt) => {
             const verdict = summarizeAttemptChecks(
               checks.filter((c) => c.repairAttemptId === attempt.id),
             ).verdict;
+            const badge = VERDICT_BADGE[verdict];
             return (
-              <li key={attempt.id}>
-                <button
-                  type="button"
-                  onClick={() => setSelectedId(attempt.id)}
-                  aria-current={attempt.id === selectedId}
-                  className={`block w-full px-4 py-3 text-left focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-sky-700 ${
-                    attempt.id === selectedId ? 'bg-sky-50' : 'hover:bg-stone-50'
-                  }`}
-                >
-                  <span className="flex items-center gap-2 text-sm font-medium text-stone-900">
-                    <span aria-hidden="true">{VERDICT_STYLE[verdict].glyph}</span>
-                    Attempt {attempt.attempt}
-                  </span>
-                  <span className="mt-1 block font-mono text-xs text-stone-500">
+              <ListItem
+                key={attempt.id}
+                label={`Attempt ${attempt.attempt}`}
+                description={
+                  <Text type="code">
                     {attempt.status} · {formatDateTime(attempt.finishedAt ?? attempt.createdAt)}
-                  </span>
-                </button>
-              </li>
+                  </Text>
+                }
+                endContent={<Badge variant={badge.variant} label={badge.shortLabel} />}
+                onSelect={() => setSelectedId(attempt.id)}
+                isSelected={attempt.id === selectedId}
+              />
             );
           })}
-        </ol>
-      </div>
+        </List>
+      </Card>
 
-      <div className="lg:col-span-8">
-        {selected && (
-          <article className="space-y-4 rounded-lg border border-stone-200 bg-white p-5">
-            <div className="flex flex-wrap items-center gap-2">
+      {selected && (
+        <Card>
+          <VStack gap={4}>
+            <HStack gap={2} wrap="wrap">
               <AttemptVerdictBadge verdict={summary.verdict} />
-              <span className="font-mono text-xs text-stone-600">
-                {summary.passed} passed · {summary.failed} failed · {summary.incomplete} incomplete ·{' '}
-                {summary.skipped} skipped
-              </span>
-            </div>
+              <Text type="code">
+                {summary.passed} passed · {summary.failed} failed · {summary.incomplete}{' '}
+                incomplete · {summary.skipped} skipped
+              </Text>
+            </HStack>
 
-            <h3 className="text-base font-semibold text-stone-900">
-              Attempt {selected.attempt} patch
-            </h3>
-            <dl className="grid grid-cols-1 gap-2 text-sm sm:grid-cols-2">
-              <div>
-                <dt className="text-xs font-semibold text-stone-500">Workspace</dt>
-                <dd className="mt-0.5 break-all font-mono text-xs text-stone-700">
-                  {selected.workspacePath}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-xs font-semibold text-stone-500">Source</dt>
-                <dd className="mt-0.5 break-all font-mono text-xs text-stone-700">
-                  {selected.sourceIdentity}
-                </dd>
-              </div>
-            </dl>
+            <Heading level={3}>Attempt {selected.attempt} patch</Heading>
+            <MetadataList>
+              <MetadataListItem label="Workspace">{selected.workspacePath}</MetadataListItem>
+              <MetadataListItem label="Source">{selected.sourceIdentity}</MetadataListItem>
+            </MetadataList>
 
-            <div>
-              <h4 className="text-xs font-semibold text-stone-500">Unified diff vs snapshot</h4>
+            <VStack gap={1}>
+              <Heading level={4}>Unified diff vs snapshot</Heading>
               {selected.diff.trim() === '' ? (
-                <p className="mt-1 text-sm text-stone-500">
-                  The attempt produced no changes.
-                </p>
+                <Text type="supporting">The attempt produced no changes.</Text>
               ) : (
-                <pre
-                  className="mt-1 max-h-96 overflow-auto rounded border border-stone-200 bg-stone-50 p-2 font-mono text-xs leading-5"
-                  aria-label={`Diff for attempt ${selected.attempt}`}
-                >
-                  {selected.diff.split('\n').map((line, index) => (
-                    <span key={index} className={`block px-1 ${diffLineClass(line)}`}>
-                      {line === '' ? ' ' : line}
-                    </span>
-                  ))}
-                </pre>
+                <CodeBlock
+                  code={selected.diff}
+                  isDiff
+                  title={`Attempt ${selected.attempt} diff`}
+                  hasLineNumbers={selected.diff.split('\n').length >= 5}
+                  maxHeight={384}
+                />
               )}
-              <p className="mt-1 text-xs text-stone-500">
+              <Text type="supporting">
                 Added lines are shaded green, removed lines red. The diff covers the whole
                 isolated package checkout.
-              </p>
-            </div>
-          </article>
-        )}
-      </div>
-    </div>
+              </Text>
+            </VStack>
+          </VStack>
+        </Card>
+      )}
+    </Grid>
   );
 }

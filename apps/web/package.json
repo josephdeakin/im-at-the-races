@@ -10,8 +10,12 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@astryxdesign/cli": "^0.7.5",
+    "@astryxdesign/core": "^0.7.5",
+    "@astryxdesign/theme-neutral": "^0.7.5",
     "@races/contracts": "workspace:*",
     "@races/db": "workspace:*",
+    "@stylexjs/stylex": "^0.19.1",
     "next": "16.4.3",
     "react": "19.3.1",
     "react-dom": "19.3.1",

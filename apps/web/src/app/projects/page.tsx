@@ -1,65 +1,59 @@
-import Link from 'next/link';
-import { listProjects } from '@races/db';
+import { Card } from '@astryxdesign/core/Card';
+import { EmptyState } from '@astryxdesign/core/EmptyState';
+import { Grid } from '@astryxdesign/core/Grid';
+import { Heading } from '@astryxdesign/core/Heading';
+import { List, ListItem } from '@astryxdesign/core/List';
+import { Text } from '@astryxdesign/core/Text';
+import { VStack } from '@astryxdesign/core/VStack';
 import { getDb } from '@/lib/server/db';
+import { listProjects } from '@races/db';
 import { toProjectJson } from '@/lib/server/serializers';
 import { formatDateTime } from '@/lib/format';
-import { EmptyState } from '@/components/EmptyState';
 import { ProjectForm } from '@/components/ProjectForm';
 
 export default async function ProjectsPage() {
-  const projects = listProjects(getDb()).map(toProjectJson);
+  const db = getDb();
+  const projects = listProjects(db).map(toProjectJson);
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-xl font-semibold tracking-tight text-stone-900">Projects</h1>
-        <p className="mt-1 max-w-2xl text-sm text-stone-600">
+    <VStack gap={4}>
+      <VStack gap={2}>
+        <Heading level={1}>Projects</Heading>
+        <Text type="supporting">
           A project points this tool at a local repository and the running app to investigate.
-          Repository paths refer to the machine running this tool — the same machine serving this
-          page — not the browser.
-        </p>
-      </div>
+          Repository paths refer to the machine running this tool — the same machine serving
+          this page — not the browser.
+        </Text>
+      </VStack>
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-5">
-        <div className="lg:col-span-2">
-          <ProjectForm />
-        </div>
-        <div className="lg:col-span-3">
-          {projects.length === 0 ? (
-            <EmptyState title="No projects yet">
-              <p>
-                Create your first project to start queuing race-condition investigations. Projects
-                are stored locally in the repository&apos;s <code className="font-mono text-xs">.races</code>{' '}
-                directory.
-              </p>
-            </EmptyState>
-          ) : (
-            <ul className="divide-y divide-stone-200 rounded-lg border border-stone-200 bg-white">
+      <Grid columns={{ minWidth: 340, max: 2 }} gap={4}>
+        <ProjectForm />
+        {projects.length === 0 ? (
+          <EmptyState
+            title="No projects yet"
+            description="Create your first project to start queuing race-condition investigations. Projects are stored locally in the repository's .races directory."
+          />
+        ) : (
+          <Card>
+            <List hasDividers edge="bleed">
               {projects.map((project) => (
-                <li key={project.id}>
-                  <Link
-                    href={`/projects/${project.id}`}
-                    className="block px-4 py-3.5 hover:bg-stone-50 focus-visible:outline-2 focus-visible:outline-inset focus-visible:outline-sky-700"
-                  >
-                    <span className="block text-sm font-medium text-stone-900">
-                      {project.name}
-                    </span>
-                    <span className="mt-0.5 block truncate font-mono text-xs text-stone-500">
-                      {project.repositoryPath}
-                    </span>
-                    <span className="mt-0.5 block truncate font-mono text-xs text-stone-500">
-                      {project.targetUrl}
-                    </span>
-                    <span className="mt-1 block text-xs text-stone-400">
-                      Created {formatDateTime(project.createdAt)}
-                    </span>
-                  </Link>
-                </li>
+              <ListItem
+                key={project.id}
+                href={`/projects/${project.id}`}
+                label={project.name}
+                description={
+                  <VStack gap={0}>
+                    <Text type="code">{project.repositoryPath}</Text>
+                    <Text type="code">{project.targetUrl}</Text>
+                    <Text type="supporting">Created {formatDateTime(project.createdAt)}</Text>
+                  </VStack>
+                }
+              />
               ))}
-            </ul>
-          )}
-        </div>
-      </div>
-    </div>
+            </List>
+          </Card>
+        )}
+      </Grid>
+    </VStack>
   );
 }

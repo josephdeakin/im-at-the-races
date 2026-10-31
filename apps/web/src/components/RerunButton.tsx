@@ -2,6 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Button } from '@astryxdesign/core/Button';
+import { HStack } from '@astryxdesign/core/HStack';
+import { Text } from '@astryxdesign/core/Text';
 
 export function RerunButton({ runId }: { runId: string }) {
   const router = useRouter();
@@ -27,21 +30,19 @@ export function RerunButton({ runId }: { runId: string }) {
   }
 
   return (
-    <span className="inline-flex items-center gap-2">
+    <HStack gap={2}>
       {error && (
-        <span role="alert" className="text-xs text-red-700">
-          {error}
-        </span>
+        <Text type="supporting" color="primary">
+          <span role="alert">{error}</span>
+        </Text>
       )}
-      <button
-        type="button"
+      <Button
+        variant="secondary"
+        label={pending ? 'Starting rerun' : 'Rerun investigation'}
+        tooltip="Start a fresh investigation run with the same task. Recorded evidence is never modified."
         onClick={onRerun}
-        disabled={pending}
-        title="Start a fresh investigation run with the same task. Recorded evidence is never modified."
-        className="rounded border border-stone-300 bg-white px-3 py-1.5 text-sm font-medium text-stone-800 hover:bg-stone-50 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700"
-      >
-        {pending ? 'Starting…' : '↻ Rerun investigation'}
-      </button>
-    </span>
+        isLoading={pending}
+      />
+    </HStack>
   );
 }

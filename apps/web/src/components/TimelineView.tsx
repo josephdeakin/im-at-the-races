@@ -2,6 +2,23 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Experiment, RunEvent, Trial } from '@races/contracts';
+import { Badge } from '@astryxdesign/core/Badge';
+import { Banner } from '@astryxdesign/core/Banner';
+import { Button } from '@astryxdesign/core/Button';
+import { Card } from '@astryxdesign/core/Card';
+import { CodeBlock } from '@astryxdesign/core/CodeBlock';
+import { EmptyState } from '@astryxdesign/core/EmptyState';
+import { Grid } from '@astryxdesign/core/Grid';
+import { Heading } from '@astryxdesign/core/Heading';
+import { HStack } from '@astryxdesign/core/HStack';
+import { Icon } from '@astryxdesign/core/Icon';
+import { IconButton } from '@astryxdesign/core/IconButton';
+import { List, ListItem } from '@astryxdesign/core/List';
+import { MetadataList, MetadataListItem } from '@astryxdesign/core/MetadataList';
+import { Selector } from '@astryxdesign/core/Selector';
+import { Slider } from '@astryxdesign/core/Slider';
+import { Text } from '@astryxdesign/core/Text';
+import { VStack } from '@astryxdesign/core/VStack';
 import { formatDateTime } from '@/lib/format';
 import { buildTrialLanes, type Lane, type LaneMarker } from '@/lib/timeline';
 import { explainTrial } from '@/lib/explain';
@@ -25,21 +42,16 @@ interface ExperimentsResponse {
 
 const POLL_INTERVAL_MS = 1500;
 
-const TONE_CLASSES: Record<string, string> = {
-  accent: 'bg-sky-700 text-white',
-  bad: 'bg-red-700 text-white',
-  good: 'bg-green-700 text-white',
-  muted: 'bg-stone-200 text-stone-800',
-};
+const TONE_VARIANTS = {
+  accent: 'info',
+  bad: 'error',
+  good: 'success',
+  muted: 'neutral',
+} as const;
 
 function toneBadge(tone: string, glyph: string, label: string): React.ReactNode {
-  return (
-    <span
-      className={`inline-flex items-center gap-1 rounded px-1.5 py-0.5 font-mono text-[11px] font-semibold ${TONE_CLASSES[tone] ?? TONE_CLASSES.muted}`}
-    >
-      <span aria-hidden="true">{glyph}</span> {label}
-    </span>
-  );
+  const variant = TONE_VARIANTS[tone as keyof typeof TONE_VARIANTS] ?? 'neutral';
+  return <Badge variant={variant} label={label} icon={<span aria-hidden="true">{glyph}</span>} />;
 }
 
 function trialLabel(experiment: Experiment, trial: Trial): string {
@@ -232,14 +244,14 @@ export function TimelineView({
 
   if (experiments.length === 0) {
     return (
-      <div className="rounded-lg border border-dashed border-stone-300 bg-white px-6 py-10 text-center">
-        <p className="text-sm font-medium text-stone-900">No experiments recorded yet</p>
-        <p className="mx-auto mt-1 max-w-md text-sm text-stone-600">
-          {isTerminal
+      <EmptyState
+        title="No experiments recorded yet"
+        description={
+          isTerminal
             ? 'This run finished without executing an experiment. The activity tab shows what happened.'
-            : 'Trials will appear here once the agent runs its first experiment.'}
-        </p>
-      </div>
+            : 'Trials will appear here once the agent runs its first experiment.'
+        }
+      />
     );
   }
 
@@ -250,227 +262,203 @@ export function TimelineView({
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-3">
-        <label htmlFor="trial-select" className="text-sm font-medium text-stone-800">
-          Trial
-        </label>
-        <select
-          id="trial-select"
+    <VStack gap={4}>
+      <HStack gap={3}>
+        <Selector
+          label="Trial"
           value={trialId ?? ''}
-          onChange={(event) => selectTrial(event.target.value)}
-          className="max-w-full rounded-md border border-stone-300 bg-white px-2 py-1.5 font-mono text-xs text-stone-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700"
-        >
-          {experiments.map((experiment) =>
-            experiment.trials.map((t) => (
-              <option key={t.id} value={t.id}>
-                {trialLabel(experiment, t)}
-              </option>
-            )),
-          )}
-        </select>
+          onChange={selectTrial}
+          options={experiments.map((experiment) => ({
+            type: 'section' as const,
+            title: experiment.name,
+            options: experiment.trials.map((t) => ({
+              value: t.id,
+              label: trialLabel(experiment, t),
+            })),
+          }))}
+        />
         {!isTerminal && (
-          <span className="text-xs text-stone-500" role="status">
-            Updating live
-          </span>
+          <Text type="supporting">
+            <span role="status">Updating live</span>
+          </Text>
         )}
-      </div>
+      </HStack>
 
       {trial && explanation && (
-        <section
-          aria-label="What happened"
-          className="rounded-lg border border-stone-200 bg-white p-4"
-        >
-          <div className="flex items-start gap-2">
-            <span aria-hidden="true" className="mt-0.5 text-sm">
-              {explanation.tone === 'bad' ? '✗' : explanation.tone === 'good' ? '✓' : '○'}
-            </span>
-            <div>
-              <p className="text-sm text-stone-900">{explanation.headline}</p>
-              {explanation.detail && (
-                <p className="mt-1 font-mono text-xs text-stone-600">{explanation.detail}</p>
-              )}
+        <Banner
+          status={explanation.tone === 'bad' ? 'error' : explanation.tone === 'good' ? 'success' : 'info'}
+          title={explanation.headline}
+          description={
+            <VStack gap={2}>
+              {explanation.detail && <Text type="code">{explanation.detail}</Text>}
               {explanation.links.length > 0 && (
-                <p className="mt-2 flex flex-wrap gap-2">
+                <HStack gap={2}>
                   {explanation.links.map((link) => (
-                    <button
+                    <Button
                       key={link.eventSequence}
-                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      label={`Show: ${link.label}`}
                       onClick={() => {
                         setSelectedSequence(link.eventSequence);
                         setPlaying(false);
                       }}
-                      className="rounded border border-stone-300 bg-stone-50 px-2 py-1 font-mono text-xs text-sky-800 hover:bg-stone-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700"
-                    >
-                      Show: {link.label} →
-                    </button>
+                    />
                   ))}
-                </p>
+                </HStack>
               )}
-            </div>
-          </div>
-        </section>
+            </VStack>
+          }
+        />
       )}
 
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-12">
-        <div className="space-y-4 xl:col-span-7">
-          <section
-            aria-label="Request timeline"
-            className="rounded-lg border border-stone-200 bg-white p-4"
-          >
-            {lanes.length === 0 ? (
-              <p className="text-sm text-stone-500">No timeline events for this trial yet.</p>
-            ) : (
-              <ol className="space-y-3">
-                {lanes.map((lane) => (
-                  <li key={lane.id}>
-                    <div className="flex items-baseline gap-2">
-                      <p className="w-36 shrink-0 truncate text-xs font-semibold text-stone-900">
-                        {lane.label}
-                      </p>
-                      {lane.sublabel && (
-                        <p className="truncate font-mono text-[11px] text-stone-500">{lane.sublabel}</p>
-                      )}
-                    </div>
-                    <LaneTrack
-                      lane={lane}
-                      position={position}
-                      selectedSequence={selectedSequence}
-                      onSelect={(sequence) => {
-                        setSelectedSequence(sequence);
-                        setPlaying(false);
-                      }}
-                    />
-                  </li>
-                ))}
-              </ol>
-            )}
-            {timeBounds && (
-              <p className="mt-2 font-mono text-[11px] text-stone-500">
-                {((timeBounds.max - timeBounds.min) / 1000).toFixed(1)}s of recorded events on a
-                shared relative time scale. Markers at the extreme edges are nudged inward to
-                stay readable.
-              </p>
-            )}
-          </section>
+      <Grid columns={{ minWidth: 420, max: 2 }} gap={4}>
+        <VStack gap={4}>
+          <Card>
+            <VStack gap={3}>
+              <Heading level={3}>Request timeline</Heading>
+              {lanes.length === 0 ? (
+                <Text type="supporting">No timeline events for this trial yet.</Text>
+              ) : (
+                <VStack gap={3} as="ol">
+                  {lanes.map((lane) => (
+                    <VStack gap={1} key={lane.id} as="li">
+                      <HStack gap={2}>
+                        <Text weight="medium">{lane.label}</Text>
+                        {lane.sublabel && <Text type="code">{lane.sublabel}</Text>}
+                      </HStack>
+                      <LaneTrack
+                        lane={lane}
+                        position={position}
+                        selectedSequence={selectedSequence}
+                        onSelect={(sequence) => {
+                          setSelectedSequence(sequence);
+                          setPlaying(false);
+                        }}
+                      />
+                    </VStack>
+                  ))}
+                </VStack>
+              )}
+              {timeBounds && (
+                <Text type="supporting">
+                  {((timeBounds.max - timeBounds.min) / 1000).toFixed(1)}s of recorded events on
+                  a shared relative time scale. Markers at the extreme edges are nudged inward
+                  to stay readable.
+                </Text>
+              )}
+            </VStack>
+          </Card>
 
-          <section
-            aria-label="Replay controls"
-            className="flex flex-wrap items-center gap-2 rounded-lg border border-stone-200 bg-white p-3"
-          >
-            <button
-              type="button"
-              onClick={() => {
-                setPlaying(false);
-                if (selectedIndex > 0) setSelectedSequence(trialEvents[selectedIndex - 1].sequence);
-              }}
-              disabled={selectedIndex <= 0}
-              aria-label="Previous event"
-              className="rounded border border-stone-300 px-2 py-1 text-sm text-stone-800 disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700"
-            >
-              ◀
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                if (!playing && selectedIndex >= trialEvents.length - 1) {
-                  setSelectedSequence(trialEvents[0]?.sequence ?? null);
-                }
-                setPlaying(!playing);
-              }}
-              disabled={trialEvents.length === 0}
-              aria-label={playing ? 'Pause recorded replay' : 'Play recorded replay'}
-              className="rounded border border-stone-300 px-3 py-1 text-sm font-medium text-stone-800 disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700"
-            >
-              {playing ? '❚❚ Pause' : '▶ Play'}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setPlaying(false);
-                if (selectedIndex >= 0 && selectedIndex < trialEvents.length - 1) {
-                  setSelectedSequence(trialEvents[selectedIndex + 1].sequence);
-                }
-              }}
-              disabled={selectedIndex < 0 || selectedIndex >= trialEvents.length - 1}
-              aria-label="Next event"
-              className="rounded border border-stone-300 px-2 py-1 text-sm text-stone-800 disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700"
-            >
-              ▶
-            </button>
-            <label className="flex items-center gap-1 text-xs text-stone-600">
-              Speed
-              <select
-                value={speed}
-                onChange={(event) => setSpeed(Number(event.target.value))}
-                aria-label="Replay speed"
-                className="rounded border border-stone-300 bg-white px-1 py-1 text-xs focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700"
-              >
-                <option value={0.5}>0.5×</option>
-                <option value={1}>1×</option>
-                <option value={2}>2×</option>
-              </select>
-            </label>
-            <input
-              type="range"
-              min={0}
-              max={Math.max(0, trialEvents.length - 1)}
-              value={selectedIndex < 0 ? 0 : selectedIndex}
-              onChange={(event) => {
-                setPlaying(false);
-                const next = trialEvents[Number(event.target.value)];
-                if (next) setSelectedSequence(next.sequence);
-              }}
-              aria-label="Scrub recorded events"
-              className="min-w-24 flex-1 accent-sky-700"
-            />
-            <span className="font-mono text-xs text-stone-600" aria-live="polite">
-              {trialEvents.length === 0
-                ? '0 / 0'
-                : `${selectedIndex + 1} / ${trialEvents.length}`}
-            </span>
-          </section>
-          <p className="-mt-2 text-xs text-stone-500">
-            Replay walks saved evidence only. Backwards movement never re-executes the trial.
-          </p>
+          <Card>
+            <VStack gap={2}>
+              <Heading level={3}>Replay controls</Heading>
+              <HStack gap={2}>
+                <IconButton
+                  label="Previous event"
+                  icon={<Icon icon="chevronLeft" />}
+                  onClick={() => {
+                    setPlaying(false);
+                    if (selectedIndex > 0) setSelectedSequence(trialEvents[selectedIndex - 1].sequence);
+                  }}
+                  isDisabled={selectedIndex <= 0}
+                />
+                <Button
+                  variant="secondary"
+                  label={playing ? 'Pause' : 'Play'}
+                  onClick={() => {
+                    if (!playing && selectedIndex >= trialEvents.length - 1) {
+                      setSelectedSequence(trialEvents[0]?.sequence ?? null);
+                    }
+                    setPlaying(!playing);
+                  }}
+                  isDisabled={trialEvents.length === 0}
+                />
+                <IconButton
+                  label="Next event"
+                  icon={<Icon icon="chevronRight" />}
+                  onClick={() => {
+                    setPlaying(false);
+                    if (selectedIndex >= 0 && selectedIndex < trialEvents.length - 1) {
+                      setSelectedSequence(trialEvents[selectedIndex + 1].sequence);
+                    }
+                  }}
+                  isDisabled={selectedIndex < 0 || selectedIndex >= trialEvents.length - 1}
+                />
+                <Selector
+                  label="Replay speed"
+                  value={String(speed)}
+                  onChange={(value) => setSpeed(Number(value))}
+                  options={[
+                    { value: '0.5', label: '0.5×' },
+                    { value: '1', label: '1×' },
+                    { value: '2', label: '2×' },
+                  ]}
+                />
+              </HStack>
+              <HStack gap={2}>
+                <Slider
+                  label="Scrub recorded events"
+                  min={0}
+                  max={Math.max(0, trialEvents.length - 1)}
+                  step={1}
+                  value={selectedIndex < 0 ? 0 : selectedIndex}
+                  onChange={(value: number) => {
+                    setPlaying(false);
+                    const next = trialEvents[value];
+                    if (next) setSelectedSequence(next.sequence);
+                  }}
+                  valueDisplay="none"
+                />
+                <Text type="code">
+                  <span aria-live="polite">
+                    {trialEvents.length === 0 ? '0 / 0' : `${selectedIndex + 1} / ${trialEvents.length}`}
+                  </span>
+                </Text>
+              </HStack>
+              <Text type="supporting">
+                Replay walks saved evidence only. Backwards movement never re-executes the trial.
+              </Text>
+            </VStack>
+          </Card>
 
-          <section aria-label="Trial events">
-            <h3 className="text-sm font-semibold text-stone-900">Events</h3>
-            <ol className="mt-2 divide-y divide-stone-200 rounded-lg border border-stone-200 bg-white">
-              {trialEvents.map((event) => (
-                <li key={event.sequence}>
-                  <button
-                    type="button"
-                    onClick={() => {
+          <VStack gap={2}>
+            <Heading level={3}>Events</Heading>
+            <Card>
+              <List hasDividers edge="bleed">
+                {trialEvents.map((event) => (
+                  <ListItem
+                    key={event.sequence}
+                    label={
+                      <HStack gap={2}>
+                        <Text type="code">#{event.sequence}</Text>
+                        <Text type="code" weight="medium">
+                          {event.kind}
+                        </Text>
+                        <EventHint event={event} />
+                      </HStack>
+                    }
+                    description={formatDateTime(event.createdAt)}
+                    onSelect={() => {
                       setSelectedSequence(event.sequence);
                       setPlaying(false);
                     }}
-                    aria-current={event.sequence === selectedSequence}
-                    className={`flex w-full flex-wrap items-baseline gap-x-3 gap-y-1 px-4 py-2 text-left focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-sky-700 ${
-                      event.sequence === selectedSequence ? 'bg-sky-50' : 'hover:bg-stone-50'
-                    }`}
-                  >
-                    <span className="font-mono text-xs text-stone-400">#{event.sequence}</span>
-                    <span className="font-mono text-sm text-stone-900">{event.kind}</span>
-                    <EventHint event={event} />
-                    <span className="ml-auto text-xs text-stone-500">
-                      {formatDateTime(event.createdAt)}
-                    </span>
-                  </button>
-                </li>
-              ))}
-            </ol>
-          </section>
-        </div>
+                    isSelected={event.sequence === selectedSequence}
+                  />
+                ))}
+              </List>
+            </Card>
+          </VStack>
+        </VStack>
 
-        <div className="space-y-4 xl:col-span-5">
+        <VStack gap={4}>
           <SnapshotPanel selectedEvent={selectedEvent} screenshotEvent={screenshotEvent} />
           {trial && (
             <InspectorPanel trial={trial} selectedEvent={selectedEvent} valuesEvent={valuesEvent} />
           )}
-        </div>
-      </div>
-    </div>
+        </VStack>
+      </Grid>
+    </VStack>
   );
 }
 
@@ -511,7 +499,7 @@ function LaneTrack({
   const rows = assignRows(lane.markers, position);
   return (
     <div
-      className="relative ml-36 mt-1 rounded bg-stone-50"
+      className="relative rounded-md bg-surface"
       style={{ height: `${Math.max(1, rows.length) * ROW_HEIGHT_PX + 8}px` }}
     >
       {lane.spans.map((span) => (
@@ -527,12 +515,11 @@ function LaneTrack({
             aria-current={marker.sequence === selectedSequence}
             onClick={() => onSelect(marker.sequence)}
             style={{ left: `${position(marker.at)}%`, top: `${4 + rowIndex * ROW_HEIGHT_PX}px` }}
-            className={`absolute max-w-44 -translate-x-1/2 truncate rounded px-1 py-0.5 font-mono text-[11px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 ${
-              marker.sequence === selectedSequence ? 'ring-2 ring-sky-700 ring-offset-1' : ''
-            } ${TONE_CLASSES[marker.tone] ?? TONE_CLASSES.muted}`}
+            className={`absolute max-w-44 -translate-x-1/2 focus-visible:outline-2 focus-visible:outline-offset-2 ${
+              marker.sequence === selectedSequence ? 'rounded-md ring-2 ring-offset-1' : ''
+            }`}
           >
-            <span aria-hidden="true">{marker.glyph}</span>{' '}
-            <span className="hidden sm:inline">{marker.label}</span>
+            {toneBadge(marker.tone, marker.glyph, marker.label)}
           </button>
         )),
       )}
@@ -560,7 +547,7 @@ function Span({
       aria-hidden="true"
       title={span.label}
       style={{ left: `${fromPct}%`, width: `${Math.max(1, toPct - fromPct)}%` }}
-      className="absolute inset-y-1 rounded bg-sky-200/70"
+      className="absolute inset-y-1 rounded bg-info opacity-40"
     />
   );
 }
@@ -584,7 +571,7 @@ function EventHint({ event }: { event: RunEvent }) {
               ? outcome
               : null;
   if (!hint) return null;
-  return <span className="font-mono text-xs text-stone-500">{hint}</span>;
+  return <Text type="code">{hint}</Text>;
 }
 
 function SnapshotPanel({
@@ -601,47 +588,46 @@ function SnapshotPanel({
       ? screenshotEvent.payload.artifactId
       : null;
   return (
-    <section aria-label="Browser snapshot" className="rounded-lg border border-stone-200 bg-white p-4">
-      <h3 className="text-sm font-semibold text-stone-900">Snapshot</h3>
-      <dl className="mt-2 space-y-1 font-mono text-xs text-stone-600">
-        <div className="flex gap-2">
-          <dt className="shrink-0 text-stone-500">Selected event</dt>
-          <dd>{selectedEvent ? `#${selectedEvent.sequence} · ${formatDateTime(selectedEvent.createdAt)}` : 'none'}</dd>
-        </div>
-        <div className="flex gap-2">
-          <dt className="shrink-0 text-stone-500">Image captured</dt>
-          <dd>
-            {screenshotEvent
-              ? `#${screenshotEvent.sequence} · ${formatDateTime(screenshotEvent.createdAt)}`
-              : 'no screenshot recorded before this event'}
-          </dd>
-        </div>
-      </dl>
-      {screenshotEvent && artifactId && !broken ? (
-        <a
-          href={`/api/artifacts/${artifactId}`}
-          target="_blank"
-          rel="noreferrer"
-          className="mt-3 block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700"
-        >
-          <img
-            src={`/api/artifacts/${artifactId}`}
-            alt={`Recorded browser screenshot (${String(screenshotEvent.payload.label ?? 'screenshot')})`}
-            onError={() => setBroken(true)}
-            className="aspect-video w-full rounded border border-stone-200 object-cover object-top"
-          />
-        </a>
-      ) : (
-        <p className="mt-3 rounded border border-dashed border-stone-300 px-4 py-8 text-center text-sm text-stone-500">
-          {screenshotEvent && broken
-            ? 'Screenshot file is missing from local evidence.'
-            : 'No screenshot recorded before this event.'}
-        </p>
-      )}
-      <p className="mt-2 text-xs text-stone-500">
-        Nearest recorded image at or before the selected event. Nothing between captures is shown.
-      </p>
-    </section>
+    <Card>
+      <VStack gap={2}>
+        <Heading level={3}>Snapshot</Heading>
+        <MetadataList>
+          <MetadataListItem label="Selected event">
+            <Text type="code">
+              {selectedEvent ? `#${selectedEvent.sequence} · ${formatDateTime(selectedEvent.createdAt)}` : 'none'}
+            </Text>
+          </MetadataListItem>
+          <MetadataListItem label="Image captured">
+            <Text type="code">
+              {screenshotEvent
+                ? `#${screenshotEvent.sequence} · ${formatDateTime(screenshotEvent.createdAt)}`
+                : 'no screenshot recorded before this event'}
+            </Text>
+          </MetadataListItem>
+        </MetadataList>
+        {screenshotEvent && artifactId && !broken ? (
+          <a href={`/api/artifacts/${artifactId}`} target="_blank" rel="noreferrer">
+            <img
+              src={`/api/artifacts/${artifactId}`}
+              alt={`Recorded browser screenshot (${String(screenshotEvent.payload.label ?? 'screenshot')})`}
+              onError={() => setBroken(true)}
+              className="aspect-video w-full rounded-md object-cover object-top"
+            />
+          </a>
+        ) : (
+          <Card variant="muted">
+            <Text type="supporting" justify="center">
+              {screenshotEvent && broken
+                ? 'Screenshot file is missing from local evidence.'
+                : 'No screenshot recorded before this event.'}
+            </Text>
+          </Card>
+        )}
+        <Text type="supporting">
+          Nearest recorded image at or before the selected event. Nothing between captures is shown.
+        </Text>
+      </VStack>
+    </Card>
   );
 }
 
@@ -655,32 +641,34 @@ function InspectorPanel({
   valuesEvent: RunEvent | null;
 }) {
   return (
-    <section aria-label="Inspector" className="rounded-lg border border-stone-200 bg-white p-4">
-      <h3 className="text-sm font-semibold text-stone-900">Inspector</h3>
-      {!selectedEvent ? (
-        <p className="mt-2 text-sm text-stone-500">Select an event to inspect its evidence.</p>
-      ) : (
-        <div className="mt-2 space-y-4">
-          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-            <span className="font-mono text-xs text-stone-400">#{selectedEvent.sequence}</span>
-            <span className="font-mono text-sm font-medium text-stone-900">{selectedEvent.kind}</span>
-            <span className="ml-auto text-xs text-stone-500">
-              {formatDateTime(selectedEvent.createdAt)}
-            </span>
-          </div>
-          <EventDetails trial={trial} event={selectedEvent} />
-          <ValuesDetails valuesEvent={valuesEvent} />
-          <details>
-            <summary className="cursor-pointer text-xs text-sky-700 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700">
-              Raw event payload
-            </summary>
-            <pre className="mt-1.5 overflow-x-auto rounded-md bg-stone-50 p-3 font-mono text-xs text-stone-700">
-              {JSON.stringify(selectedEvent.payload, null, 2)}
-            </pre>
-          </details>
-        </div>
-      )}
-    </section>
+    <Card>
+      <VStack gap={2}>
+        <Heading level={3}>Inspector</Heading>
+        {!selectedEvent ? (
+          <Text type="supporting">Select an event to inspect its evidence.</Text>
+        ) : (
+          <VStack gap={3}>
+            <HStack gap={2} justify="between" wrap="wrap">
+              <HStack gap={2}>
+                <Text type="code">#{selectedEvent.sequence}</Text>
+                <Text type="code" weight="medium">
+                  {selectedEvent.kind}
+                </Text>
+              </HStack>
+              <Text type="supporting">{formatDateTime(selectedEvent.createdAt)}</Text>
+            </HStack>
+            <EventDetails trial={trial} event={selectedEvent} />
+            <ValuesDetails valuesEvent={valuesEvent} />
+            <details>
+              <summary>
+                <Text type="supporting">Raw event payload</Text>
+              </summary>
+              <CodeBlock code={JSON.stringify(selectedEvent.payload, null, 2)} language="json" />
+            </details>
+          </VStack>
+        )}
+      </VStack>
+    </Card>
   );
 }
 
@@ -689,35 +677,42 @@ function EventDetails({ trial, event }: { trial: Trial; event: RunEvent }) {
   if (typeof requestId === 'string' && event.kind.startsWith('request.')) {
     const record = trial.detail?.requests.find((r) => r.id === requestId) ?? null;
     return (
-      <div className="space-y-2 text-sm">
-        <p className="font-medium text-stone-900">Request {requestId}</p>
+      <VStack gap={2}>
+        <Text weight="medium">Request {requestId}</Text>
         {record ? (
-          <dl className="space-y-1 font-mono text-xs text-stone-700">
-            <div className="flex gap-2"><dt className="text-stone-500">Method</dt><dd>{record.method}</dd></div>
-            <div className="flex gap-2"><dt className="text-stone-500">URL</dt><dd className="break-all">{record.url}</dd></div>
-            <div className="flex gap-2"><dt className="text-stone-500">Status</dt><dd>{record.status ?? '—'}</dd></div>
-            <div className="flex gap-2">
-              <dt className="text-stone-500">Held / released</dt>
-              <dd>{record.held ? 'yes' : 'no'} / {record.released ? 'yes' : 'no'}</dd>
-            </div>
-          </dl>
+          <MetadataList>
+            <MetadataListItem label="Method">
+              <Text type="code">{record.method}</Text>
+            </MetadataListItem>
+            <MetadataListItem label="URL">
+              <Text type="code">{record.url}</Text>
+            </MetadataListItem>
+            <MetadataListItem label="Status">
+              <Text type="code">{record.status ?? '—'}</Text>
+            </MetadataListItem>
+            <MetadataListItem label="Held / released">
+              <Text type="code">
+                {record.held ? 'yes' : 'no'} / {record.released ? 'yes' : 'no'}
+              </Text>
+            </MetadataListItem>
+          </MetadataList>
         ) : (
-          <p className="text-xs text-stone-500">No request record stored for this ID.</p>
+          <Text type="supporting">No request record stored for this ID.</Text>
         )}
         {record?.responseExcerpt != null && (
           <details>
-            <summary className="cursor-pointer text-xs text-sky-700 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700">
-              Response excerpt{record.responseTruncated ? ' (truncated)' : ''}
+            <summary>
+              <Text type="supporting">
+                Response excerpt{record.responseTruncated ? ' (truncated)' : ''}
+              </Text>
             </summary>
-            <pre className="mt-1.5 max-h-48 overflow-auto rounded-md bg-stone-50 p-3 font-mono text-xs text-stone-700">
-              {record.responseExcerpt}
-            </pre>
+            <CodeBlock code={record.responseExcerpt} language="json" />
           </details>
         )}
-        <p className="text-xs text-stone-500">
+        <Text type="supporting">
           Release marks delivery to the browser; it does not prove the app consumed it.
-        </p>
-      </div>
+        </Text>
+      </VStack>
     );
   }
   if (event.kind === 'assertion.evaluated') {
@@ -725,89 +720,95 @@ function EventDetails({ trial, event }: { trial: Trial; event: RunEvent }) {
     const expected = event.payload.expected;
     const observed = event.payload.observed;
     return (
-      <div className="space-y-2 text-sm">
-        <div className="flex items-center gap-2">
+      <VStack gap={2}>
+        <HStack gap={2}>
           {toneBadge(passed ? 'good' : 'bad', passed ? '✓' : '✗', passed ? 'Passed' : 'Failed')}
-          <span className="font-mono text-xs text-stone-600">
+          <Text type="code">
             {typeof event.payload.assertionId === 'string' ? event.payload.assertionId : 'check'}
-          </span>
-        </div>
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-          <div className="rounded border border-stone-200 p-2">
-            <p className="text-xs font-medium text-stone-500">Expected</p>
-            <p className="mt-1 break-words font-mono text-xs text-stone-900">
-              {typeof expected === 'string' ? expected : '—'}
-            </p>
-          </div>
-          <div className="rounded border border-stone-200 p-2">
-            <p className="text-xs font-medium text-stone-500">Observed</p>
-            <p className="mt-1 break-words font-mono text-xs text-stone-900">
-              {typeof observed === 'string' ? observed : '—'}
-            </p>
-          </div>
-        </div>
-      </div>
+          </Text>
+        </HStack>
+        <Grid columns={{ minWidth: 200, max: 2 }} gap={2}>
+          <Card variant="muted">
+            <VStack gap={1}>
+              <Text type="supporting" weight="medium">
+                Expected
+              </Text>
+              <Text type="code">{typeof expected === 'string' ? expected : '—'}</Text>
+            </VStack>
+          </Card>
+          <Card variant="muted">
+            <VStack gap={1}>
+              <Text type="supporting" weight="medium">
+                Observed
+              </Text>
+              <Text type="code">{typeof observed === 'string' ? observed : '—'}</Text>
+            </VStack>
+          </Card>
+        </Grid>
+      </VStack>
     );
   }
   if (event.kind === 'action.performed') {
     return (
-      <dl className="space-y-1 font-mono text-xs text-stone-700">
-        <div className="flex gap-2"><dt className="text-stone-500">Action</dt><dd>{String(event.payload.actionId ?? '—')}</dd></div>
-        <div className="flex gap-2"><dt className="text-stone-500">Kind</dt><dd>{String(event.payload.kind ?? '—')}</dd></div>
-        <div className="flex gap-2"><dt className="text-stone-500">Target</dt><dd>{String(event.payload.testId ?? '—')}</dd></div>
-      </dl>
+      <MetadataList>
+        <MetadataListItem label="Action">
+          <Text type="code">{String(event.payload.actionId ?? '—')}</Text>
+        </MetadataListItem>
+        <MetadataListItem label="Kind">
+          <Text type="code">{String(event.payload.kind ?? '—')}</Text>
+        </MetadataListItem>
+        <MetadataListItem label="Target">
+          <Text type="code">{String(event.payload.testId ?? '—')}</Text>
+        </MetadataListItem>
+      </MetadataList>
     );
   }
   if (event.kind === 'trigger.satisfied') {
     return (
-      <p className="text-sm text-stone-700">
-        Release of <span className="font-mono">{String(event.payload.requestId ?? '?')}</span>{' '}
-        was triggered by completion of{' '}
-        <span className="font-mono">{String(event.payload.afterResponse ?? '?')}</span>. This
-        ordering was applied by the runner; it is recorded, not inferred.
-      </p>
+      <Text>
+        Release of <Text type="code">{String(event.payload.requestId ?? '?')}</Text> was
+        triggered by completion of <Text type="code">{String(event.payload.afterResponse ?? '?')}</Text>.
+        This ordering was applied by the runner; it is recorded, not inferred.
+      </Text>
     );
   }
   if (event.kind === 'trial.completed') {
     return (
-      <div className="flex items-center gap-2 text-sm">
+      <HStack gap={2}>
         {toneBadge(
           event.payload.outcome === 'pass' ? 'good' : event.payload.outcome === 'violation' ? 'bad' : 'muted',
           event.payload.outcome === 'pass' ? '✓' : event.payload.outcome === 'violation' ? '✗' : '○',
           `Trial ${String(event.payload.outcome ?? 'finished')}`,
         )}
         {typeof event.payload.reason === 'string' && (
-          <span className="font-mono text-xs text-stone-600">{event.payload.reason}</span>
+          <Text type="code">{event.payload.reason}</Text>
         )}
-      </div>
+      </HStack>
     );
   }
-  return <p className="text-sm text-stone-500">See the raw payload below for details.</p>;
+  return <Text type="supporting">See the raw payload below for details.</Text>;
 }
 
 function ValuesDetails({ valuesEvent }: { valuesEvent: RunEvent | null }) {
   if (!valuesEvent) {
-    return <p className="text-sm text-stone-500">No recorded values at or before this event.</p>;
+    return <Text type="supporting">No recorded values at or before this event.</Text>;
   }
   const values = valuesEvent.payload.values as Record<string, unknown> | undefined;
   if (!values || typeof values !== 'object') {
-    return <p className="text-sm text-stone-500">Values record has no readable entries.</p>;
+    return <Text type="supporting">Values record has no readable entries.</Text>;
   }
   return (
-    <div>
-      <p className="text-xs font-medium text-stone-500">
+    <VStack gap={1}>
+      <Text type="supporting" weight="medium">
         Recorded values (captured #{valuesEvent.sequence} · {formatDateTime(valuesEvent.createdAt)})
-      </p>
-      <dl className="mt-1 space-y-1">
+      </Text>
+      <MetadataList>
         {Object.entries(values).map(([testId, value]) => (
-          <div key={testId} className="rounded border border-stone-200 p-2">
-            <dt className="font-mono text-xs text-stone-500">{testId}</dt>
-            <dd className="mt-0.5 break-words font-mono text-xs text-stone-900">
-              {typeof value === 'string' ? value : '—'}
-            </dd>
-          </div>
+          <MetadataListItem key={testId} label={testId}>
+            <Text type="code">{typeof value === 'string' ? value : '—'}</Text>
+          </MetadataListItem>
         ))}
-      </dl>
-    </div>
+      </MetadataList>
+    </VStack>
   );
 }

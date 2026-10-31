@@ -2,9 +2,18 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { isTerminalRunStatus, type Run, type RunEvent, type RunStatus } from '@races/contracts';
+import { Banner } from '@astryxdesign/core/Banner';
+import { Button } from '@astryxdesign/core/Button';
+import { Card } from '@astryxdesign/core/Card';
+import { CodeBlock } from '@astryxdesign/core/CodeBlock';
+import { Collapsible } from '@astryxdesign/core/Collapsible';
+import { Heading } from '@astryxdesign/core/Heading';
+import { HStack } from '@astryxdesign/core/HStack';
+import { List, ListItem } from '@astryxdesign/core/List';
+import { Text } from '@astryxdesign/core/Text';
+import { VStack } from '@astryxdesign/core/VStack';
 import { formatDateTime, shortId } from '@/lib/format';
 import { StatusBadge } from './StatusBadge';
-import { dangerButtonClassName } from './form';
 
 const POLL_INTERVAL_MS = 1500;
 
@@ -121,90 +130,98 @@ export function RunMonitor({
   const terminal = isTerminalRunStatus(run.status);
 
   return (
-    <div className="space-y-6">
-      <section
-        aria-label="Run status"
-        className="flex flex-wrap items-center gap-x-4 gap-y-3 rounded-lg border border-stone-200 bg-white p-4"
-      >
-        <StatusBadge status={run.status} />
-        <p className="text-sm text-stone-600">
-          Phase <span className="font-mono text-stone-900">{run.phase}</span>
-        </p>
-        {!terminal && (
-          <div className="ml-auto flex items-center gap-3">
-            {cancelError && (
-              <p role="alert" className="text-sm text-red-700">
-                {cancelError}
-              </p>
-            )}
-            <button
-              type="button"
-              onClick={onCancel}
-              disabled={cancelling}
-              className={dangerButtonClassName}
-            >
-              {cancelling ? 'Cancelling…' : 'Cancel run'}
-            </button>
-          </div>
-        )}
-        {terminal && run.status === 'cancelled' && (
-          <p className="ml-auto text-sm text-stone-500">This run was cancelled.</p>
-        )}
-      </section>
+    <VStack gap={4}>
+      <Card>
+        <HStack gap={3} justify="between" wrap="wrap">
+          <HStack gap={3}>
+            <StatusBadge status={run.status} />
+            <Text>
+              Phase <Text type="code">{run.phase}</Text>
+            </Text>
+          </HStack>
+          {!terminal && (
+            <HStack gap={3}>
+              {cancelError && (
+                <Text type="supporting">
+                  <span role="alert">{cancelError}</span>
+                </Text>
+              )}
+              <Button
+                variant="destructive"
+                label={cancelling ? 'Cancelling run' : 'Cancel run'}
+                onClick={onCancel}
+                isLoading={cancelling}
+              />
+            </HStack>
+          )}
+          {terminal && run.status === 'cancelled' && (
+            <Text type="supporting">This run was cancelled.</Text>
+          )}
+        </HStack>
+      </Card>
 
       {run.status === 'queued' && (
-        <section
-          aria-label="Executor notice"
-          className="rounded-lg border border-stone-200 bg-white p-4 text-sm text-stone-600"
-        >
-          <p className="font-medium text-stone-900">Waiting for a worker to claim this run</p>
-          <p className="mt-1">
-            If this persists, the worker process is not running — start it with{' '}
-            <span className="font-mono">pnpm dev:worker</span> (or{' '}
-            <span className="font-mono">pnpm dev</span> for web + worker together).
-          </p>
-        </section>
+        <Banner
+          status="info"
+          title="Waiting for a worker to claim this run"
+          description={
+            <>
+              If this persists, the worker process is not running. Start it with{' '}
+              <Text type="code">pnpm dev:worker</Text> (or <Text type="code">pnpm dev</Text> for
+              web and worker together).
+            </>
+          }
+        />
       )}
 
-      <section aria-label="Activity">
-        <h2 className="text-sm font-semibold text-stone-900">Activity</h2>
+      <VStack gap={2}>
+        <Heading level={2}>Activity</Heading>
         {pollError && (
-          <p role="status" className="mt-2 text-sm text-amber-700">
-            {pollError}
-          </p>
+          <Text type="supporting">
+            <span role="status">{pollError}</span>
+          </Text>
         )}
         {events.length === 0 ? (
-          <p className="mt-2 rounded-lg border border-dashed border-stone-300 bg-white px-4 py-6 text-center text-sm text-stone-500">
-            No activity recorded yet.
-          </p>
+          <Card variant="muted">
+            <Text type="supporting" justify="center">
+              No activity recorded yet.
+            </Text>
+          </Card>
         ) : (
-          <ol className="mt-2 divide-y divide-stone-200 rounded-lg border border-stone-200 bg-white">
-            {events.map((event) => (
-              <li key={event.sequence} className="px-4 py-3">
-                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                  <span className="font-mono text-xs text-stone-400">
-                    #{event.sequence} · {shortId(event.id)}
-                  </span>
-                  <span className="font-mono text-sm font-medium text-stone-900">{event.kind}</span>
-                  <span className="ml-auto text-xs text-stone-500">
-                    {formatDateTime(event.createdAt)}
-                  </span>
-                </div>
-                {Object.keys(event.payload).length > 0 && (
-                  <details className="mt-1.5">
-                    <summary className="cursor-pointer text-xs text-sky-700 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700">
-                      Event details
-                    </summary>
-                    <pre className="mt-1.5 overflow-x-auto rounded-md bg-stone-50 p-3 font-mono text-xs text-stone-700">
-                      {JSON.stringify(event.payload, null, 2)}
-                    </pre>
-                  </details>
-                )}
-              </li>
-            ))}
-          </ol>
+          <Card>
+            <List hasDividers edge="bleed">
+              {events.map((event) => (
+                <ListItem
+                  key={event.sequence}
+                  label={
+                    <HStack gap={2} justify="between" wrap="wrap">
+                      <HStack gap={2}>
+                        <Text type="code">
+                          #{event.sequence} · {shortId(event.id)}
+                        </Text>
+                        <Text type="code" weight="medium">
+                          {event.kind}
+                        </Text>
+                      </HStack>
+                      <Text type="supporting">{formatDateTime(event.createdAt)}</Text>
+                    </HStack>
+                  }
+                  description={
+                    Object.keys(event.payload).length > 0 ? (
+                      <Collapsible trigger={<Text type="supporting">Event details</Text>}>
+                        <CodeBlock
+                          code={JSON.stringify(event.payload, null, 2)}
+                          language="json"
+                        />
+                      </Collapsible>
+                    ) : undefined
+                  }
+                />
+              ))}
+            </List>
+          </Card>
         )}
-      </section>
-    </div>
+      </VStack>
+    </VStack>
   );
 }

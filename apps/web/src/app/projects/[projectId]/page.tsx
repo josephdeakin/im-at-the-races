@@ -1,11 +1,18 @@
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getProject, listRunsByProject } from '@races/db';
 import { RUN_MODE_LABELS } from '@races/contracts';
+import { Card } from '@astryxdesign/core/Card';
+import { EmptyState } from '@astryxdesign/core/EmptyState';
+import { Grid } from '@astryxdesign/core/Grid';
+import { Heading } from '@astryxdesign/core/Heading';
+import { HStack } from '@astryxdesign/core/HStack';
+import { Link } from '@astryxdesign/core/Link';
+import { List, ListItem } from '@astryxdesign/core/List';
+import { Text } from '@astryxdesign/core/Text';
+import { VStack } from '@astryxdesign/core/VStack';
 import { getDb } from '@/lib/server/db';
 import { toProjectJson, toRunJson } from '@/lib/server/serializers';
 import { formatDateTime, shortId } from '@/lib/format';
-import { EmptyState } from '@/components/EmptyState';
 import { RunForm } from '@/components/RunForm';
 import { StatusBadge } from '@/components/StatusBadge';
 
@@ -22,68 +29,62 @@ export default async function ProjectPage({
   const runs = listRunsByProject(db, projectId).map(toRunJson);
 
   return (
-    <div className="space-y-8">
-      <div>
-        <Link
-          href="/projects"
-          className="text-sm text-sky-700 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700"
-        >
+    <VStack gap={4}>
+      <VStack gap={2}>
+        <Link href="/projects" isStandalone>
           ← All projects
         </Link>
-        <h1 className="mt-2 text-xl font-semibold tracking-tight text-stone-900">{project.name}</h1>
-        <dl className="mt-2 space-y-1 text-sm">
-          <div className="flex flex-wrap gap-x-2">
-            <dt className="text-stone-500">Repository:</dt>
-            <dd className="font-mono text-xs leading-5 text-stone-800">{project.repositoryPath}</dd>
-          </div>
-          <div className="flex flex-wrap gap-x-2">
-            <dt className="text-stone-500">Target:</dt>
-            <dd className="font-mono text-xs leading-5 text-stone-800">{project.targetUrl}</dd>
-          </div>
-        </dl>
-      </div>
+        <Heading level={1}>{project.name}</Heading>
+        <VStack gap={1}>
+          <HStack gap={2}>
+            <Text type="supporting">Repository:</Text>
+            <Text type="code">{project.repositoryPath}</Text>
+          </HStack>
+          <HStack gap={2}>
+            <Text type="supporting">Target:</Text>
+            <Text type="code">{project.targetUrl}</Text>
+          </HStack>
+        </VStack>
+      </VStack>
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-5">
-        <div className="lg:col-span-2">
-          <RunForm projectId={project.id} />
-        </div>
-        <div className="lg:col-span-3">
-          <h2 className="text-sm font-semibold text-stone-900">Previous runs</h2>
+      <Grid columns={{ minWidth: 340, max: 2 }} gap={4}>
+        <RunForm projectId={project.id} />
+        <VStack gap={2}>
+          <Heading level={2}>Previous runs</Heading>
           {runs.length === 0 ? (
-            <div className="mt-2">
-              <EmptyState title="No runs yet">
-                <p>
-                  Create an investigation to queue the first run for this project. Runs persist in
-                  the local database and stay queued until the execution engine is connected.
-                </p>
-              </EmptyState>
-            </div>
+            <EmptyState
+              title="No runs yet"
+              description="Create an investigation to queue the first run for this project. Runs persist in the local database."
+            />
           ) : (
-            <ul className="mt-2 divide-y divide-stone-200 rounded-lg border border-stone-200 bg-white">
-              {runs.map((run) => (
-                <li key={run.id}>
-                  <Link
+            <Card>
+              <List hasDividers edge="bleed">
+                {runs.map((run) => (
+                  <ListItem
+                    key={run.id}
                     href={`/runs/${run.id}`}
-                    className="block px-4 py-3 hover:bg-stone-50 focus-visible:outline-2 focus-visible:outline-inset focus-visible:outline-sky-700"
-                  >
-                    <span className="flex items-center gap-3">
-                      <StatusBadge status={run.status} />
-                      <span className="font-mono text-xs text-stone-500">{shortId(run.id)}</span>
-                      <span className="ml-auto text-xs text-stone-400">
-                        {formatDateTime(run.createdAt)}
-                      </span>
-                    </span>
-                    <span className="mt-1.5 block truncate text-sm text-stone-800">{run.task}</span>
-                    <span className="mt-0.5 block text-xs text-stone-500">
-                      {RUN_MODE_LABELS[run.mode]} · phase {run.phase}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+                    label={
+                      <HStack gap={2}>
+                        <StatusBadge status={run.status} />
+                        <Text type="code">{shortId(run.id)}</Text>
+                        <Text type="supporting">{formatDateTime(run.createdAt)}</Text>
+                      </HStack>
+                    }
+                    description={
+                      <VStack gap={0}>
+                        <Text>{run.task}</Text>
+                        <Text type="supporting">
+                          {RUN_MODE_LABELS[run.mode]} · phase {run.phase}
+                        </Text>
+                      </VStack>
+                    }
+                  />
+                ))}
+              </List>
+            </Card>
           )}
-        </div>
-      </div>
-    </div>
+        </VStack>
+      </Grid>
+    </VStack>
   );
 }

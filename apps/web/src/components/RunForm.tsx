@@ -2,9 +2,20 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Button } from '@astryxdesign/core/Button';
+import { Card } from '@astryxdesign/core/Card';
+import { FormLayout } from '@astryxdesign/core/FormLayout';
+import { Heading } from '@astryxdesign/core/Heading';
+import { HStack } from '@astryxdesign/core/HStack';
+import { NumberInput } from '@astryxdesign/core/NumberInput';
+import { RadioList } from '@astryxdesign/core/RadioList';
+import { RadioListItem } from '@astryxdesign/core/RadioList';
+import { Text } from '@astryxdesign/core/Text';
+import { TextArea } from '@astryxdesign/core/TextArea';
+import { VStack } from '@astryxdesign/core/VStack';
 import { DEFAULT_RUN_LIMITS, DEFAULT_RUN_TASK, type RunMode } from '@races/contracts';
 import { extractApiMessage } from '@/lib/format';
-import { FormError, hintClassName, inputClassName, labelClassName, primaryButtonClassName } from './form';
+import { FormError } from './form';
 
 const MODES: { value: RunMode; title: string; description: string }[] = [
   {
@@ -23,11 +34,9 @@ export function RunForm({ projectId }: { projectId: string }) {
   const router = useRouter();
   const [task, setTask] = useState('');
   const [mode, setMode] = useState<RunMode>('investigate');
-  const [durationMinutes, setDurationMinutes] = useState(
-    String(DEFAULT_RUN_LIMITS.durationMs / 60_000),
-  );
-  const [modelCalls, setModelCalls] = useState(String(DEFAULT_RUN_LIMITS.modelCalls));
-  const [experiments, setExperiments] = useState(String(DEFAULT_RUN_LIMITS.experiments));
+  const [durationMinutes, setDurationMinutes] = useState(DEFAULT_RUN_LIMITS.durationMs / 60_000);
+  const [modelCalls, setModelCalls] = useState(DEFAULT_RUN_LIMITS.modelCalls);
+  const [experiments, setExperiments] = useState(DEFAULT_RUN_LIMITS.experiments);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
@@ -43,9 +52,9 @@ export function RunForm({ projectId }: { projectId: string }) {
           task,
           mode,
           limits: {
-            durationMs: Math.round(Number(durationMinutes) * 60_000),
-            modelCalls: Number(modelCalls),
-            experiments: Number(experiments),
+            durationMs: Math.round(durationMinutes * 60_000),
+            modelCalls,
+            experiments,
           },
         }),
       });
@@ -69,122 +78,80 @@ export function RunForm({ projectId }: { projectId: string }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-5 rounded-lg border border-stone-200 bg-white p-5">
-      <h2 className="text-sm font-semibold text-stone-900">New investigation</h2>
-      <div>
-        <label htmlFor="run-task" className={labelClassName}>
-          Task <span className="font-normal text-stone-500">(optional)</span>
-        </label>
-        <textarea
-          id="run-task"
-          name="task"
-          rows={3}
-          maxLength={4000}
-          className={`${inputClassName} mt-1`}
-          placeholder={DEFAULT_RUN_TASK}
-          value={task}
-          onChange={(e) => setTask(e.target.value)}
-          disabled={saving}
-        />
-        <p className={hintClassName}>
-          Leave blank for a broad investigation across the whole project.
-        </p>
-      </div>
-      <fieldset>
-        <legend className={labelClassName}>Mode</legend>
-        <div className="mt-2 space-y-2">
-          {MODES.map((option) => (
-            <label
-              key={option.value}
-              className="flex cursor-pointer items-start gap-3 rounded-md border border-stone-200 px-3 py-2.5 has-checked:border-sky-700 has-checked:bg-sky-50"
-            >
-              <input
-                type="radio"
-                name="mode"
-                value={option.value}
-                checked={mode === option.value}
-                onChange={() => setMode(option.value)}
-                disabled={saving}
-                className="mt-1 h-4 w-4 accent-sky-700"
+    <Card>
+      <VStack gap={4}>
+        <Heading level={2}>New investigation</Heading>
+        <form onSubmit={onSubmit}>
+          <VStack gap={4}>
+            <FormLayout>
+              <TextArea
+                label="Task"
+                description="Leave blank for a broad investigation across the whole project."
+                placeholder={DEFAULT_RUN_TASK}
+                rows={3}
+                maxLength={4000}
+                value={task}
+                onChange={setTask}
+                htmlName="task"
+                isDisabled={saving}
+                isOptional
               />
-              <span>
-                <span className="block text-sm font-medium text-stone-900">{option.title}</span>
-                <span className="block text-xs text-stone-500">{option.description}</span>
-              </span>
-            </label>
-          ))}
-        </div>
-        <p className={hintClassName}>
-          Stored as intent only — execution is not implemented yet, so runs stay queued.
-        </p>
-      </fieldset>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div>
-          <label htmlFor="run-duration" className={labelClassName}>
-            Duration (min)
-          </label>
-          <input
-            id="run-duration"
-            name="durationMinutes"
-            type="number"
-            required
-            min={1}
-            max={1440}
-            step={1}
-            inputMode="numeric"
-            className={`${inputClassName} mt-1`}
-            value={durationMinutes}
-            onChange={(e) => setDurationMinutes(e.target.value)}
-            disabled={saving}
-          />
-        </div>
-        <div>
-          <label htmlFor="run-model-calls" className={labelClassName}>
-            Model calls
-          </label>
-          <input
-            id="run-model-calls"
-            name="modelCalls"
-            type="number"
-            required
-            min={0}
-            max={100000}
-            step={1}
-            inputMode="numeric"
-            className={`${inputClassName} mt-1`}
-            value={modelCalls}
-            onChange={(e) => setModelCalls(e.target.value)}
-            disabled={saving}
-          />
-        </div>
-        <div>
-          <label htmlFor="run-experiments" className={labelClassName}>
-            Experiments
-          </label>
-          <input
-            id="run-experiments"
-            name="experiments"
-            type="number"
-            required
-            min={0}
-            max={1000}
-            step={1}
-            inputMode="numeric"
-            className={`${inputClassName} mt-1`}
-            value={experiments}
-            onChange={(e) => setExperiments(e.target.value)}
-            disabled={saving}
-          />
-        </div>
-      </div>
-      <p className="text-xs text-stone-500">
-        Limits bound the future experiment engine: wall-clock budget, model calls and timing
-        experiments per run.
-      </p>
-      <FormError message={error} />
-      <button type="submit" className={primaryButtonClassName} disabled={saving}>
-        {saving ? 'Creating…' : 'Create investigation'}
-      </button>
-    </form>
+            </FormLayout>
+            <RadioList
+              label="Mode"
+              value={mode}
+              onChange={(value) => setMode(value as RunMode)}
+              htmlName="mode"
+              isDisabled={saving}
+            >
+              {MODES.map((option) => (
+                <RadioListItem
+                  key={option.value}
+                  label={option.title}
+                  value={option.value}
+                  description={option.description}
+                />
+              ))}
+            </RadioList>
+            <FormLayout direction="horizontal">
+              <NumberInput
+                label="Duration"
+                value={durationMinutes}
+                onChange={setDurationMinutes}
+                htmlName="durationMinutes"
+                isDisabled={saving}
+              />
+              <NumberInput
+                label="Model calls"
+                value={modelCalls}
+                onChange={setModelCalls}
+                htmlName="modelCalls"
+                isDisabled={saving}
+              />
+              <NumberInput
+                label="Experiments"
+                value={experiments}
+                onChange={setExperiments}
+                htmlName="experiments"
+                isDisabled={saving}
+              />
+            </FormLayout>
+            <Text type="supporting">
+              All limits are required and bound the investigation: wall-clock budget in
+              minutes, model calls, and timing experiments per run.
+            </Text>
+            <FormError message={error} />
+            <HStack>
+              <Button
+                type="submit"
+                variant="primary"
+                label={saving ? 'Creating investigation' : 'Create investigation'}
+                isLoading={saving}
+              />
+            </HStack>
+          </VStack>
+        </form>
+      </VStack>
+    </Card>
   );
 }

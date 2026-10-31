@@ -11,6 +11,11 @@ import {
   type RunEvent,
   type VerificationCheck,
 } from '@races/contracts';
+import { Badge } from '@astryxdesign/core/Badge';
+import { HStack } from '@astryxdesign/core/HStack';
+import { Tab } from '@astryxdesign/core/TabList';
+import { TabList } from '@astryxdesign/core/TabList';
+import { VStack } from '@astryxdesign/core/VStack';
 import { RunMonitor } from './RunMonitor';
 import { TimelineView, type ExperimentWithTrials } from './TimelineView';
 import { FindingsView } from './FindingsView';
@@ -86,78 +91,79 @@ export function RunWorkspace({
     null,
   );
 
-  return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-2">
-        <div className="flex gap-1 rounded-lg border border-stone-200 bg-white p-1" role="group" aria-label="Run views">
-          {(Object.keys(TAB_LABELS) as Tab[]).map((key) => (
-            <button
-              key={key}
-              type="button"
-              onClick={() => setTab(key)}
-              aria-pressed={tab === key}
-              className={`rounded-md px-3 py-1.5 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 ${
-                tab === key ? 'bg-stone-900 text-white' : 'text-stone-600 hover:bg-stone-100'
-              }`}
-            >
-              {TAB_LABELS[key]}
-              {key === 'findings' && findings.length > 0 && (
-                <span className="ml-1 font-mono text-xs opacity-80">({findings.length})</span>
-              )}
-              {key === 'patch' && repair.attempts.length > 0 && (
-                <span className="ml-1 font-mono text-xs opacity-80">({repair.attempts.length})</span>
-              )}
-              {key === 'verification' && repair.checks.length > 0 && (
-                <span className="ml-1 font-mono text-xs opacity-80">({repair.checks.length})</span>
-              )}
-            </button>
-          ))}
-        </div>
-        <span className="ml-auto">
-          <RerunButton runId={initialRun.id} />
-        </span>
-      </div>
+  const counts: Partial<Record<Tab, number>> = {
+    findings: findings.length,
+    patch: repair.attempts.length,
+    verification: repair.checks.length,
+  };
 
-      {tab === 'timeline' && (
-        <TimelineView
-          runId={initialRun.id}
-          initialExperiments={experiments}
-          initialEvents={initialEvents}
-          isTerminal={isTerminalRunStatus(initialRun.status)}
-          initialTrialId={initialTrialId}
-          focusRequest={focusRequest}
-        />
-      )}
-      {tab === 'findings' && (
-        <FindingsView
-          findings={findings}
-          experiments={experiments}
-          runStatus={initialRun.status}
-          onOpenTrial={(trialId) => {
-            setFocusRequest((prev) => ({ trialId, nonce: (prev?.nonce ?? 0) + 1 }));
-            setTab('timeline');
-          }}
-        />
-      )}
-      {tab === 'patch' && <PatchView attempts={repair.attempts} checks={repair.checks} />}
-      {tab === 'verification' && (
-        <VerificationView
-          reproducers={repair.reproducers}
-          attempts={repair.attempts}
-          checks={repair.checks}
-          reproArtifacts={repair.reproArtifacts}
-          findings={findings}
-          runMode={initialRun.mode}
-          runStatus={initialRun.status}
-        />
-      )}
-      {tab === 'activity' && (
-        <RunMonitor
-          initialRun={initialRun}
-          initialEvents={initialEvents}
-          initialNextAfter={initialNextAfter}
-        />
-      )}
-    </div>
+  return (
+    <VStack gap={4}>
+      <HStack gap={2} justify="between" wrap="wrap">
+        <TabList
+          value={tab}
+          onChange={(value) => setTab(value as Tab)}
+          role="tablist"
+          aria-label="Run views"
+          hasDivider
+        >
+          {(Object.keys(TAB_LABELS) as Tab[]).map((key) => (
+            <Tab
+              key={key}
+              value={key}
+              label={TAB_LABELS[key]}
+              panelId={`run-panel-${key}`}
+              endContent={
+                counts[key] ? <Badge variant="neutral" label={String(counts[key])} /> : undefined
+              }
+            />
+          ))}
+        </TabList>
+        <RerunButton runId={initialRun.id} />
+      </HStack>
+
+      <section id={`run-panel-${tab}`} role="tabpanel" aria-label={TAB_LABELS[tab]}>
+        {tab === 'timeline' && (
+          <TimelineView
+            runId={initialRun.id}
+            initialExperiments={experiments}
+            initialEvents={initialEvents}
+            isTerminal={isTerminalRunStatus(initialRun.status)}
+            initialTrialId={initialTrialId}
+            focusRequest={focusRequest}
+          />
+        )}
+        {tab === 'findings' && (
+          <FindingsView
+            findings={findings}
+            experiments={experiments}
+            runStatus={initialRun.status}
+            onOpenTrial={(trialId) => {
+              setFocusRequest((prev) => ({ trialId, nonce: (prev?.nonce ?? 0) + 1 }));
+              setTab('timeline');
+            }}
+          />
+        )}
+        {tab === 'patch' && <PatchView attempts={repair.attempts} checks={repair.checks} />}
+        {tab === 'verification' && (
+          <VerificationView
+            reproducers={repair.reproducers}
+            attempts={repair.attempts}
+            checks={repair.checks}
+            reproArtifacts={repair.reproArtifacts}
+            findings={findings}
+            runMode={initialRun.mode}
+            runStatus={initialRun.status}
+          />
+        )}
+        {tab === 'activity' && (
+          <RunMonitor
+            initialRun={initialRun}
+            initialEvents={initialEvents}
+            initialNextAfter={initialNextAfter}
+          />
+        )}
+      </section>
+    </VStack>
   );
 }
