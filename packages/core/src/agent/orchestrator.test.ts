@@ -5,8 +5,12 @@ import path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import {
   DEFAULT_PLAN_TIMEOUTS,
+  RunEventSchema,
   type ExperimentPlan,
   type FindingStatus,
+  type RunEvent,
+  type RunEventKind,
+  type RunEventPayloadMap,
   type TrialDetail,
   type TrialKind,
   type TrialOutcome,
@@ -172,17 +176,24 @@ function makeContext(overrides: Partial<ExecutionContext> = {}): {
 } {
   const events: { kind: string; payload: Record<string, unknown> }[] = [];
   const sink: EventSink = {
-    appendEvent: vi.fn(async (runId: string, kind: string, payload: Record<string, unknown>) => {
-      events.push({ kind, payload });
-      return {
-        id: `event-${events.length}`,
-        runId,
-        sequence: events.length - 1,
-        kind,
-        payload,
-        createdAt: new Date().toISOString(),
-      };
-    }),
+    appendEvent: vi.fn(
+      async <K extends RunEventKind>(
+        runId: string,
+        kind: K,
+        payload: RunEventPayloadMap[K],
+      ): Promise<RunEvent> => {
+        const event = RunEventSchema.parse({
+          id: `event-${events.length}`,
+          runId,
+          sequence: events.length,
+          kind,
+          payload,
+          createdAt: new Date().toISOString(),
+        });
+        events.push({ kind: event.kind, payload: event.payload });
+        return event;
+      },
+    ),
     setPhase: vi.fn(async () => {}),
   };
   const artifacts: ArtifactStore = {

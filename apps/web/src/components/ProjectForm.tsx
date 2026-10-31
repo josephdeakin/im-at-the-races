@@ -9,6 +9,7 @@ import { Heading } from '@astryxdesign/core/Heading';
 import { HStack } from '@astryxdesign/core/HStack';
 import { TextInput } from '@astryxdesign/core/TextInput';
 import { VStack } from '@astryxdesign/core/VStack';
+import { CreateProjectResponseSchema } from '@races/contracts';
 import { extractApiMessage } from '@/lib/format';
 import { FormError } from './form';
 
@@ -35,12 +36,12 @@ export function ProjectForm() {
         setError(extractApiMessage(body, 'Could not create the project.'));
         return;
       }
-      const id = (body as { project?: { id?: string } }).project?.id;
-      if (!id) {
+      const parsed = CreateProjectResponseSchema.safeParse(body);
+      if (!parsed.success) {
         setError('Server returned an unexpected response.');
         return;
       }
-      router.push(`/projects/${id}`);
+      router.push(`/projects/${parsed.data.project.id}`);
       router.refresh();
     } catch {
       setError('Could not reach the server. Is the web app running?');

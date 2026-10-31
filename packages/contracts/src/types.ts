@@ -7,7 +7,6 @@ import type {
   ExperimentSchema,
   ExperimentStatusSchema,
   ProjectSchema,
-  RunEventSchema,
   RunLimitsSchema,
   RunModeSchema,
   RunSchema,
@@ -22,7 +21,6 @@ export type CreateRunInput = z.infer<typeof CreateRunSchema>;
 export type EventsQuery = z.infer<typeof EventsQuerySchema>;
 export type Project = z.infer<typeof ProjectSchema>;
 export type Run = z.infer<typeof RunSchema>;
-export type RunEvent = z.infer<typeof RunEventSchema>;
 export type Artifact = z.infer<typeof ArtifactSchema>;
 export type ExperimentStatus = z.infer<typeof ExperimentStatusSchema>;
 export type Experiment = z.infer<typeof ExperimentSchema>;
@@ -66,9 +64,9 @@ export const DEFAULT_RUN_LIMITS: RunLimits = {
 export const INITIAL_RUN_PHASE = 'queued';
 
 /**
- * Known run event kinds. The `kind` column stays open-ended so the future
- * worker can append new kinds without a contract change; unknown kinds must
- * be rendered generically by the UI.
+ * Run event kinds. Closed: every kind has a payload schema in `./events.js`
+ * (parity is compile-checked), producers are type-checked at emit, and
+ * stored rows are re-validated on read.
  */
 export const KNOWN_RUN_EVENT_KINDS = {
   CREATED: 'run.created',
@@ -80,7 +78,6 @@ export const KNOWN_RUN_EVENT_KINDS = {
   COMPLETED: 'run.completed',
   FAILED: 'run.failed',
   INTERRUPTED: 'run.interrupted',
-  ARTIFACT_ADDED: 'artifact.added',
   EXPERIMENT_STARTED: 'experiment.started',
   EXPERIMENT_COMPLETED: 'experiment.completed',
   TRIAL_STARTED: 'trial.started',

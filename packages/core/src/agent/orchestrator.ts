@@ -545,11 +545,10 @@ export class AgentExecutor implements Executor {
   }
 
   /**
-   * M5 repair phase: freeze the reproducer, prove it fails on the original
-   * app, then run up to two isolated repair attempts with the full VF01 gate
-   * set on the patched app. Every limitation returns early with a logged
-   * reason; the run result degrades to investigation-only, never a silent
-   * pass. Only aborts throw.
+   * Repair phase: freeze the reproducer, prove it fails on the original
+   * app, then run up to two isolated repair attempts with the full VF01
+   * gate set. Limitations return early with a logged reason and degrade to
+   * investigation-only, never a silent pass. Only aborts throw.
    */
   private async repairPhase(args: {
     ctx: ExecutionContext;

@@ -1,10 +1,17 @@
-import type { Artifact, Project, Run, RunEvent, RunLimits } from '@races/contracts';
+import type {
+  Artifact,
+  Project,
+  Run,
+  RunEvent,
+  RunEventKind,
+  RunEventPayloadMap,
+  RunLimits,
+} from '@races/contracts';
 
 /**
- * Investigation phases for the future executor. Status (queued/running/...)
- * stays separate: phase describes what a running investigation is doing.
- * The `phase` column is free-form so new phases need no migration; these
- * constants are the agreed vocabulary.
+ * Investigation phase vocabulary. Status (queued/running/...) stays separate:
+ * phase describes what a running investigation is doing. The `phase` column
+ * is free-form so new phases need no migration.
  */
 export const INVESTIGATION_PHASES = {
   QUEUED: 'queued',
@@ -82,10 +89,10 @@ export {
 
 /** Append-only sink the executor uses to record progress. */
 export interface EventSink {
-  appendEvent(
+  appendEvent<K extends RunEventKind>(
     runId: string,
-    kind: string,
-    payload: Record<string, unknown>,
+    kind: K,
+    payload: RunEventPayloadMap[K],
   ): Promise<RunEvent> | RunEvent;
   setPhase(runId: string, phase: string): Promise<void> | void;
 }

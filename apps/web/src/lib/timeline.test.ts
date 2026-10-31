@@ -1,16 +1,32 @@
 import { describe, expect, it } from 'vitest';
-import type { RunEvent, TrialDetail } from '@races/contracts';
+import {
+  RunEventSchema,
+  type RunEvent,
+  type RunEventKind,
+  type RunEventPayloadMap,
+  type TrialDetail,
+} from '@races/contracts';
 import { buildTrialLanes } from './timeline';
 
-function event(sequence: number, kind: string, payload: Record<string, unknown> = {}): RunEvent {
-  return {
+const TRIAL_BASE = {
+  experimentId: 'experiment-1',
+  trialId: 'trial-1',
+  trialKind: 'baseline' as const,
+};
+
+function event<K extends RunEventKind>(
+  sequence: number,
+  kind: K,
+  payload: RunEventPayloadMap[K],
+): RunEvent {
+  return RunEventSchema.parse({
     id: `event-${sequence}`,
     runId: 'run-1',
     sequence,
     kind,
-    payload: { trialId: 'trial-1', ...payload },
+    payload,
     createdAt: new Date(sequence * 1000).toISOString(),
-  };
+  });
 }
 
 const detail: TrialDetail = {
@@ -28,12 +44,12 @@ describe('buildTrialLanes', () => {
   it('builds request lanes with a held span in plan order', () => {
     const lanes = buildTrialLanes(
       [
-        event(1, 'request.started', { requestId: 'early' }),
-        event(2, 'request.captured', { requestId: 'early', status: 200 }),
-        event(3, 'request.held', { requestId: 'early' }),
-        event(4, 'request.captured', { requestId: 'late', status: 200 }),
-        event(5, 'trigger.satisfied', { requestId: 'early', afterResponse: 'late' }),
-        event(6, 'request.released', { requestId: 'early', reason: 'after-late' }),
+        event(1, 'request.started', { ...TRIAL_BASE, requestId: 'early', method: 'GET', url: 'http://x/a' }),
+        event(2, 'request.captured', { ...TRIAL_BASE, requestId: 'early', status: 200, held: false }),
+        event(3, 'request.held', { ...TRIAL_BASE, requestId: 'early', status: 200, maxHoldMs: 1000 }),
+        event(4, 'request.captured', { ...TRIAL_BASE, requestId: 'late', status: 200, held: false }),
+        event(5, 'trigger.satisfied', { ...TRIAL_BASE, requestId: 'early', afterResponse: 'late' }),
+        event(6, 'request.released', { ...TRIAL_BASE, requestId: 'early', reason: 'after-late' }),
       ],
       detail,
     );
@@ -53,10 +69,10 @@ describe('buildTrialLanes', () => {
   it('marks an unreleased hold and groups actions, checks, and evidence', () => {
     const lanes = buildTrialLanes(
       [
-        event(1, 'action.performed', { actionId: 'a1' }),
-        event(2, 'request.held', { requestId: 'early' }),
-        event(3, 'assertion.evaluated', { assertionId: 'final', passed: false }),
-        event(4, 'screenshot.captured', { label: 'post-release' }),
+        event(1, 'action.performed', { ...TRIAL_BASE, actionId: 'a1', kind: 'click', testId: 'go' }),
+        event(2, 'request.held', { ...TRIAL_BASE, requestId: 'early', status: 200, maxHoldMs: 1000 }),
+        event(3, 'assertion.evaluated', { ...TRIAL_BASE, assertionId: 'final', passed: false, expected: 'b', observed: 'a' }),
+        event(4, 'screenshot.captured', { ...TRIAL_BASE, artifactId: 'artifact-1', filename: 'shot.png', label: 'post-release' }),
       ],
       detail,
     );

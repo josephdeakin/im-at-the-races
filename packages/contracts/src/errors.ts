@@ -20,10 +20,13 @@ export const ApiErrorSchema = z.object({
 
 export type ApiErrorBody = z.infer<typeof ApiErrorSchema>;
 
+/** Validation failure details carried on 400 responses. */
+export type ZodIssueList = z.core.$ZodIssue[];
+
 export function apiErrorBody(
   code: ApiErrorCode,
   message: string,
-  details?: unknown,
+  details?: ZodIssueList | null,
 ): ApiErrorBody {
   return details === undefined
     ? { error: { code, message } }

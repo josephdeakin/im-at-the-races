@@ -227,9 +227,8 @@ async function runCommand(
 
 /**
  * Install worktree dependencies from a clean slate, preferring the offline
- * package store. Any pre-existing node_modules (for example from an
- * over-broad carry) is removed first so the isolated install is
- * deterministic; the path is always our own throwaway worktree.
+ * package store. Any pre-existing node_modules is removed first so the
+ * isolated install is deterministic; the path is always our own worktree.
  */
 export async function installWorkspace(workspacePath: string): Promise<CommandResult> {
   fs.rmSync(path.join(workspacePath, 'node_modules'), { recursive: true, force: true });

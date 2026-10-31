@@ -1,4 +1,5 @@
 /** Client-safe formatting helpers (no server imports). */
+import { ApiErrorSchema } from '@races/contracts';
 
 export function formatDateTime(iso: string | null): string {
   if (!iso) return '—';
@@ -19,11 +20,9 @@ export function shortId(id: string): string {
 }
 
 export function extractApiMessage(body: unknown, fallback: string): string {
-  if (typeof body === 'object' && body !== null && 'error' in body) {
-    const error = (body as { error?: { message?: unknown } }).error;
-    if (error && typeof error.message === 'string' && error.message.trim() !== '') {
-      return error.message;
-    }
+  const parsed = ApiErrorSchema.safeParse(body);
+  if (parsed.success && parsed.data.error.message.trim() !== '') {
+    return parsed.data.error.message;
   }
   return fallback;
 }

@@ -13,7 +13,12 @@ import { RadioListItem } from '@astryxdesign/core/RadioList';
 import { Text } from '@astryxdesign/core/Text';
 import { TextArea } from '@astryxdesign/core/TextArea';
 import { VStack } from '@astryxdesign/core/VStack';
-import { DEFAULT_RUN_LIMITS, DEFAULT_RUN_TASK, type RunMode } from '@races/contracts';
+import {
+  CreateRunResponseSchema,
+  DEFAULT_RUN_LIMITS,
+  DEFAULT_RUN_TASK,
+  type RunMode,
+} from '@races/contracts';
 import { extractApiMessage } from '@/lib/format';
 import { FormError } from './form';
 
@@ -63,12 +68,12 @@ export function RunForm({ projectId }: { projectId: string }) {
         setError(extractApiMessage(body, 'Could not create the run.'));
         return;
       }
-      const runId = (body as { runId?: string }).runId;
-      if (!runId) {
+      const parsed = CreateRunResponseSchema.safeParse(body);
+      if (!parsed.success) {
         setError('Server returned an unexpected response.');
         return;
       }
-      router.push(`/runs/${runId}`);
+      router.push(`/runs/${parsed.data.runId}`);
       router.refresh();
     } catch {
       setError('Could not reach the server. Is the web app running?');

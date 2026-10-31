@@ -1,4 +1,4 @@
-import type { RunEvent, TrialDetail } from '@races/contracts';
+import { requestIdOf, type RunEvent, type TrialDetail } from '@races/contracts';
 
 export interface LaneMarker {
   sequence: number;
@@ -20,16 +20,6 @@ export interface Lane {
   sublabel: string | null;
   markers: LaneMarker[];
   spans: LaneSpan[];
-}
-
-function payloadString(event: RunEvent, key: string): string | null {
-  const value = event.payload[key];
-  return typeof value === 'string' ? value : null;
-}
-
-function payloadNumber(event: RunEvent, key: string): number | null {
-  const value = event.payload[key];
-  return typeof value === 'number' ? value : null;
 }
 
 function at(event: RunEvent): number {
@@ -54,7 +44,7 @@ export function buildTrialLanes(events: RunEvent[], detail: TrialDetail | null):
   }
   for (const event of ordered) {
     if (!event.kind.startsWith('request.')) continue;
-    const id = payloadString(event, 'requestId');
+    const id = requestIdOf(event);
     if (id && !requestIds.includes(id)) requestIds.push(id);
   }
   const records = new Map((detail?.requests ?? []).map((r) => [r.id, r]));
@@ -63,32 +53,29 @@ export function buildTrialLanes(events: RunEvent[], detail: TrialDetail | null):
     const spans: LaneSpan[] = [];
     let holdStart: number | null = null;
     for (const event of ordered) {
-      if (payloadString(event, 'requestId') !== id) continue;
+      if (requestIdOf(event) !== id) continue;
       switch (event.kind) {
         case 'request.started':
           markers.push({ sequence: event.sequence, at: at(event), label: 'started', glyph: '○', tone: 'muted' });
           break;
-        case 'request.captured': {
-          const status = payloadNumber(event, 'status');
+        case 'request.captured':
           markers.push({
             sequence: event.sequence,
             at: at(event),
-            label: status === null ? 'captured' : `captured ${status}`,
+            label: `captured ${event.payload.status}`,
             glyph: '●',
             tone: 'muted',
           });
           break;
-        }
         case 'request.held':
           holdStart = event.sequence;
           markers.push({ sequence: event.sequence, at: at(event), label: 'held', glyph: '▮', tone: 'accent' });
           break;
-        case 'request.released': {
-          const reason = payloadString(event, 'reason');
+        case 'request.released':
           markers.push({
             sequence: event.sequence,
             at: at(event),
-            label: reason ? `released (${reason})` : 'released',
+            label: `released (${event.payload.reason})`,
             glyph: '▶',
             tone: 'accent',
           });
@@ -97,11 +84,10 @@ export function buildTrialLanes(events: RunEvent[], detail: TrialDetail | null):
             holdStart = null;
           }
           break;
-        }
         default:
           break;
       }
-      if (event.kind === 'trigger.satisfied' && payloadString(event, 'requestId') === id) {
+      if (event.kind === 'trigger.satisfied' && event.payload.requestId === id) {
         markers.push({ sequence: event.sequence, at: at(event), label: 'trigger satisfied', glyph: '◆', tone: 'accent' });
       }
     }
@@ -124,7 +110,7 @@ export function buildTrialLanes(events: RunEvent[], detail: TrialDetail | null):
     actions.push({
       sequence: event.sequence,
       at: at(event),
-      label: payloadString(event, 'actionId') ?? 'action',
+      label: event.payload.actionId,
       glyph: '⬔',
       tone: 'muted',
     });
@@ -136,11 +122,11 @@ export function buildTrialLanes(events: RunEvent[], detail: TrialDetail | null):
   const checks: LaneMarker[] = [];
   for (const event of ordered) {
     if (event.kind !== 'assertion.evaluated') continue;
-    const passed = event.payload.passed === true;
+    const passed = event.payload.passed;
     checks.push({
       sequence: event.sequence,
       at: at(event),
-      label: `${passed ? '✓' : '✗'} ${payloadString(event, 'assertionId') ?? 'check'}`,
+      label: `${passed ? '✓' : '✗'} ${event.payload.assertionId}`,
       glyph: passed ? '✓' : '✗',
       tone: passed ? 'good' : 'bad',
     });
@@ -155,7 +141,7 @@ export function buildTrialLanes(events: RunEvent[], detail: TrialDetail | null):
       evidence.push({
         sequence: event.sequence,
         at: at(event),
-        label: `image: ${payloadString(event, 'label') ?? 'screenshot'}`,
+        label: `image: ${event.payload.label}`,
         glyph: '▣',
         tone: 'muted',
       });

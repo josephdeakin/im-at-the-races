@@ -96,30 +96,20 @@ export function checkLabel(name: string): string {
   return name.replace(/-/g, ' ');
 }
 
-function stringField(detail: Record<string, unknown>, key: string): string | null {
-  const value = detail[key];
-  return typeof value === 'string' ? value : null;
-}
-
 /** One human line from a check's detail payload for the matrix row. */
 export function checkOneLiner(check: VerificationCheck): string | null {
   const detail = check.detail;
-  const note = stringField(detail, 'note');
-  if (note) return note;
-  const reason = stringField(detail, 'reason');
-  if (reason) return reason;
-  const error = stringField(detail, 'error');
-  if (error) return error.slice(0, 200);
-  const baseline = stringField(detail, 'baseline');
-  const intervention = stringField(detail, 'intervention');
-  if (baseline && intervention) return `baseline ${baseline} · intervention ${intervention}`;
-  const exitCode = detail.exitCode;
-  if (typeof exitCode === 'number') {
-    const baselineExit = detail.baselineExitCode;
-    const suffix = typeof baselineExit === 'number' ? ` (baseline ${baselineExit})` : '';
-    return `exit ${exitCode}${suffix}`;
+  if (detail.note) return detail.note;
+  if (detail.reason) return detail.reason;
+  if (detail.error) return detail.error.slice(0, 200);
+  if (detail.baseline && detail.intervention) {
+    return `baseline ${detail.baseline} · intervention ${detail.intervention}`;
   }
-  const url = stringField(detail, 'url');
-  if (url) return url;
+  if (typeof detail.exitCode === 'number') {
+    const suffix =
+      typeof detail.baselineExitCode === 'number' ? ` (baseline ${detail.baselineExitCode})` : '';
+    return `exit ${detail.exitCode}${suffix}`;
+  }
+  if (detail.url) return detail.url;
   return null;
 }

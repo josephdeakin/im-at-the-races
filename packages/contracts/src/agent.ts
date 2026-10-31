@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { ExperimentPlanSchema } from './plans.js';
 
 /**
- * Agent tool-call contract (M3). Every model tool call is validated with one
+ * Agent tool-call contract. Every model tool call is validated with one
  * of these schemas before execution; validation failures return actionable
  * errors to the model and consume a bounded retry allowance.
  */

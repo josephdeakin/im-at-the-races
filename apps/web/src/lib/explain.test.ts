@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import type { RunEvent, Trial } from '@races/contracts';
+import {
+  RunEventSchema,
+  type RunEvent,
+  type RunEventKind,
+  type RunEventPayloadMap,
+  type Trial,
+} from '@races/contracts';
 import { explainTrial, tallyConfirmations } from './explain';
 
 function trial(overrides: Partial<Trial> = {}): Trial {
@@ -34,15 +40,25 @@ function trial(overrides: Partial<Trial> = {}): Trial {
   };
 }
 
-function event(sequence: number, kind: string, payload: Record<string, unknown> = {}): RunEvent {
-  return {
+const TRIAL_BASE = {
+  experimentId: 'experiment-1',
+  trialId: 'trial-1',
+  trialKind: 'baseline' as const,
+};
+
+function event<K extends RunEventKind>(
+  sequence: number,
+  kind: K,
+  payload: RunEventPayloadMap[K],
+): RunEvent {
+  return RunEventSchema.parse({
     id: `event-${sequence}`,
     runId: 'run-1',
     sequence,
     kind,
     payload,
     createdAt: new Date(sequence * 1000).toISOString(),
-  };
+  });
 }
 
 describe('explainTrial', () => {
@@ -50,10 +66,10 @@ describe('explainTrial', () => {
     const explanation = explainTrial(
       trial(),
       [
-        event(1, 'request.released', { requestId: 'early' }),
-        event(2, 'trigger.satisfied', { requestId: 'early', afterResponse: 'late' }),
-        event(3, 'request.captured', { requestId: 'late' }),
-        event(4, 'assertion.evaluated', { assertionId: 'final', passed: false }),
+        event(1, 'request.released', { ...TRIAL_BASE, requestId: 'early', reason: 'after-late' }),
+        event(2, 'trigger.satisfied', { ...TRIAL_BASE, requestId: 'early', afterResponse: 'late' }),
+        event(3, 'request.captured', { ...TRIAL_BASE, requestId: 'late', status: 200, held: false }),
+        event(4, 'assertion.evaluated', { ...TRIAL_BASE, assertionId: 'final', passed: false, expected: 'beta', observed: 'alpha' }),
       ],
     );
     expect(explanation.tone).toBe('bad');

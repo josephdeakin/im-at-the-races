@@ -1,16 +1,9 @@
 /**
- * Worker for "I'm at the Races".
- *
- * Single-run loop: claim one queued run transactionally, execute it with the
- * configured Executor, persist the terminal outcome, repeat. One active run
- * is enforced structurally — the next claim happens only after the current
- * run reaches a terminal state. Run only one worker process per database.
- *
- * Cancellation: the web app records `cancelRequestedAt` on a running run;
- * this loop polls for it and aborts the executor's AbortSignal, then records
- * the run as cancelled once cleanup finishes. A run left `running` at boot
- * belonged to a crashed worker and is marked interrupted with its evidence
- * preserved.
+ * Single-run worker loop: claim one queued run, execute it, persist the
+ * terminal outcome, repeat. One active run is structural (next claim only
+ * after terminal state); run one worker per database. Cancellation aborts
+ * the executor and records cancelled after cleanup; a run left `running`
+ * at boot belonged to a crashed worker and is marked interrupted.
  */
 import { randomUUID } from 'node:crypto';
 import path from 'node:path';

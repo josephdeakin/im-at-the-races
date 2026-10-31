@@ -6,7 +6,7 @@ import {
 } from '@races/contracts';
 import type { ArtifactStore, EventSink } from '../index.js';
 import { executeTrial, type TrialResult, type TrialStore } from './trial.js';
-import { isAbortError } from './util.js';
+import { asJsonRecord, isAbortError } from './util.js';
 
 export interface StoredExperiment {
   id: string;
@@ -69,7 +69,7 @@ export async function runExperiment(request: ExperimentRequest): Promise<Experim
   const experimentId = store.createExperiment(runId, {
     name: plan.id,
     hypothesis: plan.hypothesis,
-    plan: plan as unknown as Record<string, unknown>,
+    plan: asJsonRecord(plan),
   }).id;
   await events.appendEvent(runId, KNOWN_RUN_EVENT_KINDS.EXPERIMENT_STARTED, {
     experimentId,

@@ -21,15 +21,19 @@ import {
   sumArtifactBytesByRun,
   type RacesDatabase,
 } from '@races/db';
-import type {
-  Artifact,
-  FindingStatus,
-  RepairAttemptStatus,
-  RunEvent,
-  TrialDetail,
-  TrialKind,
-  TrialOutcome,
-  VerificationCheckStatus,
+import {
+  RunEventSchema,
+  type Artifact,
+  type FindingStatus,
+  type RepairAttemptStatus,
+  type RunEvent,
+  type RunEventKind,
+  type RunEventPayloadMap,
+  type TrialDetail,
+  type TrialKind,
+  type TrialOutcome,
+  type VerificationCheckDetail,
+  type VerificationCheckStatus,
 } from '@races/contracts';
 import { CapacityError } from '@races/core';
 import type {
@@ -43,20 +47,20 @@ import type {
 export class DbEventSink implements EventSink {
   constructor(private readonly db: RacesDatabase) {}
 
-  appendEvent(
+  appendEvent<K extends RunEventKind>(
     runId: string,
-    kind: string,
-    payload: Record<string, unknown>,
+    kind: K,
+    payload: RunEventPayloadMap[K],
   ): RunEvent {
     const row = appendEvent(this.db, runId, kind, payload);
-    return {
+    return RunEventSchema.parse({
       id: row.id,
       runId: row.runId,
       sequence: row.sequence,
       kind: row.kind,
       payload: row.payload,
       createdAt: new Date(row.createdAt).toISOString(),
-    };
+    });
   }
 
   setPhase(runId: string, phase: string): void {
@@ -214,7 +218,7 @@ export class DbExperimentStore implements AgentStore {
     repairAttemptId: string | null;
     name: string;
     status: VerificationCheckStatus;
-    detail: Record<string, unknown>;
+    detail: VerificationCheckDetail;
   }): { id: string } {
     return createVerificationCheck(this.db, input);
   }

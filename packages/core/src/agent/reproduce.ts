@@ -1,4 +1,4 @@
-import type { TrialDetail } from '@races/contracts';
+import { TrialDetailSchema, type TrialDetail } from '@races/contracts';
 import type { StoredTrial } from '../runner/experiment.js';
 
 export interface ReproduceVerdict {
@@ -12,9 +12,9 @@ export interface ReproduceVerdict {
 }
 
 function asDetail(detail: Record<string, unknown> | null): TrialDetail | null {
-  if (!detail || typeof detail !== 'object') return null;
-  if (!Array.isArray(detail.assertions)) return null;
-  return detail as unknown as TrialDetail;
+  if (!detail) return null;
+  const parsed = TrialDetailSchema.safeParse(detail);
+  return parsed.success ? parsed.data : null;
 }
 
 function passedIds(detail: TrialDetail | null): Set<string> {

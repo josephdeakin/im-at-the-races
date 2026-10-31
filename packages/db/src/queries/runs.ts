@@ -4,6 +4,8 @@ import {
   INITIAL_RUN_PHASE,
   KNOWN_RUN_EVENT_KINDS,
   isTerminalRunStatus,
+  type RunEventKind,
+  type RunEventPayloadMap,
   type RunLimits,
   type RunMode,
   type RunStatus,
@@ -36,12 +38,12 @@ function nextSequence(db: DbOrTx, runId: string): number {
   return last ? last.sequence + 1 : 0;
 }
 
-function insertEvent(
+function insertEvent<K extends RunEventKind>(
   db: DbOrTx,
   runId: string,
   sequence: number,
-  kind: string,
-  payload: Record<string, unknown>,
+  kind: K,
+  payload: RunEventPayloadMap[K],
 ): RunEventRow {
   return db
     .insert(runEvents)
@@ -112,11 +114,11 @@ export function listRunsByProject(db: DbOrTx, projectId: string): RunRow[] {
 }
 
 /** Append one event with the next sequence number, atomically. */
-export function appendEvent(
+export function appendEvent<K extends RunEventKind>(
   db: RacesDatabase,
   runId: string,
-  kind: string,
-  payload: Record<string, unknown>,
+  kind: K,
+  payload: RunEventPayloadMap[K],
 ): RunEventRow {
   return db.transaction((tx) => {
     requireRun(tx, runId);
@@ -196,7 +198,7 @@ export interface FinishRunOutcome {
 
 /**
  * Record a terminal outcome. No-op (changed: false) when the run is already
- * terminal. Reserved for the future worker; the web app never calls this.
+ * terminal. Called by the worker; the web app never calls this.
  */
 export function finishRun(
   db: RacesDatabase,
@@ -235,8 +237,7 @@ export function finishRun(
 
 /**
  * Transactionally claim the oldest queued run for a worker. Returns null when
- * nothing is claimable. Reserved for the future executor; the skeleton worker
- * deliberately never calls this, so runs stay queued until then.
+ * nothing is claimable.
  */
 export function claimNextQueuedRun(
   db: RacesDatabase,

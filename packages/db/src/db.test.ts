@@ -195,8 +195,11 @@ describe('events', () => {
   it('returns chronological pages by exclusive cursor without duplicates', () => {
     const { db } = openIsolatedDb();
     const run = seedRun(db, seedProject(db).id);
-    const kinds = ['run.phase', 'run.log', 'run.log', 'run.phase', 'run.log'];
-    for (const kind of kinds) appendEvent(db, run.id, kind, { kind });
+    const kinds = ['run.phase', 'run.log', 'run.log', 'run.phase', 'run.log'] as const;
+    for (const kind of kinds) {
+      if (kind === 'run.phase') appendEvent(db, run.id, kind, { phase: 'inspecting' });
+      else appendEvent(db, run.id, kind, { message: kind });
+    }
 
     const all = listEvents(db, run.id, -1);
     expect(all.map((e) => e.sequence)).toEqual([0, 1, 2, 3, 4, 5]);
@@ -233,7 +236,7 @@ describe('events', () => {
 
   it('rejects events for unknown runs', () => {
     const { db } = openIsolatedDb();
-    expect(() => appendEvent(db, 'missing', 'run.log', {})).toThrow(NotFoundError);
+    expect(() => appendEvent(db, 'missing', 'run.log', { message: 'x' })).toThrow(NotFoundError);
   });
 });
 

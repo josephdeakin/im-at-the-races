@@ -3,6 +3,8 @@ import {
   KNOWN_RUN_EVENT_KINDS,
   type ExperimentPlan,
   type PlanAssertion,
+  type RunEventKind,
+  type RunEventPayloadMap,
   type TrialAssertionResult,
   type TrialDetail,
   type TrialKind,
@@ -22,6 +24,28 @@ export interface TrialStore {
   createTrial(experimentId: string, kind: TrialKind, attempt?: number): { id: string };
   finishTrial(trialId: string, outcome: TrialOutcome, detail: TrialDetail): void;
 }
+
+/** Event kinds emitted from inside a trial; the emitter injects the trial base fields. */
+export type TrialEventKind = Extract<
+  RunEventKind,
+  | 'trial.started'
+  | 'trial.completed'
+  | 'action.performed'
+  | 'request.started'
+  | 'request.captured'
+  | 'request.held'
+  | 'request.released'
+  | 'trigger.satisfied'
+  | 'screenshot.captured'
+  | 'values.captured'
+  | 'assertion.evaluated'
+  | 'evidence.skipped'
+>;
+
+export type TrialEmitter = <K extends TrialEventKind>(
+  eventKind: K,
+  payload: Omit<RunEventPayloadMap[K], 'experimentId' | 'trialId' | 'trialKind'>,
+) => Promise<void>;
 
 export interface TrialRequest {
   plan: ExperimentPlan;
@@ -104,13 +128,17 @@ export async function executeTrial(request: TrialRequest): Promise<TrialResult> 
   const trialId = request.trials.createTrial(experimentId, kind, attempt).id;
   const shortId = trialId.slice(0, 8);
 
-  const emit = async (eventKind: string, payload: Record<string, unknown>): Promise<void> => {
-    await request.events.appendEvent(runId, eventKind, {
+  const emit: TrialEmitter = async (eventKind, payload) => {
+    // Reassembling the full payload from injected base fields plus the
+    // kind-specific remainder: provably complete, but inexpressible to the
+    // compiler through the generic Omit.
+    const full = {
       experimentId,
       trialId,
       trialKind: kind,
       ...payload,
-    });
+    } as RunEventPayloadMap[typeof eventKind];
+    await request.events.appendEvent(runId, eventKind, full);
   };
 
   // Trial deadline independent of the parent signal: a trial timeout is an
@@ -360,7 +388,7 @@ async function runActions(
   page: Page,
   request: TrialRequest,
   tracker: RequestTracker,
-  emit: (kind: string, payload: Record<string, unknown>) => Promise<void>,
+  emit: TrialEmitter,
   signal: AbortSignal,
 ): Promise<void> {
   const { plan } = request;
@@ -395,7 +423,7 @@ async function runReleaseProgram(
   plan: ExperimentPlan,
   releaseHeld: (logicalId: string, reason: string) => Promise<void>,
   records: Map<string, BoundRecord>,
-  emit: (kind: string, payload: Record<string, unknown>) => Promise<void>,
+  emit: TrialEmitter,
   signal: AbortSignal,
 ): Promise<void> {
   const schedule = plan.schedule;
@@ -444,7 +472,7 @@ async function captureEvidence(
   kind: 'screenshot' | 'values',
   save: () => Promise<void>,
   label: string,
-  emit: (eventKind: string, payload: Record<string, unknown>) => Promise<void>,
+  emit: TrialEmitter,
 ): Promise<void> {
   try {
     await save();
@@ -465,7 +493,7 @@ async function captureScreenshot(
   shortId: string,
   kind: TrialKind,
   label: string,
-  emit: (eventKind: string, payload: Record<string, unknown>) => Promise<void>,
+  emit: TrialEmitter,
 ): Promise<void> {
   const png = await page.screenshot({ type: 'png' });
   const filename = `trial-${kind}-${shortId}-${label}.png`;
@@ -490,7 +518,7 @@ async function captureValues(
   trialId: string,
   shortId: string,
   kind: TrialKind,
-  emit: (eventKind: string, payload: Record<string, unknown>) => Promise<void>,
+  emit: TrialEmitter,
 ): Promise<void> {
   const testIds = new Set<string>();
   for (const assertion of plan.assertions) testIds.add(assertion.testId);
@@ -539,7 +567,7 @@ function assertionMatches(assertion: PlanAssertion, observed: string | null): bo
 async function evaluateAssertions(
   page: Page,
   plan: ExperimentPlan,
-  emit: (kind: string, payload: Record<string, unknown>) => Promise<void>,
+  emit: TrialEmitter,
   signal: AbortSignal,
 ): Promise<TrialAssertionResult[]> {
   const results: TrialAssertionResult[] = [];

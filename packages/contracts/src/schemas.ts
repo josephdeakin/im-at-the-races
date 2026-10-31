@@ -15,7 +15,7 @@ export const RunStatusSchema = z.enum([
 
 export const RunModeSchema = z.enum(['investigate', 'investigate-repair']);
 
-/** Investigation phase is a free-form string so the future worker can add phases. */
+/** Investigation phase is free-form so the worker can add phases without a contract change. */
 export const RunPhaseSchema = z.string().trim().min(1).max(100);
 
 export const RunLimitsSchema = z.object({
@@ -80,7 +80,7 @@ export const EventsQuerySchema = z.object({
   after: z.coerce.number().int().min(-1).max(Number.MAX_SAFE_INTEGER).optional().default(-1),
 });
 
-const IsoDateTimeSchema = z.string().min(1).max(100);
+export const IsoDateTimeSchema = z.string().min(1).max(100);
 
 export const ProjectSchema = z.object({
   id: z.string().min(1),
@@ -107,15 +107,6 @@ export const RunSchema = z.object({
   errorMessage: z.string().nullable(),
 });
 
-export const RunEventSchema = z.object({
-  id: z.string().min(1),
-  runId: z.string().min(1),
-  sequence: z.number().int().min(0),
-  kind: z.string().min(1),
-  payload: z.record(z.string(), z.unknown()),
-  createdAt: IsoDateTimeSchema,
-});
-
 export const ArtifactSchema = z.object({
   id: z.string().min(1),
   runId: z.string().min(1),
@@ -138,4 +129,13 @@ export const ExperimentSchema = z.object({
   status: ExperimentStatusSchema,
   createdAt: IsoDateTimeSchema,
   finishedAt: IsoDateTimeSchema.nullable(),
+});
+
+export const CreateProjectResponseSchema = z.object({
+  project: ProjectSchema,
+});
+
+export const CreateRunResponseSchema = z.object({
+  runId: z.string().min(1),
+  run: RunSchema,
 });

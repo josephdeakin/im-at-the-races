@@ -9,8 +9,7 @@ import {
   isSameOriginMutation,
   notFoundError,
   ok,
-  readJsonBody,
-  validationError,
+  parseJsonBody,
 } from '@/lib/server/http';
 import { toRunJson } from '@/lib/server/serializers';
 
@@ -39,15 +38,11 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
     if (!getProject(db, projectId)) {
       return notFoundError(`Project not found: ${projectId}`);
     }
-    const body = await readJsonBody(req);
-    if (!body.ok) return validationError('Request body must be valid JSON', null);
-    const parsed = CreateRunSchema.safeParse(body.value);
-    if (!parsed.success) {
-      return validationError('Invalid run configuration', parsed.error.issues);
-    }
-    // No execution happens here: the run is persisted as queued and the
-    // future worker will claim it. Never launch browser work in a request.
-    const { run } = createRun(db, { projectId, ...resolveRunInput(parsed.data) });
+    const body = await parseJsonBody(req, CreateRunSchema, 'Invalid run configuration');
+    if (!body.ok) return body.response;
+    // No execution happens here: the run is persisted as queued for the
+    // worker to claim. Never launch browser work in a request.
+    const { run } = createRun(db, { projectId, ...resolveRunInput(body.data) });
     return accepted({ runId: run.id, run: toRunJson(run) });
   });
 }

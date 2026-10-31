@@ -1,4 +1,4 @@
-import type { RunEvent, Trial } from '@races/contracts';
+import { requestIdOf, type RunEvent, type Trial } from '@races/contracts';
 
 export interface ExplanationLink {
   label: string;
@@ -13,17 +13,14 @@ export interface TrialExplanation {
   tone: 'bad' | 'good' | 'muted';
 }
 
-function payloadString(event: RunEvent, key: string): string | null {
-  const value = event.payload[key];
-  return typeof value === 'string' ? value : null;
-}
-
-function findEvent(
+function findEvent<K extends 'trigger.satisfied' | 'request.released' | 'request.captured'>(
   events: RunEvent[],
-  kind: string,
+  kind: K,
   requestId: string,
-): RunEvent | undefined {
-  return events.find((e) => e.kind === kind && payloadString(e, 'requestId') === requestId);
+): Extract<RunEvent, { kind: K }> | undefined {
+  return events.find(
+    (e): e is Extract<RunEvent, { kind: K }> => e.kind === kind && requestIdOf(e) === requestId,
+  );
 }
 
 /**
@@ -74,7 +71,7 @@ export function explainTrial(trial: Trial, events: RunEvent[]): TrialExplanation
   let headline: string;
   if (held) {
     const triggerEvent = findEvent(events, 'trigger.satisfied', held.id);
-    const triggerId = triggerEvent ? payloadString(triggerEvent, 'afterResponse') : null;
+    const triggerId = triggerEvent ? triggerEvent.payload.afterResponse : null;
     const releaseEvent = findEvent(events, 'request.released', held.id);
     if (releaseEvent) links.push({ label: `late response ${held.id}`, eventSequence: releaseEvent.sequence });
     if (triggerId) {
@@ -99,7 +96,7 @@ export function explainTrial(trial: Trial, events: RunEvent[]): TrialExplanation
   if (firstFailed) {
     detailText = `Check “${firstFailed.id}”: expected ${JSON.stringify(firstFailed.expected)}, observed ${JSON.stringify(firstFailed.observed)}.`;
     const assertionEvent = events.find(
-      (e) => e.kind === 'assertion.evaluated' && payloadString(e, 'assertionId') === firstFailed.id,
+      (e) => e.kind === 'assertion.evaluated' && e.payload.assertionId === firstFailed.id,
     );
     if (assertionEvent) {
       links.push({ label: `failed check ${firstFailed.id}`, eventSequence: assertionEvent.sequence });

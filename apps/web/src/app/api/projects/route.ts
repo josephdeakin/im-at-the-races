@@ -9,7 +9,7 @@ import {
   guard,
   isSameOriginMutation,
   ok,
-  readJsonBody,
+  parseJsonBody,
   validationError,
 } from '@/lib/server/http';
 import { toProjectJson } from '@/lib/server/serializers';
@@ -25,18 +25,14 @@ export async function POST(req: NextRequest) {
     if (!isSameOriginMutation(req)) {
       return apiError('ORIGIN_FORBIDDEN', 'Cross-origin mutations are not allowed', 403);
     }
-    const body = await readJsonBody(req);
-    if (!body.ok) return validationError('Request body must be valid JSON', null);
-    const parsed = CreateProjectSchema.safeParse(body.value);
-    if (!parsed.success) {
-      return validationError('Invalid project', parsed.error.issues);
-    }
+    const body = await parseJsonBody(req, CreateProjectSchema, 'Invalid project');
+    if (!body.ok) return body.response;
     // Defense in depth: the contract check is platform-regex based so it can
     // run in any JS runtime; re-check with the real platform semantics here.
-    if (!path.isAbsolute(parsed.data.repositoryPath)) {
+    if (!path.isAbsolute(body.data.repositoryPath)) {
       return validationError('Repository path must be an absolute path', null);
     }
-    const project = toProjectJson(createProject(getDb(), parsed.data));
+    const project = toProjectJson(createProject(getDb(), body.data));
     return created({ project });
   });
 }

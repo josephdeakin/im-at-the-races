@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { CreateRunResponseSchema } from '@races/contracts';
 import { Button } from '@astryxdesign/core/Button';
 import { HStack } from '@astryxdesign/core/HStack';
 import { Text } from '@astryxdesign/core/Text';
@@ -16,12 +17,13 @@ export function RerunButton({ runId }: { runId: string }) {
     setError(null);
     try {
       const res = await fetch(`/api/runs/${runId}/rerun`, { method: 'POST' });
-      const body = (await res.json().catch(() => null)) as { runId?: string } | null;
-      if (!res.ok || !body?.runId) {
+      const body: unknown = await res.json().catch(() => null);
+      const parsed = CreateRunResponseSchema.safeParse(body);
+      if (!res.ok || !parsed.success) {
         setError('Rerun failed. Please try again.');
         return;
       }
-      router.push(`/runs/${body.runId}`);
+      router.push(`/runs/${parsed.data.runId}`);
     } catch {
       setError('Could not reach the server.');
     } finally {

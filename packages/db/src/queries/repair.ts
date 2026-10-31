@@ -1,6 +1,10 @@
 import { randomUUID } from 'node:crypto';
 import { asc, eq } from 'drizzle-orm';
-import type { RepairAttemptStatus, VerificationCheckStatus } from '@races/contracts';
+import type {
+  RepairAttemptStatus,
+  VerificationCheckDetail,
+  VerificationCheckStatus,
+} from '@races/contracts';
 import type { DbOrTx, RacesDatabase } from '../client.js';
 import { NotFoundError } from '../errors.js';
 import {
@@ -133,7 +137,7 @@ export interface CreateVerificationCheckInput {
   repairAttemptId: string | null;
   name: string;
   status: VerificationCheckStatus;
-  detail: Record<string, unknown>;
+  detail: VerificationCheckDetail;
 }
 
 export function createVerificationCheck(

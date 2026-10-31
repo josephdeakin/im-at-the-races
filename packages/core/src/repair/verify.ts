@@ -6,6 +6,7 @@ import {
   type ExperimentPlan,
   type RepairAttemptStatus,
   type TrialOutcome,
+  type VerificationCheckDetail,
   type VerificationCheckStatus,
 } from '@races/contracts';
 import type { ArtifactStore, EventSink } from '../index.js';
@@ -42,7 +43,7 @@ export interface RepairStore {
     repairAttemptId: string | null;
     name: string;
     status: VerificationCheckStatus;
-    detail: Record<string, unknown>;
+    detail: VerificationCheckDetail;
   }): { id: string };
 }
 
@@ -252,7 +253,7 @@ async function recordCheck(
   input: VerificationInput,
   name: string,
   status: VerificationCheckStatus,
-  detail: Record<string, unknown>,
+  detail: VerificationCheckDetail,
 ): Promise<void> {
   input.repairStore.createVerificationCheck({
     runId: input.runId,

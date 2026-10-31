@@ -23,6 +23,15 @@ export function isCapacityError(err: unknown): boolean {
   return err instanceof CapacityError || (err instanceof Error && err.name === 'CapacityError');
 }
 
+/**
+ * Reinterpret a validated in-memory value as a JSON record for storage.
+ * Zod-inferred object types lack implicit index signatures, so the cast
+ * lives here instead of at each call site.
+ */
+export function asJsonRecord(value: unknown): Record<string, unknown> {
+  return value as Record<string, unknown>;
+}
+
 /** Sleep that rejects with AbortError when the signal fires first. */
 export function sleep(ms: number, signal?: AbortSignal): Promise<void> {
   if (signal?.aborted) return Promise.reject(new AbortError());

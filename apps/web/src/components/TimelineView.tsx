@@ -1,7 +1,13 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { Experiment, RunEvent, Trial } from '@races/contracts';
+import {
+  requestIdOf,
+  trialIdOf,
+  type Experiment,
+  type RunEvent,
+  type Trial,
+} from '@races/contracts';
 import { Badge } from '@astryxdesign/core/Badge';
 import { Banner } from '@astryxdesign/core/Banner';
 import { Button } from '@astryxdesign/core/Button';
@@ -168,7 +174,7 @@ export function TimelineView({
   const trialEvents = useMemo(() => {
     if (!trial) return [];
     return events
-      .filter((e) => (e.payload.trialId as string | undefined) === trial.id)
+      .filter((e) => trialIdOf(e) === trial.id)
       .sort((a, b) => a.sequence - b.sequence);
   }, [events, trial]);
 
@@ -219,7 +225,7 @@ export function TimelineView({
 
   const screenshotEvent = useMemo(() => {
     if (selectedSequence === null) return null;
-    let best: RunEvent | null = null;
+    let best: Extract<RunEvent, { kind: 'screenshot.captured' }> | null = null;
     for (const event of trialEvents) {
       if (event.kind !== 'screenshot.captured' || event.sequence > selectedSequence) continue;
       if (!best || event.sequence > best.sequence) best = event;
@@ -229,7 +235,7 @@ export function TimelineView({
 
   const valuesEvent = useMemo(() => {
     if (selectedSequence === null) return null;
-    let best: RunEvent | null = null;
+    let best: Extract<RunEvent, { kind: 'values.captured' }> | null = null;
     for (const event of trialEvents) {
       if (event.kind !== 'values.captured' || event.sequence > selectedSequence) continue;
       if (!best || event.sequence > best.sequence) best = event;
@@ -553,25 +559,27 @@ function Span({
 }
 
 function EventHint({ event }: { event: RunEvent }) {
-  const requestId = event.payload.requestId;
-  const actionId = event.payload.actionId;
-  const assertionId = event.payload.assertionId;
-  const label = event.payload.label;
-  const outcome = event.payload.outcome;
-  const hint =
-    typeof requestId === 'string'
-      ? requestId
-      : typeof actionId === 'string'
-        ? actionId
-        : typeof assertionId === 'string'
-          ? `${assertionId} ${event.payload.passed === true ? '✓' : event.payload.passed === false ? '✗' : ''}`
-          : typeof label === 'string'
-            ? label
-            : typeof outcome === 'string'
-              ? outcome
-              : null;
-  if (!hint) return null;
-  return <Text type="code">{hint}</Text>;
+  switch (event.kind) {
+    case 'request.started':
+    case 'request.captured':
+    case 'request.held':
+    case 'request.released':
+    case 'trigger.satisfied':
+      return <Text type="code">{event.payload.requestId}</Text>;
+    case 'action.performed':
+      return <Text type="code">{event.payload.actionId}</Text>;
+    case 'assertion.evaluated':
+      return (
+        <Text type="code">{`${event.payload.assertionId} ${event.payload.passed ? '✓' : '✗'}`}</Text>
+      );
+    case 'screenshot.captured':
+    case 'evidence.skipped':
+      return <Text type="code">{event.payload.label}</Text>;
+    case 'trial.completed':
+      return <Text type="code">{event.payload.outcome}</Text>;
+    default:
+      return null;
+  }
 }
 
 function SnapshotPanel({
@@ -579,14 +587,11 @@ function SnapshotPanel({
   screenshotEvent,
 }: {
   selectedEvent: RunEvent | null;
-  screenshotEvent: RunEvent | null;
+  screenshotEvent: Extract<RunEvent, { kind: 'screenshot.captured' }> | null;
 }) {
   const [broken, setBroken] = useState(false);
   useEffect(() => setBroken(false), [screenshotEvent?.id]);
-  const artifactId =
-    screenshotEvent && typeof screenshotEvent.payload.artifactId === 'string'
-      ? screenshotEvent.payload.artifactId
-      : null;
+  const artifactId = screenshotEvent?.payload.artifactId ?? null;
   return (
     <Card>
       <VStack gap={2}>
@@ -609,7 +614,7 @@ function SnapshotPanel({
           <a href={`/api/artifacts/${artifactId}`} target="_blank" rel="noreferrer">
             <img
               src={`/api/artifacts/${artifactId}`}
-              alt={`Recorded browser screenshot (${String(screenshotEvent.payload.label ?? 'screenshot')})`}
+              alt={`Recorded browser screenshot (${screenshotEvent.payload.label})`}
               onError={() => setBroken(true)}
               className="aspect-video w-full rounded-md object-cover object-top"
             />
@@ -638,7 +643,7 @@ function InspectorPanel({
 }: {
   trial: Trial;
   selectedEvent: RunEvent | null;
-  valuesEvent: RunEvent | null;
+  valuesEvent: Extract<RunEvent, { kind: 'values.captured' }> | null;
 }) {
   return (
     <Card>
@@ -673,8 +678,8 @@ function InspectorPanel({
 }
 
 function EventDetails({ trial, event }: { trial: Trial; event: RunEvent }) {
-  const requestId = event.payload.requestId;
-  if (typeof requestId === 'string' && event.kind.startsWith('request.')) {
+  const requestId = requestIdOf(event);
+  if (requestId !== null && event.kind.startsWith('request.')) {
     const record = trial.detail?.requests.find((r) => r.id === requestId) ?? null;
     return (
       <VStack gap={2}>
@@ -716,16 +721,12 @@ function EventDetails({ trial, event }: { trial: Trial; event: RunEvent }) {
     );
   }
   if (event.kind === 'assertion.evaluated') {
-    const passed = event.payload.passed === true;
-    const expected = event.payload.expected;
-    const observed = event.payload.observed;
+    const passed = event.payload.passed;
     return (
       <VStack gap={2}>
         <HStack gap={2}>
           {toneBadge(passed ? 'good' : 'bad', passed ? '✓' : '✗', passed ? 'Passed' : 'Failed')}
-          <Text type="code">
-            {typeof event.payload.assertionId === 'string' ? event.payload.assertionId : 'check'}
-          </Text>
+          <Text type="code">{event.payload.assertionId}</Text>
         </HStack>
         <Grid columns={{ minWidth: 200, max: 2 }} gap={2}>
           <Card variant="muted">
@@ -733,7 +734,7 @@ function EventDetails({ trial, event }: { trial: Trial; event: RunEvent }) {
               <Text type="supporting" weight="medium">
                 Expected
               </Text>
-              <Text type="code">{typeof expected === 'string' ? expected : '—'}</Text>
+              <Text type="code">{event.payload.expected}</Text>
             </VStack>
           </Card>
           <Card variant="muted">
@@ -741,7 +742,7 @@ function EventDetails({ trial, event }: { trial: Trial; event: RunEvent }) {
               <Text type="supporting" weight="medium">
                 Observed
               </Text>
-              <Text type="code">{typeof observed === 'string' ? observed : '—'}</Text>
+              <Text type="code">{event.payload.observed ?? '—'}</Text>
             </VStack>
           </Card>
         </Grid>
@@ -752,13 +753,13 @@ function EventDetails({ trial, event }: { trial: Trial; event: RunEvent }) {
     return (
       <MetadataList>
         <MetadataListItem label="Action">
-          <Text type="code">{String(event.payload.actionId ?? '—')}</Text>
+          <Text type="code">{event.payload.actionId}</Text>
         </MetadataListItem>
         <MetadataListItem label="Kind">
-          <Text type="code">{String(event.payload.kind ?? '—')}</Text>
+          <Text type="code">{event.payload.kind}</Text>
         </MetadataListItem>
         <MetadataListItem label="Target">
-          <Text type="code">{String(event.payload.testId ?? '—')}</Text>
+          <Text type="code">{event.payload.testId}</Text>
         </MetadataListItem>
       </MetadataList>
     );
@@ -766,37 +767,37 @@ function EventDetails({ trial, event }: { trial: Trial; event: RunEvent }) {
   if (event.kind === 'trigger.satisfied') {
     return (
       <Text>
-        Release of <Text type="code">{String(event.payload.requestId ?? '?')}</Text> was
-        triggered by completion of <Text type="code">{String(event.payload.afterResponse ?? '?')}</Text>.
-        This ordering was applied by the runner; it is recorded, not inferred.
+        Release of <Text type="code">{event.payload.requestId}</Text> was triggered by
+        completion of <Text type="code">{event.payload.afterResponse}</Text>. This ordering
+        was applied by the runner; it is recorded, not inferred.
       </Text>
     );
   }
   if (event.kind === 'trial.completed') {
+    const outcome = event.payload.outcome;
     return (
       <HStack gap={2}>
         {toneBadge(
-          event.payload.outcome === 'pass' ? 'good' : event.payload.outcome === 'violation' ? 'bad' : 'muted',
-          event.payload.outcome === 'pass' ? '✓' : event.payload.outcome === 'violation' ? '✗' : '○',
-          `Trial ${String(event.payload.outcome ?? 'finished')}`,
+          outcome === 'pass' ? 'good' : outcome === 'violation' ? 'bad' : 'muted',
+          outcome === 'pass' ? '✓' : outcome === 'violation' ? '✗' : '○',
+          `Trial ${outcome}`,
         )}
-        {typeof event.payload.reason === 'string' && (
-          <Text type="code">{event.payload.reason}</Text>
-        )}
+        {event.payload.reason && <Text type="code">{event.payload.reason}</Text>}
       </HStack>
     );
   }
   return <Text type="supporting">See the raw payload below for details.</Text>;
 }
 
-function ValuesDetails({ valuesEvent }: { valuesEvent: RunEvent | null }) {
+function ValuesDetails({
+  valuesEvent,
+}: {
+  valuesEvent: Extract<RunEvent, { kind: 'values.captured' }> | null;
+}) {
   if (!valuesEvent) {
     return <Text type="supporting">No recorded values at or before this event.</Text>;
   }
-  const values = valuesEvent.payload.values as Record<string, unknown> | undefined;
-  if (!values || typeof values !== 'object') {
-    return <Text type="supporting">Values record has no readable entries.</Text>;
-  }
+  const values = valuesEvent.payload.values;
   return (
     <VStack gap={1}>
       <Text type="supporting" weight="medium">

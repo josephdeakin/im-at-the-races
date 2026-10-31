@@ -1,9 +1,8 @@
 /**
- * Obvious-pattern secret redaction for persisted evidence. This is a
- * deliberately narrow safety net — known secret query keys and credential
- * schemes — not a general secret detector. Recorded traffic comes from local
- * demo targets with synthetic data; anything outside these patterns is kept
- * verbatim so evidence stays inspectable. Documented as such in the README.
+ * Obvious-pattern secret redaction for persisted evidence: a deliberately
+ * narrow safety net (known secret query keys, credential schemes), not a
+ * general secret detector. Anything outside these patterns is kept verbatim
+ * so evidence stays inspectable.
  */
 
 const SECRET_QUERY_KEYS = new Set([

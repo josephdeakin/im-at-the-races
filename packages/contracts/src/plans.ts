@@ -1,18 +1,18 @@
 import { z } from 'zod';
 
 /**
- * Versioned experiment plan contract (M2).
- *
- * A plan is data: the model (M3) or a checked-in script (M2) produces it, the
- * runner validates it with these schemas before launching anything. Plans may
- * contain app-specific selectors and checks; the engine itself must not.
+ * Versioned experiment plan contract. A plan is data: producers (the model or
+ * a checked-in script) emit it, the runner validates it before launching
+ * anything. Plans may contain app-specific selectors; the engine must not.
  */
 
 export const PLAN_SCHEMA_VERSION = 1 as const;
 
+export const PlanActionKindSchema = z.enum(['fill', 'click']);
+
 export const PlanActionSchema = z.object({
   id: z.string().trim().min(1).max(100),
-  kind: z.enum(['fill', 'click']),
+  kind: PlanActionKindSchema,
   /** Stable selector: data-testid attribute value. */
   testId: z.string().trim().min(1).max(300),
   /** Required for fill; forbidden for click. */
@@ -284,6 +284,31 @@ export type RepairAttempt = z.infer<typeof RepairAttemptSchema>;
 export const VerificationCheckStatusSchema = z.enum(['pass', 'fail', 'incomplete', 'skipped']);
 export type VerificationCheckStatus = z.infer<typeof VerificationCheckStatusSchema>;
 
+/** Closed detail shape: every field below has at least one writer. */
+export const VerificationCheckDetailSchema = z.object({
+  note: z.string().optional(),
+  reason: z.string().optional(),
+  error: z.string().optional(),
+  baseline: TrialOutcomeSchema.optional(),
+  intervention: TrialOutcomeSchema.optional(),
+  experimentId: z.string().optional(),
+  targetUrl: z.string().optional(),
+  url: z.string().optional(),
+  exitCode: z.number().int().nullable().optional(),
+  baselineExitCode: z.number().int().nullable().optional(),
+  outputTail: z.string().optional(),
+  durationMs: z.number().optional(),
+  reproStatus: z.string().optional(),
+  testHash: z.string().optional(),
+  planHash: z.string().optional(),
+  pid: z.number().int().optional(),
+  port: z.number().int().optional(),
+  cwd: z.string().optional(),
+  command: z.array(z.string()).optional(),
+});
+
+export type VerificationCheckDetail = z.infer<typeof VerificationCheckDetailSchema>;
+
 export const VerificationCheckSchema = z.object({
   id: z.string().min(1),
   runId: z.string().min(1),
@@ -291,7 +316,7 @@ export const VerificationCheckSchema = z.object({
   repairAttemptId: z.string().min(1).nullable(),
   name: z.string().min(1),
   status: VerificationCheckStatusSchema,
-  detail: z.record(z.string(), z.unknown()),
+  detail: VerificationCheckDetailSchema,
   createdAt: z.string().min(1),
 });
 

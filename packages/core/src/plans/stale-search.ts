@@ -5,7 +5,7 @@ import {
 } from '@races/contracts';
 
 /**
- * Checked-in scripted experiment for the stale-search fixture (M2). This is
+ * Checked-in scripted experiment for the stale-search fixture. This is
  * plan DATA, not engine logic: the runner discovers everything through the
  * matchers and assertions below. `startUrl` is a placeholder the worker
  * replaces with the project's target URL before validation.

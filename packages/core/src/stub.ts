@@ -28,12 +28,9 @@ const STEPS: { phase: string; message: string; delayMs: number }[] = [
 ];
 
 /**
- * Placeholder executor that walks the phase vocabulary and completes, so the
- * worker claim/execute/finish loop, cancellation, and the live UI can be
- * verified before the real experiment engine exists (M2 replaces this).
- * Abort-aware: when the context signal fires it stops immediately and
- * reports interrupted; the worker maps that to cancelled when the run had a
- * cancellation request.
+ * Deterministic executor for tests: walks the phase vocabulary and completes
+ * without a browser or model. Abort-aware: stops immediately and reports
+ * interrupted when the context signal fires.
  */
 export class StubExecutor implements Executor {
   readonly name = 'stub';

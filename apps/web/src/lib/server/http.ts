@@ -1,13 +1,13 @@
 import 'server-only';
 import { NextRequest, NextResponse } from 'next/server';
-import { apiErrorBody, type ApiErrorCode } from '@races/contracts';
+import { apiErrorBody, type ApiErrorCode, type ZodIssueList } from '@races/contracts';
 import { NotFoundError } from '@races/db';
 
 /** Structural subset of a Zod schema: enough to parse without importing zod. */
 export interface SafeParser<T> {
   safeParse(data: unknown):
     | { success: true; data: T }
-    | { success: false; error: { issues: unknown } };
+    | { success: false; error: { issues: ZodIssueList } };
 }
 
 export function ok<T>(data: T): NextResponse<T> {
@@ -26,12 +26,12 @@ export function apiError(
   code: ApiErrorCode,
   message: string,
   status: number,
-  details?: unknown,
+  details?: ZodIssueList | null,
 ): NextResponse {
   return NextResponse.json(apiErrorBody(code, message, details), { status });
 }
 
-export function validationError(message: string, issues: unknown): NextResponse {
+export function validationError(message: string, issues: ZodIssueList | null): NextResponse {
   return apiError('VALIDATION_ERROR', message, 400, issues);
 }
 
@@ -63,15 +63,26 @@ export function isSameOriginMutation(req: NextRequest): boolean {
   return true;
 }
 
-export async function readJsonBody(req: NextRequest): Promise<{
-  ok: boolean;
-  value: unknown;
-}> {
+/**
+ * Parse a JSON request body with a contract schema. Returns the typed data
+ * or an error response, so routes never handle untyped bodies.
+ */
+export async function parseJsonBody<T>(
+  req: NextRequest,
+  parser: SafeParser<T>,
+  invalidMessage: string,
+): Promise<{ ok: true; data: T } | { ok: false; response: NextResponse }> {
+  let value: unknown;
   try {
-    return { ok: true, value: await req.json() };
+    value = await req.json();
   } catch {
-    return { ok: false, value: undefined };
+    return { ok: false, response: validationError('Request body must be valid JSON', null) };
   }
+  const parsed = parser.safeParse(value);
+  if (!parsed.success) {
+    return { ok: false, response: validationError(invalidMessage, parsed.error.issues) };
+  }
+  return { ok: true, data: parsed.data };
 }
 
 /** Map query-helper errors to the shared error envelope. */
