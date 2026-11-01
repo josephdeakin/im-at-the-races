@@ -107,6 +107,23 @@ describe('ExperimentPlanSchema', () => {
     expect(ExperimentPlanSchema.safeParse(danglingHold).success).toBe(false);
   });
 
+  it('accepts WS frame matchers for socket races', () => {
+    const plan = validPlan();
+    plan.requests = [
+      {
+        id: 'push1',
+        method: 'WS',
+        urlPattern: '/api/odds',
+        bodyContains: '"version":1',
+        occurrence: 1,
+        afterAction: 'a1',
+      },
+    ];
+    plan.requiredCapabilities = ['ws-hold-release'];
+    plan.schedule = null;
+    expect(ExperimentPlanSchema.safeParse(plan).success).toBe(true);
+  });
+
   it('rejects releases without a hold and self-triggered releases', () => {
     const unheld = validPlan();
     unheld.schedule = {

@@ -13,7 +13,9 @@ import {
   AgentExecutor,
   AnthropicModelClient,
   ResponsesApiClient,
+  ResponsesVisionClient,
   UnavailableExecutor,
+  VISION_PROMPT,
   type ExecutionContext,
   type ExecutionOutcome,
   type Executor,
@@ -29,6 +31,7 @@ import {
   getRun,
   getRunStatusCounts,
   getSharedDatabase,
+  listArtifactsByRun,
   markAbandonedRunningInterrupted,
   migrate,
   resolveDatabasePath,
@@ -42,12 +45,15 @@ import {
   DbExperimentStore,
   FsArtifactStore,
   LocalEvidenceReader,
+  pickVisionArtifact,
 } from './sinks.js';
 
 const CLAIM_POLL_MS = 1000;
 const CANCEL_POLL_MS = 500;
 const HEARTBEAT_MS = 30_000;
-const DEFAULT_MODEL = 'claude-sonnet-4-5-20250929';
+const DEFAULT_MODEL = 'muse-spark-1.3-contributor';
+const DEFAULT_ANTHROPIC_MODEL = 'claude-sonnet-4-5-20250929';
+const DEFAULT_META_BASE_URL = 'https://api.meta.ai/v1';
 
 const workerId = `worker-${randomUUID().slice(0, 8)}`;
 let executor: Executor | null = null;
@@ -108,9 +114,13 @@ function getExecutor(db: RacesDatabase): Executor {
     executor = new UnavailableExecutor();
     return executor;
   }
-  const modelId = process.env.RACES_MODEL?.trim() || DEFAULT_MODEL;
-  const provider = process.env.RACES_MODEL_PROVIDER?.trim() || 'anthropic';
-  const baseUrl = process.env.RACES_MODEL_BASE_URL?.trim() || undefined;
+  const provider = process.env.RACES_MODEL_PROVIDER?.trim() || 'openai-responses';
+  const modelId =
+    process.env.RACES_MODEL?.trim() ||
+    (provider === 'anthropic' ? DEFAULT_ANTHROPIC_MODEL : DEFAULT_MODEL);
+  const baseUrl =
+    process.env.RACES_MODEL_BASE_URL?.trim() ||
+    (provider === 'openai-responses' ? DEFAULT_META_BASE_URL : undefined);
   let model: ModelClient;
   if (provider === 'openai-responses') {
     if (!baseUrl) {
@@ -126,7 +136,7 @@ function getExecutor(db: RacesDatabase): Executor {
   } else {
     console.log(`[worker] unknown RACES_MODEL_PROVIDER: ${provider}`);
     executor = new UnavailableExecutor(
-      `Unknown model provider: ${provider}. Use anthropic or openai-responses.`,
+      `Unknown model provider: ${provider}. Use openai-responses (Meta Muse Spark, default) or anthropic.`,
     );
     return executor;
   }
@@ -139,6 +149,48 @@ function getExecutor(db: RacesDatabase): Executor {
     racesDir: resolveRacesDir(),
   });
   return executor;
+}
+
+const VISION_MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+
+/**
+ * Best-effort Muse Spark vision note over the run's decisive screenshot.
+ * Appended as a run.log event, clearly labelled as model explanation.
+ * Never throws and never affects the run outcome or any verdict.
+ */
+async function appendVisionNote(db: RacesDatabase, runId: string): Promise<void> {
+  try {
+    const provider = process.env.RACES_MODEL_PROVIDER?.trim() || 'openai-responses';
+    const apiKey = process.env.RACES_MODEL_API_KEY?.trim();
+    if (provider !== 'openai-responses' || !apiKey) return;
+    const modelId = process.env.RACES_MODEL?.trim() || DEFAULT_MODEL;
+    const baseUrl = process.env.RACES_MODEL_BASE_URL?.trim() || DEFAULT_META_BASE_URL;
+    const images = listArtifactsByRun(db, runId).filter(
+      (a) => a.mimeType.startsWith('image/') && a.sizeBytes <= VISION_MAX_IMAGE_BYTES,
+    );
+    const sink = new DbEventSink(db);
+    const latest = pickVisionArtifact(images);
+    if (!latest) return;
+    const racesDir = resolveRacesDir();
+    const absolute = path.resolve(racesDir, latest.relativePath);
+    if (!absolute.startsWith(`${racesDir}${path.sep}`)) return;
+    const data = fs.readFileSync(absolute);
+    const client = new ResponsesVisionClient({ apiKey, model: modelId, baseUrl });
+    const text = await client.describeImage(data, latest.mimeType, VISION_PROMPT);
+    sink.appendEvent(runId, 'run.log', {
+      message: `Vision (Muse Spark model explanation, not evidence): ${text}`,
+    });
+    console.log(`[worker] vision note added for run ${runId}`);
+  } catch (err) {
+    try {
+      new DbEventSink(db).appendEvent(runId, 'run.log', {
+        message: `Vision: unavailable (${err instanceof Error ? err.message : String(err)}). Findings stand on recorded values and assertions.`,
+      });
+    } catch {
+      // Even the gap note is best-effort.
+    }
+    console.log(`[worker] vision note skipped for run ${runId}: ${err instanceof Error ? err.message : String(err)}`);
+  }
 }
 
 let shuttingDown = false;
@@ -213,6 +265,10 @@ async function executeClaimedRun(db: RacesDatabase, claimed: RunRow): Promise<vo
               errorCode: 'EXECUTOR_ERROR',
               errorMessage: err instanceof Error ? err.message : String(err),
             };
+    }
+
+    if (outcome.status === 'completed') {
+      await appendVisionNote(db, claimed.id);
     }
 
     const latest = getRun(db, claimed.id);

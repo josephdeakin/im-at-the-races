@@ -51,6 +51,7 @@ export interface ExperimentResult {
 
 const SUPPORTED_CAPABILITIES: ReadonlySet<string> = new Set([
   RUNNER_CAPABILITIES.HTTP_HOLD_RELEASE,
+  RUNNER_CAPABILITIES.WS_HOLD_RELEASE,
 ]);
 
 /**

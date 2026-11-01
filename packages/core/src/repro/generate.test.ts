@@ -32,6 +32,21 @@ function samplePlan(): ExperimentPlan {
   };
 }
 
+function wsPlan(): ExperimentPlan {
+  const plan = samplePlan();
+  plan.id = 'odds-ws-v1';
+  plan.requests = [
+    { id: 'v1', method: 'WS', urlPattern: '/api/odds', bodyContains: '"version":1', occurrence: 1, afterAction: 'a1' },
+    { id: 'v2', method: 'WS', urlPattern: '/api/odds', bodyContains: '"version":2', occurrence: 1, afterAction: 'a2' },
+  ];
+  plan.schedule = {
+    hold: ['v1'],
+    releases: [{ request: 'v1', afterResponse: 'v2', settleMs: 300, timeoutMs: 10_000 }],
+  };
+  plan.requiredCapabilities = ['ws-hold-release'];
+  return plan;
+}
+
 function extractConst(spec: string, name: string): unknown {
   const match = new RegExp(`const ${name} = (.+);$`, 'm').exec(spec);
   if (!match) throw new Error(`generated spec is missing ${name}`);
@@ -88,20 +103,45 @@ describe('generateReproBundle', () => {
   });
 
   it('generates syntactically valid JavaScript', () => {
+    for (const plan of [samplePlan(), wsPlan()]) {
+      const bundle = generateReproBundle({
+        plan,
+        checkId: 'final',
+        targetUrl: 'http://127.0.0.1:4100/',
+        findingTitle: 'Stale overwrite',
+        sourceIdentity: 'git:abc:clean',
+      });
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'repro-syntax-'));
+      try {
+        const file = path.join(dir, 'repro.spec.mjs');
+        fs.writeFileSync(file, bundle.spec);
+        execFileSync(process.execPath, ['--check', file], { timeout: 10_000 });
+      } finally {
+        fs.rmSync(dir, { recursive: true, force: true });
+      }
+    }
+  });
+
+  it('emits socket routing for WS matchers', () => {
     const bundle = generateReproBundle({
+      plan: wsPlan(),
+      checkId: 'final',
+      targetUrl: 'http://127.0.0.1:4311/',
+      findingTitle: 'Stale WS overwrite',
+      sourceIdentity: 'git:abc:clean',
+    });
+    expect(bundle.spec).toContain('routeWebSocket');
+    expect(bundle.spec).toContain('connectToServer');
+    expect(bundle.spec).toContain('onMessage');
+    expect(bundle.spec).toContain('capture.forward');
+
+    const httpBundle = generateReproBundle({
       plan: samplePlan(),
       checkId: 'final',
       targetUrl: 'http://127.0.0.1:4100/',
       findingTitle: 'Stale overwrite',
       sourceIdentity: 'git:abc:clean',
     });
-    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'repro-syntax-'));
-    try {
-      const file = path.join(dir, 'repro.spec.mjs');
-      fs.writeFileSync(file, bundle.spec);
-      execFileSync(process.execPath, ['--check', file], { timeout: 10_000 });
-    } finally {
-      fs.rmSync(dir, { recursive: true, force: true });
-    }
+    expect(httpBundle.spec).not.toContain('routeWebSocket');
   });
 });

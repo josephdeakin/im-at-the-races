@@ -6,7 +6,7 @@ import {
   type RunEventPayloadMap,
   type TrialDetail,
 } from '@races/contracts';
-import { buildTrialLanes } from './timeline';
+import { buildTrialLanes, clockFraction, raceClockFitMax } from './timeline';
 
 const TRIAL_BASE = {
   experimentId: 'experiment-1',
@@ -60,10 +60,18 @@ describe('buildTrialLanes', () => {
       'captured 200',
       'held',
       'trigger satisfied',
-      'released (after-late)',
+      'released ← late',
     ]);
     expect(early.spans).toEqual([{ fromSequence: 3, toSequence: 6, label: 'held' }]);
     expect(lanes[1].markers.map((m) => m.label)).toEqual(['captured 200']);
+  });
+
+  it('labels a captured WebSocket frame without a status', () => {
+    const lanes = buildTrialLanes(
+      [event(1, 'request.captured', { ...TRIAL_BASE, requestId: 'push', status: null, held: false })],
+      null,
+    );
+    expect(lanes[0].markers.map((m) => m.label)).toEqual(['captured frame']);
   });
 
   it('marks an unreleased hold and groups actions, checks, and evidence', () => {
@@ -88,5 +96,60 @@ describe('buildTrialLanes', () => {
     ]);
     expect(lanes[3].markers[0]).toMatchObject({ tone: 'bad', glyph: '✗' });
     expect(lanes[4].markers[0].label).toBe('image: post-release');
+    expect(lanes[2].markers[0].label).toBe('a1 click');
+  });
+
+  it('keeps non-after release reasons explicit', () => {
+    const lanes = buildTrialLanes(
+      [
+        event(1, 'request.held', { ...TRIAL_BASE, requestId: 'early', status: 200, maxHoldMs: 1000 }),
+        event(2, 'request.released', { ...TRIAL_BASE, requestId: 'early', reason: 'max-hold-exceeded' }),
+      ],
+      detail,
+    );
+    expect(lanes[0].markers.map((m) => m.label)).toEqual([
+      'held',
+      'released (max-hold-exceeded)',
+    ]);
+  });
+});
+
+describe('race clock', () => {
+  const lanes = buildTrialLanes(
+    [
+      event(1, 'request.started', { ...TRIAL_BASE, requestId: 'early', method: 'GET', url: 'http://x/a' }),
+      event(2, 'request.released', { ...TRIAL_BASE, requestId: 'early', reason: 'after-late' }),
+      event(16, 'assertion.evaluated', { ...TRIAL_BASE, assertionId: 'final', passed: false, expected: 'b', observed: 'a' }),
+    ],
+    detail,
+  );
+
+  it('fits the scale to requests and actions, not the long-tail check', () => {
+    // Marker times are sequence seconds: race ends at 2s, check at 16s.
+    expect(raceClockFitMax(lanes)).toBe(2000);
+  });
+
+  it('keeps immediate evidence in the window but not the failure image', () => {
+    const withEvidence = buildTrialLanes(
+      [
+        event(1, 'request.started', { ...TRIAL_BASE, requestId: 'early', method: 'GET', url: 'http://x/a' }),
+        event(2, 'screenshot.captured', { ...TRIAL_BASE, artifactId: 'a1', filename: 'post.png', label: 'post-release' }),
+        event(3, 'screenshot.captured', { ...TRIAL_BASE, artifactId: 'a2', filename: 'fail.png', label: 'assertion-failed' }),
+      ],
+      detail,
+    );
+    expect(raceClockFitMax(withEvidence)).toBe(2000);
+  });
+
+  it('clamps late markers to the rail end', () => {
+    expect(clockFraction(1000, 1000, 2000)).toBe(0);
+    expect(clockFraction(1500, 1000, 2000)).toBe(0.5);
+    expect(clockFraction(2000, 1000, 2000)).toBe(1);
+    expect(clockFraction(16000, 1000, 2000)).toBe(1);
+  });
+
+  it('centers a single instant and tolerates an empty race', () => {
+    expect(clockFraction(1000, 1000, 1000)).toBe(0.5);
+    expect(raceClockFitMax([])).toBeNull();
   });
 });

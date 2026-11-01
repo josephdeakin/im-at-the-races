@@ -22,11 +22,13 @@ export function FindingsView({
   experiments,
   runStatus,
   onOpenTrial,
+  visionNotes = [],
 }: {
   findings: Finding[];
   experiments: ExperimentWithTrials[];
   runStatus: string;
   onOpenTrial: (trialId: string) => void;
+  visionNotes?: string[];
 }) {
   const [selectedId, setSelectedId] = useState<string | null>(findings[0]?.id ?? null);
   // Findings arrive live: select the first once they land, without
@@ -127,6 +129,18 @@ export function FindingsView({
                 )}
                 <Text type="code">Source: {selected.sourceIdentity}</Text>
               </VStack>
+
+              {visionNotes.length > 0 && (
+                <VStack gap={1}>
+                  <HStack gap={2}>
+                    <Heading level={4}>What the screenshot shows</Heading>
+                    <Badge variant="neutral" label="Model explanation — not evidence" />
+                  </HStack>
+                  {visionNotes.map((note) => (
+                    <Text key={note}>{note}</Text>
+                  ))}
+                </VStack>
+              )}
 
               <VStack gap={1}>
                 <Heading level={4}>Evidence trials</Heading>

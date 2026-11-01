@@ -23,7 +23,7 @@ interface ResponseOutputItem {
   arguments?: string;
 }
 
-interface ResponsesApiPayload {
+export interface ResponsesApiPayload {
   output?: ResponseOutputItem[];
   status?: string;
   incomplete_details?: { reason?: string };

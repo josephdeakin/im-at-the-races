@@ -54,7 +54,18 @@ describe('RequestTracker', () => {
     const tracker = new RequestTracker([matcher({ afterAction: 'a1' })]);
     const candidate = { method: 'GET', url: 'http://x/api/search?q=1', body: null };
     expect(tracker.observe(candidate)).toBeNull();
-    tracker.noteActionComplete('a1');
+    tracker.noteActionStarted('a1');
+    expect(tracker.observe(candidate)).toBe('reqA');
+  });
+
+  it("binds the action's own immediate request, observed before the action resolves", () => {
+    const tracker = new RequestTracker([
+      matcher({ method: 'POST', urlPattern: '/api/transfer', afterAction: 'a3' }),
+    ]);
+    const candidate = { method: 'POST', url: 'http://x/api/transfer', body: '{"to":"rent"}' };
+    expect(tracker.observe(candidate)).toBeNull();
+    tracker.noteActionStarted('a3');
+    // A click's fetch fires while the click call is still resolving.
     expect(tracker.observe(candidate)).toBe('reqA');
   });
 
@@ -81,5 +92,19 @@ describe('RequestTracker', () => {
     expect(tracker.unmatched()).toEqual(['second']);
     expect(tracker.isBound('first')).toBe(true);
     expect(tracker.isBound('second')).toBe(false);
+  });
+
+  it('binds WebSocket frames by socket URL and frame text', () => {
+    const tracker = new RequestTracker([
+      matcher({ id: 'push1', method: 'WS', urlPattern: '/api/odds', bodyContains: '"version":1' }),
+      matcher({ id: 'push2', method: 'WS', urlPattern: '/api/odds', bodyContains: '"version":2' }),
+    ]);
+    expect(
+      tracker.observe({ method: 'WS', url: 'ws://127.0.0.1:4311/api/odds', body: '{"type":"odds","version":2}' }),
+    ).toBe('push2');
+    expect(
+      tracker.observe({ method: 'WS', url: 'ws://127.0.0.1:4311/api/odds', body: '{"type":"odds","version":1}' }),
+    ).toBe('push1');
+    expect(tracker.unmatched()).toEqual([]);
   });
 });

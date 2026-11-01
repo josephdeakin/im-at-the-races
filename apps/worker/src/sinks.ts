@@ -235,6 +235,21 @@ export class DbExperimentStore implements AgentStore {
 
 const EVIDENCE_TEXT_MAX_BYTES = 64 * 1024;
 
+/**
+ * Pick the screenshot the vision note should describe. Trial captures taken
+ * after a held response is released carry the decisive moment (the stale
+ * value on screen); prefer the last of those, else the last image at all.
+ */
+export function pickVisionArtifact<T extends { relativePath: string }>(
+  images: readonly T[],
+): T | null {
+  if (images.length === 0) return null;
+  for (let i = images.length - 1; i >= 0; i -= 1) {
+    if (images[i].relativePath.includes('post-release')) return images[i];
+  }
+  return images[images.length - 1];
+}
+
 /** Local evidence reader for the agent's readEvidence tool. */
 export class LocalEvidenceReader implements EvidenceReader {
   constructor(

@@ -33,6 +33,7 @@ import {
   packageScriptNames,
   removeRepairWorkspace,
   RepairUnavailableError,
+  revertInstallerCollateral,
   type RepairWorkspace,
   runPackageScript,
   servePackage,
@@ -778,6 +779,10 @@ export class AgentExecutor implements Executor {
       }
       this.addUsage(args.usage, repairOutcome.usage);
       await log(`Repair attempt ${attempt} ${repairOutcome.stopReason}: ${repairOutcome.summary}`);
+      const reverted = await revertInstallerCollateral(workspace);
+      if (reverted.length > 0) {
+        await log(`Installer collateral kept out of the patch: ${reverted.join(', ')}.`);
+      }
       const diff = await diffWorkspace(workspace);
       store.finishRepairAttempt(row.id, {
         diff,

@@ -37,6 +37,13 @@ export interface CarriedFile {
   sha256: string;
 }
 
+export interface LockfileSnapshot {
+  /** POSIX path relative to the worktree root. */
+  relativePath: string;
+  /** Content hash at isolation, or null when the file was absent. */
+  sha256: string | null;
+}
+
 export interface RepairWorkspace {
   repoRoot: string;
   /** Target package dir relative to the repo root ('.' when identical). */
@@ -45,7 +52,18 @@ export interface RepairWorkspace {
   worktreePath: string;
   packageDir: string;
   carriedFiles: CarriedFile[];
+  lockfiles: LockfileSnapshot[];
   sourceIdentity: string;
+}
+
+const LOCKFILE_NAMES = ['pnpm-lock.yaml', 'package-lock.json', 'yarn.lock', 'bun.lockb'];
+
+function hashOrNull(absolute: string): string | null {
+  try {
+    return sha256File(absolute);
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -122,11 +140,118 @@ export async function createRepairWorkspace(
     carriedFiles.push({ relativePath: relativeToPackage, sha256: before });
   }
 
+  // Installer collateral baseline: installs rewrite lockfiles to match the
+  // workspace's package set, which must not leak into the repair diff.
+  const lockfileDirs = [workspacePath, packageDir].filter(
+    (dir, index, all) => all.findIndex((other) => other === dir) === index,
+  );
+  const lockfiles: LockfileSnapshot[] = [];
+  for (const dir of lockfileDirs) {
+    for (const name of LOCKFILE_NAMES) {
+      const full = path.join(dir, name);
+      if (fs.statSync(full, { throwIfNoEntry: false })?.isFile()) {
+        lockfiles.push({
+          relativePath: path.relative(workspacePath, full).split(path.sep).join('/'),
+          sha256: sha256File(full),
+        });
+      } else if (!fs.existsSync(full)) {
+        lockfiles.push({
+          relativePath: path.relative(workspacePath, full).split(path.sep).join('/'),
+          sha256: null,
+        });
+      }
+    }
+  }
+
   const sourceIdentity =
     carriedFiles.length === 0
       ? `git:${headSha}:subpath-clean`
       : `git:${headSha}:subpath-clean+${carriedFiles.length}-untracked`;
-  return { repoRoot, subpath, headSha, worktreePath: workspacePath, packageDir, carriedFiles, sourceIdentity };
+  return { repoRoot, subpath, headSha, worktreePath: workspacePath, packageDir, carriedFiles, lockfiles, sourceIdentity };
+}
+
+/**
+ * Restore lockfiles the toolchain rewrote without agent intent: when no
+ * package.json changed (tracked or carried), any lockfile drift came from
+ * `install` syncing a stale snapshot, not from the repair. Returns the
+ * restored worktree-relative paths for logging. When dependencies did
+ * change, the lockfile update is plausibly part of the fix and is kept.
+ */
+export async function revertInstallerCollateral(workspace: RepairWorkspace): Promise<string[]> {
+  const names = await git(workspace.worktreePath, ['diff', 'HEAD', '--name-only', '--', '.']).catch(
+    () => '',
+  );
+  const trackedManifestChanged = names
+    .split('\n')
+    .some((line) => line.trim() !== '' && line.trim().endsWith('package.json'));
+  const carriedManifestChanged = workspace.carriedFiles.some(
+    (file) =>
+      file.relativePath.endsWith('package.json') &&
+      hashOrNull(path.join(workspace.packageDir, file.relativePath)) !== file.sha256,
+  );
+  if (trackedManifestChanged || carriedManifestChanged) return [];
+  const carriedSet = new Set(
+    workspace.carriedFiles.map((file) =>
+      workspace.subpath === '.'
+        ? file.relativePath
+        : path.posix.join(workspace.subpath, file.relativePath),
+    ),
+  );
+  const reverted: string[] = [];
+  for (const snapshot of workspace.lockfiles) {
+    const full = path.join(workspace.worktreePath, snapshot.relativePath);
+    if (hashOrNull(full) === snapshot.sha256) continue;
+    if (snapshot.sha256 === null) {
+      fs.rmSync(full, { force: true });
+    } else if (carriedSet.has(snapshot.relativePath)) {
+      const packageRelative =
+        workspace.subpath === '.'
+          ? snapshot.relativePath
+          : path.posix.relative(workspace.subpath, snapshot.relativePath);
+      fs.copyFileSync(
+        path.join(
+          workspace.repoRoot,
+          workspace.subpath === '.' ? packageRelative : path.join(workspace.subpath, packageRelative),
+        ),
+        full,
+      );
+    } else {
+      await git(workspace.worktreePath, ['checkout', 'HEAD', '--', snapshot.relativePath]).catch(
+        () => {},
+      );
+    }
+    if (hashOrNull(full) === snapshot.sha256) reverted.push(snapshot.relativePath);
+  }
+  return reverted;
+}
+
+/**
+ * `--no-index` diffs label files with the absolute paths they were given,
+ * which no patch consumer can apply. Rewrite the header lines to the
+ * repo-relative `a/<path> b/<path>` form; only the first `---`/`+++` pair
+ * is touched so removed lines starting with dashes survive.
+ */
+function rewriteCarriedHeaders(diff: string, repoRelative: string): string {
+  if (diff === '') return diff;
+  let dashed = false;
+  let plussed = false;
+  return diff
+    .split('\n')
+    .map((line, index) => {
+      if (index === 0 && line.startsWith('diff --git ')) {
+        return `diff --git a/${repoRelative} b/${repoRelative}`;
+      }
+      if (!dashed && line.startsWith('--- ')) {
+        dashed = true;
+        return `--- a/${repoRelative}`;
+      }
+      if (!plussed && line.startsWith('+++ ')) {
+        plussed = true;
+        return `+++ b/${repoRelative}`;
+      }
+      return line;
+    })
+    .join('\n');
 }
 
 /**
@@ -156,7 +281,14 @@ export async function diffWorkspace(workspace: RepairWorkspace): Promise<string>
       original,
       current,
     ]).catch((err: { stdout?: string }) => ({ stdout: err.stdout ?? '' }));
-    sections.push((stdout as string).trimEnd() || `modified carried file: ${carried.relativePath}`);
+    const repoRelative =
+      workspace.subpath === '.'
+        ? carried.relativePath
+        : [workspace.subpath, carried.relativePath].join('/').split(path.sep).join('/');
+    sections.push(
+      rewriteCarriedHeaders((stdout as string).trimEnd(), repoRelative) ||
+        `modified carried file: ${carried.relativePath}`,
+    );
   }
   const fresh = await git(workspace.worktreePath, ['ls-files', '--others', '--exclude-standard']).catch(
     () => '',

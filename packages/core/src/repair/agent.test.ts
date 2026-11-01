@@ -16,6 +16,7 @@ function makeWorkspace(): { workspace: RepairWorkspace; dir: string } {
     worktreePath: dir,
     packageDir: dir,
     carriedFiles: [],
+    lockfiles: [],
     sourceIdentity: 'test',
   };
   return { workspace, dir };

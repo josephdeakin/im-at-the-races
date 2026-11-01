@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import type { ExperimentPlan } from '@races/contracts';
 
-export const REPRO_TEMPLATE_VERSION = 'm5.1';
+export const REPRO_TEMPLATE_VERSION = 'm5.2';
 
 export function sha256Hex(content: string | Uint8Array): string {
   return `sha256:${createHash('sha256').update(content).digest('hex')}`;
@@ -51,6 +51,41 @@ function playwrightVersion(): string {
 export function generateReproSpec(input: ReproBundleInput): string {
   const { plan } = input;
   const data = (value: unknown): string => JSON.stringify(value);
+  const hasWs = plan.requests.some((request) => request.method === 'WS');
+  const wsBlock = hasWs
+    ? `
+  await page.routeWebSocket('**/*', (ws) => {
+    const socketUrl = ws.url();
+    const server = ws.connectToServer();
+    server.onMessage((frame) => {
+      const text = typeof frame === 'string' ? frame : '(binary frame)';
+      const candidate = { method: 'WS', url: socketUrl, body: text };
+      let logical = null;
+      for (const m of MATCHERS) {
+        if (bound.get(m.id)) continue;
+        if (!matchCandidate(m, candidate)) continue;
+        const n = (seen.get(m.id) || 0) + 1;
+        seen.set(m.id, n);
+        if (n === m.occurrence) {
+          bound.set(m.id, true);
+          logical = m.id;
+          break;
+        }
+      }
+      if (!logical) {
+        ws.send(frame);
+        return;
+      }
+      if (!holdIds.has(logical)) {
+        completed.add(logical);
+        ws.send(frame);
+        return;
+      }
+      held.set(logical, { forward: () => ws.send(frame) });
+    });
+  });
+`
+    : '';
   return `// Regression test for: ${sanitizeComment(input.findingTitle)}
 // Frozen from experiment plan ${sanitizeComment(plan.id)}. Fails on the vulnerable
 // app when check ${sanitizeComment(input.checkId)} is violated; passes once fixed.
@@ -78,7 +113,7 @@ test('timing regression ${sanitizeComment(plan.id, 100)}', async ({ page }) => {
   test.setTimeout(TIMEOUTS.trialMs);
   const seen = new Map();
   const bound = new Map();
-  const completedActions = new Set();
+  const startedActions = new Set();
   const completed = new Set();
   const held = new Map();
   const holdIds = new Set(SCHEDULE ? SCHEDULE.hold : []);
@@ -86,7 +121,7 @@ test('timing regression ${sanitizeComment(plan.id, 100)}', async ({ page }) => {
   function matchCandidate(m, c) {
     if (c.method !== m.method) return false;
     if (!new RegExp(m.urlPattern).test(c.url)) return false;
-    if (m.afterAction && !completedActions.has(m.afterAction)) return false;
+    if (m.afterAction && !startedActions.has(m.afterAction)) return false;
     if (m.query) {
       let params;
       try {
@@ -104,6 +139,10 @@ test('timing regression ${sanitizeComment(plan.id, 100)}', async ({ page }) => {
 
   await page.route('**/*', async (route) => {
     const req = route.request();
+    if (String(await req.headerValue('upgrade').catch(() => '')).toLowerCase() === 'websocket') {
+      await route.continue().catch(() => {});
+      return;
+    }
     const candidate = { method: req.method(), url: req.url(), body: req.postData() || null };
     let logical = null;
     for (const m of MATCHERS) {
@@ -136,7 +175,7 @@ test('timing regression ${sanitizeComment(plan.id, 100)}', async ({ page }) => {
     }
     held.set(logical, { route, response: fetched });
   });
-
+${wsBlock}
   try {
     await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded', timeout: TIMEOUTS.actionMs });
   } catch (err) {
@@ -144,6 +183,7 @@ test('timing regression ${sanitizeComment(plan.id, 100)}', async ({ page }) => {
   }
 
   for (const action of ACTIONS) {
+    startedActions.add(action.id);
     const locator = page.locator('[data-testid="' + escapeTestId(action.testId) + '"]');
     try {
       if (action.kind === 'fill') {
@@ -154,7 +194,6 @@ test('timing regression ${sanitizeComment(plan.id, 100)}', async ({ page }) => {
     } catch (err) {
       throw new Error('REPRO-ERROR action-failed ' + action.id + ': ' + ((err && err.message) || err));
     }
-    completedActions.add(action.id);
   }
 
   const matchDeadline = Date.now() + TIMEOUTS.observationMs;
@@ -184,7 +223,11 @@ test('timing regression ${sanitizeComment(plan.id, 100)}', async ({ page }) => {
       }
       held.delete(step.request);
       completed.add(step.request);
-      await capture.route.fulfill({ response: capture.response }).catch(() => {});
+      if (capture.forward) {
+        capture.forward();
+      } else {
+        await capture.route.fulfill({ response: capture.response }).catch(() => {});
+      }
     }
   }
 

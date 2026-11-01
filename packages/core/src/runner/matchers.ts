@@ -20,10 +20,14 @@ interface CompiledMatcher {
  * the after-action relationship all hold. The occurrence-th matching request
  * (in start order) binds the logical ID; later matches are ignored. Each
  * candidate binds at most one logical ID (plan order wins).
+ *
+ * After-action gates on action start, not completion: a click's own fetch
+ * reaches the route handler before the click call resolves, so gating on
+ * completion would make the action's own effects unmatchable.
  */
 export class RequestTracker {
   private readonly compiled: CompiledMatcher[];
-  private readonly completedActions = new Set<string>();
+  private readonly startedActions = new Set<string>();
 
   constructor(matchers: PlanRequestMatcher[]) {
     this.compiled = matchers.map((def) => ({
@@ -34,8 +38,8 @@ export class RequestTracker {
     }));
   }
 
-  noteActionComplete(actionId: string): void {
-    this.completedActions.add(actionId);
+  noteActionStarted(actionId: string): void {
+    this.startedActions.add(actionId);
   }
 
   observe(candidate: RequestCandidate): string | null {
@@ -69,7 +73,7 @@ export class RequestTracker {
     const def = entry.def;
     if (candidate.method.toUpperCase() !== def.method) return false;
     if (!entry.regex.test(candidate.url)) return false;
-    if (def.afterAction !== undefined && !this.completedActions.has(def.afterAction)) {
+    if (def.afterAction !== undefined && !this.startedActions.has(def.afterAction)) {
       return false;
     }
     if (def.query !== undefined) {

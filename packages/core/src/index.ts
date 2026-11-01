@@ -67,6 +67,11 @@ export {
 } from './agent/model.js';
 export { ResponsesApiClient } from './agent/responses.js';
 export {
+  ResponsesVisionClient,
+  VISION_PROMPT,
+  type VisionClient,
+} from './agent/vision.js';
+export {
   AGENT_TOOL_DEFINITIONS,
   dispatchTool,
   ExplorationPage,

@@ -22,7 +22,12 @@ export const PlanActionSchema = z.object({
 
 export const PlanRequestMatcherSchema = z.object({
   id: z.string().trim().min(1).max(100),
-  method: z.enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE']),
+  /**
+   * HTTP verbs match requests; WS matches server-to-client WebSocket frames
+   * on sockets whose URL matches urlPattern, with bodyContains against the
+   * frame text. Holds delay frame delivery to the page.
+   */
+  method: z.enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'WS']),
   /** Regex source matched against the full request URL. */
   urlPattern: z
     .string()
@@ -45,7 +50,7 @@ export const PlanRequestMatcherSchema = z.object({
   bodyContains: z.string().max(4000).optional(),
   /** 1-based: which matching request (in start order) this logical ID binds. */
   occurrence: z.number().int().min(1).max(1000),
-  /** Only match requests that started after this action completed. */
+  /** Only match requests that started at-or-after this action started. */
   afterAction: z.string().trim().min(1).max(100).optional(),
 });
 
@@ -88,6 +93,7 @@ export const DEFAULT_PLAN_TIMEOUTS = {
 
 export const RUNNER_CAPABILITIES = {
   HTTP_HOLD_RELEASE: 'http-hold-release',
+  WS_HOLD_RELEASE: 'ws-hold-release',
 } as const;
 
 export const ExperimentPlanSchema = z

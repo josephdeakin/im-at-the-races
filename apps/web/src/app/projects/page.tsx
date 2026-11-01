@@ -44,7 +44,7 @@ export default async function ProjectsPage() {
                 </Text>
                 <CodeBlock code="pnpm demo" language="bash" />
                 <VStack gap={0}>
-                  <Text type="supporting">1. Seeds the stale-search fixture as a git checkout.</Text>
+                  <Text type="supporting">1. Seeds the stale-bank fixture as a git checkout.</Text>
                   <Text type="supporting">2. Queues the canonical investigation against it.</Text>
                   <Text type="supporting">3. Opens the run page on the finding.</Text>
                 </VStack>

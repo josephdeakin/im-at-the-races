@@ -16,12 +16,13 @@ export function toneBadge(tone: string, glyph: string, label: string): React.Rea
 
 const ROW_HEIGHT_PX = 28;
 // Row layout: fixed label gutter, fluid time rail, fixed offset column.
-// Labels align in a column (never clipped: Badge ellipsizes), dots sit on
-// the shared time scale, offsets read as text. No measurement needed:
-// every x is a CSS calc over fixed gutters.
-const RAIL_START_PX = 176;
+// The gutter fits the longest labels ("released ← second-transfer",
+// "image: assertion-failed"); dots sit on the shared time scale, offsets
+// read as text. No measurement needed: every x is a CSS calc over fixed
+// gutters.
+const RAIL_START_PX = 216;
 const RAIL_END_PX = 64;
-const LABEL_WIDTH_PX = 160;
+const LABEL_WIDTH_PX = 200;
 const OFFSET_WIDTH_PX = 56;
 const DOT_PX = 10;
 
@@ -34,6 +35,7 @@ export function LaneTrack({
   lane,
   fraction,
   t0,
+  fitMax,
   selectedSequence,
   onSelect,
   actionLabel = 'Select event',
@@ -41,6 +43,8 @@ export function LaneTrack({
   lane: Lane;
   fraction: (at: number) => number;
   t0: number | null;
+  /** Clock window end; later markers pin at the rail end, hollow. Omit to pin nothing. */
+  fitMax?: number | null;
   selectedSequence: number | null;
   onSelect: (sequence: number) => void;
   actionLabel?: string;
@@ -64,6 +68,7 @@ export function LaneTrack({
       ))}
       {rows.map((marker, rowIndex) => {
         const selected = marker.sequence === selectedSequence;
+        const pinned = fitMax !== undefined && fitMax !== null && marker.at > fitMax;
         const offset = t0 === null ? null : `+${((marker.at - t0) / 1000).toFixed(1)}s`;
         return (
           <button
@@ -92,9 +97,10 @@ export function LaneTrack({
             <span
               aria-hidden="true"
               data-dot={marker.sequence}
-              className={`absolute top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-neutral-400 ${
-                selected ? 'ring-2 ring-offset-1' : ''
-              }`}
+              data-pinned={pinned || undefined}
+              className={`absolute top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full ${
+                pinned ? 'border-2 border-neutral-400 bg-transparent' : 'bg-neutral-400'
+              } ${selected ? 'ring-2 ring-offset-1' : ''}`}
               style={{ left: railLeft(fraction(marker.at)) }}
             />
             {offset !== null && (
@@ -139,6 +145,11 @@ function Span({
         );
   const fromFrac = fraction(fromMarker.at);
   const toFrac = toMarker ? fraction(toMarker.at) : 1;
+  // Thin interval bar across the held rows: the response was captured but
+  // withheld from the page for this stretch.
+  const firstRow = Math.max(0, fromRow);
+  const lastRow = Math.max(toRow, fromRow);
+  const centerY = 4 + ((firstRow + lastRow) / 2) * ROW_HEIGHT_PX + ROW_HEIGHT_PX / 2;
   return (
     <div
       aria-hidden="true"
@@ -146,10 +157,10 @@ function Span({
       style={{
         left: railLeft(fromFrac),
         width: `max(3px, calc(${Math.max(0, toFrac - fromFrac)} * (100% - ${RAIL_START_PX + RAIL_END_PX}px)))`,
-        top: `${4 + Math.max(0, fromRow) * ROW_HEIGHT_PX + 2}px`,
-        height: `${(Math.max(toRow, fromRow) - Math.max(0, fromRow) + 1) * ROW_HEIGHT_PX - 4}px`,
+        top: `${centerY - 2.5}px`,
+        height: '5px',
       }}
-      className="rounded bg-info opacity-40 absolute"
+      className="rounded-full bg-info opacity-60 absolute"
     />
   );
 }

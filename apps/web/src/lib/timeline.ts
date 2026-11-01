@@ -62,7 +62,7 @@ export function buildTrialLanes(events: RunEvent[], detail: TrialDetail | null):
           markers.push({
             sequence: event.sequence,
             at: at(event),
-            label: `captured ${event.payload.status}`,
+            label: event.payload.status === null ? 'captured frame' : `captured ${event.payload.status}`,
             glyph: '●',
             tone: 'muted',
           });
@@ -71,11 +71,13 @@ export function buildTrialLanes(events: RunEvent[], detail: TrialDetail | null):
           holdStart = event.sequence;
           markers.push({ sequence: event.sequence, at: at(event), label: 'held', glyph: '▮', tone: 'accent' });
           break;
-        case 'request.released':
+        case 'request.released': {
+          const reason = event.payload.reason;
+          const after = /^after-(.+)$/.exec(reason)?.[1];
           markers.push({
             sequence: event.sequence,
             at: at(event),
-            label: `released (${event.payload.reason})`,
+            label: after ? `released ← ${after}` : `released (${reason})`,
             glyph: '▶',
             tone: 'accent',
           });
@@ -84,6 +86,7 @@ export function buildTrialLanes(events: RunEvent[], detail: TrialDetail | null):
             holdStart = null;
           }
           break;
+        }
         default:
           break;
       }
@@ -110,7 +113,7 @@ export function buildTrialLanes(events: RunEvent[], detail: TrialDetail | null):
     actions.push({
       sequence: event.sequence,
       at: at(event),
-      label: event.payload.actionId,
+      label: `${event.payload.actionId} ${event.payload.kind}`,
       glyph: '⬔',
       tone: 'muted',
     });
@@ -160,4 +163,38 @@ export function buildTrialLanes(events: RunEvent[], detail: TrialDetail | null):
   }
 
   return lanes;
+}
+
+/**
+ * End of the race clock: the last request, action, or immediate-evidence
+ * marker. Checks poll on their own schedule (a failing check lands seconds
+ * later, with its assertion-failed image beside it); fitting that long tail
+ * would crush the race itself into one spot, so those markers pin at the
+ * rail end with true offsets instead. Null when nothing timed qualifies.
+ */
+export function raceClockFitMax(lanes: Lane[]): number | null {
+  let fitMax: number | null = null;
+  const consider = (marker: LaneMarker): void => {
+    if (fitMax === null || marker.at > fitMax) fitMax = marker.at;
+  };
+  for (const lane of lanes) {
+    if (lane.id.startsWith('request:') || lane.id === 'actions') {
+      for (const marker of lane.markers) consider(marker);
+    } else if (lane.id === 'evidence') {
+      // Post-race captures belong to the window; only the failure image
+      // taken after a timed-out check rides the long tail.
+      for (const marker of lane.markers) {
+        if (marker.label !== 'image: assertion-failed') consider(marker);
+      }
+    }
+  }
+  return fitMax;
+}
+
+/** Position on the race clock: linear within the window, pinned past it. */
+export function clockFraction(at: number, min: number, fitMax: number): number {
+  if (fitMax <= min) return at > fitMax ? 1 : 0.5;
+  if (at >= fitMax) return 1;
+  if (at <= min) return 0;
+  return (at - min) / (fitMax - min);
 }

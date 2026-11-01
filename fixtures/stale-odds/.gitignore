@@ -1,0 +1,5 @@
+# Dependencies (reinstalled in repair workspaces, never carried into patches).
+node_modules/
+
+# Build outputs (rebuilt by the project-build check; keep diffs source-only).
+dist/

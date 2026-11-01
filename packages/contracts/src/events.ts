@@ -79,13 +79,15 @@ const payloadSchemas = {
   'request.captured': z.object({
     ...trialBase,
     requestId: z.string().min(1),
-    status: z.number().int(),
+    /** HTTP status; null for WebSocket frames, which have none. */
+    status: z.number().int().nullable(),
     held: z.boolean(),
   }),
   'request.held': z.object({
     ...trialBase,
     requestId: z.string().min(1),
-    status: z.number().int(),
+    /** HTTP status; null for WebSocket frames, which have none. */
+    status: z.number().int().nullable(),
     maxHoldMs: z.number().int().min(0),
   }),
   'request.released': z.object({

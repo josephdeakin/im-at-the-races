@@ -2,10 +2,12 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
+  isTerminalRunStatus,
   requestIdOf,
   trialIdOf,
   type Experiment,
   type RunEvent,
+  type RunStatus,
   type Trial,
 } from '@races/contracts';
 import { Banner } from '@astryxdesign/core/Banner';
@@ -25,7 +27,8 @@ import { Slider } from '@astryxdesign/core/Slider';
 import { Text } from '@astryxdesign/core/Text';
 import { VStack } from '@astryxdesign/core/VStack';
 import { formatDateTime } from '@/lib/format';
-import { buildTrialLanes, type Lane } from '@/lib/timeline';
+import { buildTrialLanes, clockFraction, raceClockFitMax, type Lane } from '@/lib/timeline';
+import { NetworkPanel } from './NetworkPanel';
 import { explainTrial } from '@/lib/explain';
 import { LaneTrack, toneBadge } from './TrialRail';
 
@@ -35,7 +38,7 @@ export interface ExperimentWithTrials extends Experiment {
 
 interface EventsResponse {
   runId: string;
-  status: string;
+  status: RunStatus;
   phase: string;
   events: RunEvent[];
   nextAfter: number;
@@ -103,13 +106,15 @@ export function TimelineView({
   );
   const experimentsJsonRef = useRef<string>(JSON.stringify(initialExperiments));
 
-  // Live runs keep the timeline fed without a reload.
+  // Live runs keep the timeline fed without a reload. A timeline opened
+  // after completion still fetches once: the load-time snapshot may predate
+  // every trial. Polling stops at the terminal tick instead of forever.
   useEffect(() => {
-    if (isTerminal) return;
     let stopped = false;
     let timer: ReturnType<typeof setTimeout> | null = null;
     const poll = async () => {
       if (stopped) return;
+      let terminal = isTerminal;
       try {
         const [eventsRes, experimentsRes] = await Promise.all([
           fetch(`/api/runs/${runId}/events?after=${afterRef.current}`, { cache: 'no-store' }),
@@ -128,6 +133,7 @@ export function TimelineView({
             );
           }
           afterRef.current = data.nextAfter;
+          terminal = terminal || isTerminalRunStatus(data.status);
         }
         if (experimentsRes.ok) {
           const data = (await experimentsRes.json()) as ExperimentsResponse;
@@ -149,7 +155,7 @@ export function TimelineView({
           setPollError('Live updates paused: could not reach the server. Retrying…');
         }
       }
-      if (!stopped) timer = setTimeout(poll, POLL_INTERVAL_MS);
+      if (!stopped && !terminal) timer = setTimeout(poll, POLL_INTERVAL_MS);
     };
     timer = setTimeout(poll, POLL_INTERVAL_MS);
     return () => {
@@ -165,6 +171,14 @@ export function TimelineView({
     setSelectedSequence(null);
     setPlaying(false);
   }, [focusRequest]);
+
+  // Trials that arrive after mount (late-opened timeline on a live run)
+  // still need a default selection; never override an explicit choice.
+  useEffect(() => {
+    if (trialId !== null) return;
+    const fallback = defaultTrialId(experiments);
+    if (fallback) setTrialId(fallback);
+  }, [experiments, trialId]);
 
   const trial = useMemo(() => {
     for (const experiment of experiments) {
@@ -205,10 +219,28 @@ export function TimelineView({
     return { min: Math.min(...times), max: Math.max(...times) };
   }, [lanes]);
 
+  // Race clock: the rail fits the race; later checks pin at the end with
+  // true offsets instead of crushing the race flat.
+  const fitMax = useMemo(() => {
+    if (!timeBounds) return null;
+    return raceClockFitMax(lanes) ?? timeBounds.max;
+  }, [lanes, timeBounds]);
+
   const fraction = (at: number): number => {
-    if (!timeBounds || timeBounds.max === timeBounds.min) return 0.5;
-    return (at - timeBounds.min) / (timeBounds.max - timeBounds.min);
+    if (!timeBounds || fitMax === null) return 0.5;
+    return clockFraction(at, timeBounds.min, fitMax);
   };
+
+  const pinnedCount = useMemo(() => {
+    if (fitMax === null) return 0;
+    let count = 0;
+    for (const lane of lanes) {
+      for (const marker of lane.markers) {
+        if (marker.at > fitMax) count += 1;
+      }
+    }
+    return count;
+  }, [lanes, fitMax]);
 
   // Recorded playback: selection walks saved evidence, never re-executes.
   useEffect(() => {
@@ -321,6 +353,15 @@ export function TimelineView({
 
       <Grid columns={{ minWidth: 300, max: 2 }} gap={4}>
         <VStack gap={4}>
+          <ReplayControls
+            playing={playing}
+            setPlaying={setPlaying}
+            selectedIndex={selectedIndex}
+            trialEvents={trialEvents}
+            setSelectedSequence={setSelectedSequence}
+            speed={speed}
+            setSpeed={setSpeed}
+          />
           <Card>
             <VStack gap={3}>
               <Heading level={3}>Request timeline</Heading>
@@ -338,6 +379,7 @@ export function TimelineView({
                         lane={lane}
                         fraction={fraction}
                         t0={timeBounds?.min ?? null}
+                        fitMax={fitMax}
                         selectedSequence={selectedSequence}
                         onSelect={(sequence) => {
                           setSelectedSequence(sequence);
@@ -348,87 +390,35 @@ export function TimelineView({
                   ))}
                 </VStack>
               )}
-              {timeBounds && (
+              {timeBounds && fitMax !== null && (
                 <Text type="supporting">
-                  {((timeBounds.max - timeBounds.min) / 1000).toFixed(1)}s of recorded events on
-                  a shared relative time scale. Rows read top to bottom in time order; dots
-                  mark each event on that scale with its offset at right.
+                  {pinnedCount > 0 ? (
+                    <>
+                      Race clock fits the race (
+                      {((fitMax - timeBounds.min) / 1000).toFixed(1)}s window);{' '}
+                      {pinnedCount} later marker{pinnedCount === 1 ? '' : 's'} → pinned hollow
+                      at right with true offsets. Rows read top to bottom in time order; click
+                      any row to inspect.
+                    </>
+                  ) : (
+                    <>
+                      {((timeBounds.max - timeBounds.min) / 1000).toFixed(1)}s of recorded
+                      events on a shared relative time scale. Rows read top to bottom in time
+                      order; click any row to inspect.
+                    </>
+                  )}
                 </Text>
               )}
             </VStack>
           </Card>
 
-          <Card>
-            <VStack gap={2}>
-              <Heading level={3}>Replay controls</Heading>
-              <HStack gap={2}>
-                <IconButton
-                  label="Previous event"
-                  icon={<Icon icon="chevronLeft" />}
-                  onClick={() => {
-                    setPlaying(false);
-                    if (selectedIndex > 0) setSelectedSequence(trialEvents[selectedIndex - 1].sequence);
-                  }}
-                  isDisabled={selectedIndex <= 0}
-                />
-                <Button
-                  variant="secondary"
-                  label={playing ? 'Pause' : 'Play'}
-                  onClick={() => {
-                    if (!playing && selectedIndex >= trialEvents.length - 1) {
-                      setSelectedSequence(trialEvents[0]?.sequence ?? null);
-                    }
-                    setPlaying(!playing);
-                  }}
-                  isDisabled={trialEvents.length === 0}
-                />
-                <IconButton
-                  label="Next event"
-                  icon={<Icon icon="chevronRight" />}
-                  onClick={() => {
-                    setPlaying(false);
-                    if (selectedIndex >= 0 && selectedIndex < trialEvents.length - 1) {
-                      setSelectedSequence(trialEvents[selectedIndex + 1].sequence);
-                    }
-                  }}
-                  isDisabled={selectedIndex < 0 || selectedIndex >= trialEvents.length - 1}
-                />
-                <Selector
-                  label="Replay speed"
-                  value={String(speed)}
-                  onChange={(value) => setSpeed(Number(value))}
-                  options={[
-                    { value: '0.5', label: '0.5×' },
-                    { value: '1', label: '1×' },
-                    { value: '2', label: '2×' },
-                  ]}
-                />
-              </HStack>
-              <HStack gap={2}>
-                <Slider
-                  label="Scrub recorded events"
-                  min={0}
-                  max={Math.max(0, trialEvents.length - 1)}
-                  step={1}
-                  value={selectedIndex < 0 ? 0 : selectedIndex}
-                  onChange={(value: number) => {
-                    setPlaying(false);
-                    const next = trialEvents[value];
-                    if (next) setSelectedSequence(next.sequence);
-                  }}
-                  valueDisplay="none"
-                />
-                <Text type="code">
-                  <span aria-live="polite">
-                    {trialEvents.length === 0 ? '0 / 0' : `${selectedIndex + 1} / ${trialEvents.length}`}
-                  </span>
-                </Text>
-              </HStack>
-              <Text type="supporting">
-                Replay walks saved evidence only. Backwards movement never re-executes the trial.
-              </Text>
-            </VStack>
-          </Card>
+          {trial !== null && (
+            <NetworkPanel
+              requests={trial.detail?.requests ?? []}
+              events={trialEvents}
+              t0={timeBounds?.min ?? null}
+            />
+          )}
 
           <VStack gap={2}>
             <Heading level={3}>Events</Heading>
@@ -467,6 +457,98 @@ export function TimelineView({
         </VStack>
       </Grid>
     </VStack>
+  );
+}
+
+function ReplayControls({
+  playing,
+  setPlaying,
+  selectedIndex,
+  trialEvents,
+  setSelectedSequence,
+  speed,
+  setSpeed,
+}: {
+  playing: boolean;
+  setPlaying: (playing: boolean) => void;
+  selectedIndex: number;
+  trialEvents: RunEvent[];
+  setSelectedSequence: (sequence: number | null) => void;
+  speed: number;
+  setSpeed: (speed: number) => void;
+}) {
+  return (
+    <Card>
+      <VStack gap={2}>
+        <Heading level={3}>Replay controls</Heading>
+        <HStack gap={2} align="end">
+          <IconButton
+            label="Previous event"
+            icon={<Icon icon="chevronLeft" />}
+            onClick={() => {
+              setPlaying(false);
+              if (selectedIndex > 0) setSelectedSequence(trialEvents[selectedIndex - 1].sequence);
+            }}
+            isDisabled={selectedIndex <= 0}
+          />
+          <Button
+            variant="secondary"
+            label={playing ? 'Pause' : 'Play'}
+            onClick={() => {
+              if (!playing && selectedIndex >= trialEvents.length - 1) {
+                setSelectedSequence(trialEvents[0]?.sequence ?? null);
+              }
+              setPlaying(!playing);
+            }}
+            isDisabled={trialEvents.length === 0}
+          />
+          <IconButton
+            label="Next event"
+            icon={<Icon icon="chevronRight" />}
+            onClick={() => {
+              setPlaying(false);
+              if (selectedIndex >= 0 && selectedIndex < trialEvents.length - 1) {
+                setSelectedSequence(trialEvents[selectedIndex + 1].sequence);
+              }
+            }}
+            isDisabled={selectedIndex < 0 || selectedIndex >= trialEvents.length - 1}
+          />
+          <Selector
+            label="Replay speed"
+            value={String(speed)}
+            onChange={(value) => setSpeed(Number(value))}
+            options={[
+              { value: '0.5', label: '0.5×' },
+              { value: '1', label: '1×' },
+              { value: '2', label: '2×' },
+            ]}
+          />
+        </HStack>
+        <HStack gap={2} align="end">
+          <Slider
+            label="Scrub recorded events"
+            min={0}
+            max={Math.max(0, trialEvents.length - 1)}
+            step={1}
+            value={selectedIndex < 0 ? 0 : selectedIndex}
+            onChange={(value: number) => {
+              setPlaying(false);
+              const next = trialEvents[value];
+              if (next) setSelectedSequence(next.sequence);
+            }}
+            valueDisplay="none"
+          />
+          <Text type="code">
+            <span aria-live="polite">
+              {trialEvents.length === 0 ? '0 / 0' : `${selectedIndex + 1} / ${trialEvents.length}`}
+            </span>
+          </Text>
+        </HStack>
+        <Text type="supporting">
+          Replay walks saved evidence only. Backwards movement never re-executes the trial.
+        </Text>
+      </VStack>
+    </Card>
   );
 }
 

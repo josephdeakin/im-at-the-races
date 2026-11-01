@@ -1,9 +1,9 @@
-import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { getArtifact, resolveRacesDir } from '@races/db';
+import { artifactBytesMatch } from '@/lib/server/artifacts';
 import { getDb } from '@/lib/server/db';
 import { apiError, guard, notFoundError } from '@/lib/server/http';
 
@@ -39,8 +39,7 @@ export async function GET(
     } catch {
       return notFoundError(`Artifact file missing: ${artifactId}`);
     }
-    // Rows recorded before hash accounting carry an empty hash; verify the rest.
-    if (artifact.sha256 !== '' && createHash('sha256').update(data).digest('hex') !== artifact.sha256) {
+    if (!artifactBytesMatch(artifact.sha256, data)) {
       return apiError(
         'INTERNAL_ERROR',
         `Artifact bytes do not match the recorded hash: ${artifactId}`,

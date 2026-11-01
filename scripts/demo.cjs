@@ -7,6 +7,7 @@
 //   pnpm demo -- --setup-only    # start + seed, print URL, do not wait/open
 //   pnpm demo -- --no-open       # wait for the finding, print URL, do not open
 //   pnpm demo -- --keep          # reuse existing demo dirs instead of wiping
+//   pnpm demo -- --fixture odds  # race over WebSocket pushes instead of bank HTTP
 //   pnpm demo:stop               # stop everything the demo started
 const { spawn, spawnSync, execSync } = require('node:child_process');
 const fs = require('node:fs');
@@ -14,28 +15,61 @@ const net = require('node:net');
 const path = require('node:path');
 
 const ROOT = path.join(__dirname, '..');
-const TARGET_DIR = '/tmp/races-demo-target';
-const RACES_DIR = '/tmp/races-demo-live';
 const args = process.argv.slice(2);
+const strAfter = (name, fallback) => {
+  const idx = args.indexOf(name);
+  return idx >= 0 && typeof args[idx + 1] === 'string' ? args[idx + 1] : fallback;
+};
 const numAfter = (name, fallback) => {
   const idx = args.indexOf(name);
   const value = idx >= 0 ? Number(args[idx + 1]) : NaN;
   return Number.isInteger(value) && value > 0 && value < 65536 ? value : fallback;
 };
-const FIXTURE_PORT = numAfter('--fixture-port', 4100);
-const WEB_PORT = numAfter('--web-port', 3100);
+const FIXTURES = {
+  bank: {
+    dir: 'stale-bank',
+    fixturePort: 4100,
+    webPort: 3100,
+    commit: 'stale-bank fixture (demo target)',
+    project: 'guided demo (stale-bank)',
+    task:
+      'The bank page may show a stale balance when transfer responses arrive out of ' +
+      'order. Design and run an experiment that proves or disproves a stale-overwrite ' +
+      'lost update on the balance display, then repair it.',
+  },
+  odds: {
+    dir: 'stale-odds',
+    fixturePort: 4130,
+    webPort: 3130,
+    commit: 'stale-odds fixture (demo target)',
+    project: 'guided demo (stale-odds)',
+    task:
+      'The odds page shows a home-win price pushed over a WebSocket. Each Request ' +
+      'update takes a push-delay in ms; the server versions pushes in arrival ' +
+      'order. Design and run an experiment that proves or disproves a ' +
+      'stale-overwrite race on the displayed odds using the delay control, then ' +
+      'repair it.',
+  },
+};
+const FIXTURE_NAME = strAfter('--fixture', 'bank');
+const FIXTURE = FIXTURES[FIXTURE_NAME];
+if (!FIXTURE) {
+  console.error(`[demo] unknown --fixture ${FIXTURE_NAME}; want one of: ${Object.keys(FIXTURES).join(', ')}.`);
+  process.exit(1);
+}
+const TARGET_DIR = `/tmp/races-demo-target-${FIXTURE_NAME}`;
+const RACES_DIR = `/tmp/races-demo-live-${FIXTURE_NAME}`;
+const FIXTURE_PORT = numAfter('--fixture-port', FIXTURE.fixturePort);
+const WEB_PORT = numAfter('--web-port', FIXTURE.webPort);
 const WEB_URL = `http://127.0.0.1:${WEB_PORT}`;
 const TARGET_URL = `http://127.0.0.1:${FIXTURE_PORT}/`;
 const PIDS_FILE = path.join(RACES_DIR, 'demo-pids.json');
 const LOG_DIR = path.join(RACES_DIR, 'logs');
-const DEMO_TASK =
-  'The search page may show stale results when responses arrive out of order. ' +
-  'Design and run an experiment that proves or disproves a stale-overwrite race ' +
-  'on the search results, then repair it.';
+const DEMO_TASK = FIXTURE.task;
 
 const flag = (name) => args.includes(name);
 if (flag('--help') || flag('-h')) {
-  console.log('Usage: pnpm demo [-- --setup-only] [-- --no-open] [-- --keep] [-- --timeout-mins N] [-- --fixture-port N] [-- --web-port N]');
+  console.log('Usage: pnpm demo [-- --fixture bank|odds] [-- --setup-only] [-- --no-open] [-- --keep] [-- --timeout-mins N] [-- --fixture-port N] [-- --web-port N]');
   console.log('       pnpm demo:stop');
   process.exit(0);
 }
@@ -116,15 +150,15 @@ function prepareTarget() {
   log(`preparing fixture target at ${TARGET_DIR}`);
   fs.rmSync(TARGET_DIR, { recursive: true, force: true });
   fs.mkdirSync(TARGET_DIR, { recursive: true });
-  for (const entry of fs.readdirSync(path.join(ROOT, 'fixtures', 'stale-search'))) {
+  for (const entry of fs.readdirSync(path.join(ROOT, 'fixtures', FIXTURE.dir))) {
     if (entry === 'node_modules' || entry === 'dist') continue;
-    fs.cpSync(path.join(ROOT, 'fixtures', 'stale-search', entry), path.join(TARGET_DIR, entry), {
+    fs.cpSync(path.join(ROOT, 'fixtures', FIXTURE.dir, entry), path.join(TARGET_DIR, entry), {
       recursive: true,
     });
   }
   run('git init -q -b main .', { cwd: TARGET_DIR });
   run('git add -A', { cwd: TARGET_DIR });
-  run('git -c user.email=demo@local -c user.name=demo commit -qm "stale-search fixture (demo target)"', {
+  run(`git -c user.email=demo@local -c user.name=demo commit -qm "${FIXTURE.commit}"`, {
     cwd: TARGET_DIR,
   });
   log('installing target dependencies (once; this takes a while)');
@@ -162,7 +196,7 @@ async function seed() {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({
-      name: 'guided demo (stale-search)',
+      name: FIXTURE.project,
       repositoryPath: TARGET_DIR,
       targetUrl: TARGET_URL,
     }),
@@ -241,7 +275,7 @@ async function start() {
   pids.worker = startDetached('worker', 'pnpm', ['--filter', 'worker', 'start'], { RACES_DIR });
   fs.writeFileSync(PIDS_FILE, JSON.stringify(pids, null, 2));
 
-  await waitFor(`${TARGET_URL}api/search?q=smoke`, 60000, 'fixture');
+  await waitFor(`${TARGET_URL}api/balance`, 60000, 'fixture');
   log(`fixture serving at ${TARGET_URL}`);
   await waitFor(`${WEB_URL}/api/projects`, 120000, 'web');
   log(`web serving at ${WEB_URL}`);
@@ -280,14 +314,16 @@ function stopPids(pids) {
 }
 
 function stop() {
-  if (!fs.existsSync(PIDS_FILE)) {
-    log('nothing to stop (no demo pids file).');
-    return;
+  // Stacks are per-fixture; stop every stack that has a pids file.
+  let stopped = 0;
+  for (const name of Object.keys(FIXTURES)) {
+    const pidsFile = path.join(`/tmp/races-demo-live-${name}`, 'demo-pids.json');
+    if (!fs.existsSync(pidsFile)) continue;
+    stopPids(JSON.parse(fs.readFileSync(pidsFile, 'utf8')));
+    fs.rmSync(pidsFile, { force: true });
+    stopped += 1;
   }
-  const pids = JSON.parse(fs.readFileSync(PIDS_FILE, 'utf8'));
-  stopPids(pids);
-  fs.rmSync(PIDS_FILE, { force: true });
-  log('demo stopped. State stays under /tmp/races-demo-* for inspection.');
+  log(stopped === 0 ? 'nothing to stop (no demo pids file).' : 'demo stopped. State stays under /tmp/races-demo-* for inspection.');
 }
 
 if (flag('--stop')) stop();

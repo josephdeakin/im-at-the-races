@@ -1,4 +1,4 @@
-import type { APIResponse, Browser, Page, Route } from 'playwright';
+import type { APIResponse, Browser, Page, Route, WebSocketRoute } from 'playwright';
 import {
   KNOWN_RUN_EVENT_KINDS,
   type ExperimentPlan,
@@ -80,11 +80,9 @@ interface BoundRecord {
   error: string | null;
 }
 
-interface HeldCapture {
-  route: Route;
-  response: APIResponse;
-  timer: NodeJS.Timeout;
-}
+type HeldCapture =
+  | { kind: 'http'; route: Route; response: APIResponse; timer: NodeJS.Timeout }
+  | { kind: 'ws'; forward: () => void; timer: NodeJS.Timeout };
 
 function newRecord(): BoundRecord {
   return {
@@ -170,7 +168,11 @@ export async function executeTrial(request: TrialRequest): Promise<TrialResult> 
     record.completed = true;
     if (reason === 'max-hold-exceeded') record.autoReleased = true;
     try {
-      await capture.route.fulfill({ response: capture.response });
+      if (capture.kind === 'http') {
+        await capture.route.fulfill({ response: capture.response });
+      } else {
+        capture.forward();
+      }
     } catch {
       // Page already gone (abort/cleanup path); the record stands.
     }
@@ -185,7 +187,76 @@ export async function executeTrial(request: TrialRequest): Promise<TrialResult> 
     context = await browser.newContext({ viewport: VIEWPORT });
     const page = await context.newPage();
 
+    // Socket frames ride the same interception machinery as HTTP responses:
+    // the live server connection stays up, each frame binds through the
+    // tracker, and holds delay forwarding to the page.
+    await page.routeWebSocket('**/*', (ws: WebSocketRoute) => {
+      const socketUrl = ws.url();
+      const server = ws.connectToServer();
+      server.onMessage((frame: string | Buffer) => {
+        const text = typeof frame === 'string' ? frame : '(binary frame)';
+        void (async () => {
+          const candidate = { method: 'WS', url: socketUrl, body: text };
+          const logicalId = tracker.observe(candidate);
+          if (!logicalId) {
+            ws.send(frame);
+            return;
+          }
+          const record = records.get(logicalId);
+          if (!record) {
+            ws.send(frame);
+            return;
+          }
+          record.url = candidate.url;
+          await emit(KNOWN_RUN_EVENT_KINDS.REQUEST_STARTED, {
+            requestId: logicalId,
+            method: candidate.method,
+            url: redactUrl(candidate.url),
+          });
+          // The frame is the capture: no fetch step, no status.
+          record.truncated = text.length > RESPONSE_EXCERPT_MAX_BYTES;
+          record.excerpt = text.slice(0, RESPONSE_EXCERPT_MAX_BYTES);
+          await emit(KNOWN_RUN_EVENT_KINDS.REQUEST_CAPTURED, {
+            requestId: logicalId,
+            status: null,
+            held: heldIds.has(logicalId),
+          });
+          if (!heldIds.has(logicalId)) {
+            record.completed = true;
+            ws.send(frame);
+            return;
+          }
+          record.held = true;
+          const timer = setTimeout(() => {
+            void releaseHeld(logicalId, 'max-hold-exceeded');
+          }, plan.timeouts.maxHoldMs);
+          heldCaptures.set(logicalId, {
+            kind: 'ws',
+            forward: () => ws.send(frame),
+            timer,
+          });
+          await emit(KNOWN_RUN_EVENT_KINDS.REQUEST_HELD, {
+            requestId: logicalId,
+            status: null,
+            maxHoldMs: plan.timeouts.maxHoldMs,
+          });
+        })().catch(() => {
+          try {
+            ws.send(frame);
+          } catch {
+            // Page already gone; the record stands.
+          }
+        });
+      });
+    });
+
     await page.route('**/*', async (route: Route) => {
+      // WebSocket upgrades belong to the socket router below; fetching one
+      // here would break the handshake.
+      if ((await route.request().headerValue('upgrade').catch(() => null) ?? '').toLowerCase() === 'websocket') {
+        await route.continue().catch(() => {});
+        return;
+      }
       const candidate = {
         method: route.request().method(),
         url: route.request().url(),
@@ -239,7 +310,7 @@ export async function executeTrial(request: TrialRequest): Promise<TrialResult> 
       const timer = setTimeout(() => {
         void releaseHeld(logicalId, 'max-hold-exceeded');
       }, plan.timeouts.maxHoldMs);
-      heldCaptures.set(logicalId, { route, response: fetched, timer });
+      heldCaptures.set(logicalId, { kind: 'http', route, response: fetched, timer });
       await emit(KNOWN_RUN_EVENT_KINDS.REQUEST_HELD, {
         requestId: logicalId,
         status,
@@ -378,7 +449,15 @@ export async function executeTrial(request: TrialRequest): Promise<TrialResult> 
         record.released = true;
         record.completed = true;
       }
-      await capture.route.fulfill({ response: capture.response }).catch(() => {});
+      if (capture.kind === 'http') {
+        await capture.route.fulfill({ response: capture.response }).catch(() => {});
+      } else {
+        try {
+          capture.forward();
+        } catch {
+          // Page already gone; the record stands.
+        }
+      }
     }
     await context?.close().catch(() => {});
   }
@@ -394,6 +473,10 @@ async function runActions(
   const { plan } = request;
   for (const action of plan.actions) {
     signal.throwIfAborted();
+    // Mark started before performing: the action's own requests (e.g. a
+    // click's immediate fetch) reach our route handler before the Playwright
+    // call resolves.
+    tracker.noteActionStarted(action.id);
     const locator = page.locator(`[data-testid="${escapeTestId(action.testId)}"]`);
     const timeout = action.timeoutMs ?? plan.timeouts.actionMs;
     try {
@@ -410,7 +493,6 @@ async function runActions(
           `${err instanceof Error ? err.message : String(err)}`,
       );
     }
-    tracker.noteActionComplete(action.id);
     await emit(KNOWN_RUN_EVENT_KINDS.ACTION_PERFORMED, {
       actionId: action.id,
       kind: action.kind,

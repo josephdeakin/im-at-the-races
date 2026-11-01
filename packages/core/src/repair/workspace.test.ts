@@ -10,6 +10,7 @@ import {
   isPortFree,
   removeRepairWorkspace,
   RepairUnavailableError,
+  revertInstallerCollateral,
   runPackageScript,
   servePackage,
 } from './workspace.js';
@@ -76,6 +77,77 @@ describe('createRepairWorkspace', () => {
       );
       expect(ws.carriedFiles.map((f) => f.relativePath)).toEqual(['new.ts']);
       expect(fs.existsSync(path.join(ws.packageDir, 'node_modules'))).toBe(false);
+      await removeRepairWorkspace(ws);
+    } finally {
+      fs.rmSync(repo, { recursive: true, force: true });
+    }
+  });
+
+  it('renders carried-file diffs with repo-relative paths', async () => {
+    const repo = makeRepo();
+    try {
+      fs.writeFileSync(path.join(repo, 'pkg', 'new.ts'), 'export const w = 2;\n');
+      const ws = await createRepairWorkspace(
+        path.join(repo, 'pkg'),
+        path.join(repo, '.ws', 'run-1'),
+      );
+      fs.writeFileSync(path.join(ws.packageDir, 'new.ts'), 'export const w = 3;\n');
+      const diff = await diffWorkspace(ws);
+      expect(diff).toContain('diff --git a/pkg/new.ts b/pkg/new.ts');
+      expect(diff).toContain('--- a/pkg/new.ts');
+      expect(diff).toContain('+++ b/pkg/new.ts');
+      expect(diff).not.toContain(repo);
+      await removeRepairWorkspace(ws);
+    } finally {
+      fs.rmSync(repo, { recursive: true, force: true });
+    }
+  });
+
+  it('reverts installer-rewritten lockfiles that the agent did not earn', async () => {
+    const repo = makeRepo();
+    try {
+      fs.writeFileSync(path.join(repo, 'package.json'), '{"name":"root"}\n');
+      fs.writeFileSync(path.join(repo, 'pnpm-lock.yaml'), 'lockfileVersion: 9\n');
+      git(repo, 'add', '.');
+      git(repo, 'commit', '-qm', 'lock');
+      const ws = await createRepairWorkspace(
+        path.join(repo, 'pkg'),
+        path.join(repo, '.ws', 'run-1'),
+      );
+      // Simulated `pnpm install` sync plus an agent code edit.
+      fs.writeFileSync(path.join(ws.worktreePath, 'pnpm-lock.yaml'), 'lockfileVersion: 9\n# installer\n');
+      fs.writeFileSync(path.join(ws.packageDir, 'tracked.ts'), 'export const v = 42;\n');
+      const reverted = await revertInstallerCollateral(ws);
+      expect(reverted).toEqual(['pnpm-lock.yaml']);
+      expect(fs.readFileSync(path.join(ws.worktreePath, 'pnpm-lock.yaml'), 'utf8')).toBe(
+        'lockfileVersion: 9\n',
+      );
+      const diff = await diffWorkspace(ws);
+      expect(diff).not.toContain('pnpm-lock.yaml');
+      expect(diff).toContain('export const v = 42;');
+      await removeRepairWorkspace(ws);
+    } finally {
+      fs.rmSync(repo, { recursive: true, force: true });
+    }
+  });
+
+  it('keeps lockfile updates when dependencies actually changed', async () => {
+    const repo = makeRepo();
+    try {
+      fs.writeFileSync(path.join(repo, 'package.json'), '{"name":"root"}\n');
+      fs.writeFileSync(path.join(repo, 'pnpm-lock.yaml'), 'lockfileVersion: 9\n');
+      git(repo, 'add', '.');
+      git(repo, 'commit', '-qm', 'lock');
+      const ws = await createRepairWorkspace(
+        path.join(repo, 'pkg'),
+        path.join(repo, '.ws', 'run-1'),
+      );
+      fs.writeFileSync(path.join(ws.worktreePath, 'pnpm-lock.yaml'), 'lockfileVersion: 9\n# installer\n');
+      fs.writeFileSync(path.join(ws.worktreePath, 'package.json'), '{"name":"root","dependencies":{"x":"1"}}\n');
+      const reverted = await revertInstallerCollateral(ws);
+      expect(reverted).toEqual([]);
+      const diff = await diffWorkspace(ws);
+      expect(diff).toContain('pnpm-lock.yaml');
       await removeRepairWorkspace(ws);
     } finally {
       fs.rmSync(repo, { recursive: true, force: true });

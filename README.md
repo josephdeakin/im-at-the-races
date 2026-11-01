@@ -1,15 +1,111 @@
 # I'm at the Races
 
-A local developer tool for investigating race conditions in web apps.
+**Built on Meta Muse Spark.** Two $30 transfers should leave $40.
+When the slower first response lands last, the balance jumps back to $70 — while
+the ledger shows $60 out. Money created from thin air, by nothing more exotic
+than responses arriving out of order.
 
-A background agent inspects a repository and running app, generates timing experiments,
-manipulates browser event timing (HTTP hold/release), reproduces failures, freezes a
-regression test, generates a source patch in an isolated checkout, and verifies the patch
-against the frozen test plus timing variations and the project's own checks. The web UI
-shows a synchronized timeline, findings, the patch diff, and the verification matrix.
-Configure `RACES_MODEL_API_KEY` (plus `RACES_MODEL`/`RACES_MODEL_PROVIDER`/
-`RACES_MODEL_BASE_URL` for non-Anthropic endpoints) to enable the agent; without a key,
-runs fail fast with `MODEL_UNAVAILABLE`.
+The same bug class silently corrupts checkout totals, inventory counts, live
+odds, and search results. Happy-path tests miss it because every response is
+individually correct. I'm at the Races is a local developer tool that hunts it
+on purpose.
+
+A Muse Spark agent inspects your repository and running app, designs a timing
+experiment, holds and releases real browser responses to force the bad order,
+and proves the failure with an executable assertion. It then freezes that
+reproducer as a regression test, generates a source patch in an isolated git
+checkout, and verifies the patch against the frozen test, timing variations,
+and your project's own checks. The web UI shows the synchronized timeline,
+findings with expectation provenance, the patch diff, and the verification
+matrix — every claim backed by persisted evidence with IDs and hashes.
+
+This is not a proof that an app is race-free. It is proof, for the cases it
+tests, that a specific failure happens before the patch and does not after.
+
+Set `RACES_MODEL_API_KEY` to your Meta Model API key to enable the agent
+(Muse Spark is the default; see `.env.example`). Without a key, runs fail
+fast with `MODEL_UNAVAILABLE`.
+
+> **Hackathon judges — fastest path, no API key needed:** the recorded
+> fallback bundle replays a complete verified run (timeline, finding,
+> patch, verification matrix) with zero setup beyond install. See
+> [Demo without a key](#demo-without-a-key) below. Live runs need a Meta
+> Model API key. Full pitch: [docs/submission.md](docs/submission.md);
+> 3-minute script: [docs/demo.md](docs/demo.md).
+
+## How it works
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant D as Developer
+    participant W as Web UI (Next.js)
+    participant K as Worker (claim loop)
+    participant A as Muse Spark agent
+    participant T as Target app (Playwright)
+
+    D->>W: create project (repo path + target URL)
+    D->>W: queue investigate-repair run
+    W->>K: run waits queued
+    K->>K: claimNextQueuedRun (one active run)
+    K->>A: execute with budgets (calls, plans, time)
+    A->>A: read source (listFiles/searchCode/readFile)
+    A->>T: observePage + act (discover workflow)
+    A->>T: runExperiment: baseline trial
+    T-->>A: pass ($40.00 correct)
+    A->>T: runExperiment: intervention (hold early, release late)
+    T-->>A: violation ($70.00 stale overwrite)
+    A->>T: runExperiment confirm x3
+    T-->>A: 3-of-3 violations, same check
+    A->>K: finish: reproduced finding + provenance
+    Note over K: freeze reproducer, record test/plan/check hashes
+    K->>K: create isolated git worktree (original untouched)
+    K->>A: repair: generate patch in worktree
+    A-->>K: diff (stale guard applied)
+    K->>T: frozen test on ORIGINAL: must fail
+    T-->>K: fails for stated assertion
+    K->>T: frozen test on PATCHED x3 + timing variations
+    T-->>K: all pass
+    K->>K: project build/typecheck/test (no-worse-than-baseline)
+    K->>K: vision note over decisive screenshot (labelled, non-verdict)
+    K->>W: completed: timeline, finding, patch, verification matrix
+    W->>D: review evidence, export patch + test
+```
+
+Timing-critical execution is local code — the model designs experiments,
+never the release timing. The repair agent's words never change a verdict;
+only executed checks do.
+
+## Measured results
+
+Canonical run on the bank fixture (Muse Spark, investigate-repair):
+
+- Reproduced finding: stale transfer overwrites newer balance, confirmed 3-of-3.
+- Verified patch in 1 attempt: stale guard applied unconditionally.
+- Frozen reproducer fails on original, passes 3× on patched, plus natural
+  workflow, two timing variations, and the project's own suite — all green.
+- 18 model calls, 125,746 input / 9,914 output tokens.
+
+Non-fixture proof on [react-movies](https://github.com/adrianhajdin/react-movies)
+(1.8k stars, investigated as an instrumented fork — three `data-testid`
+hooks, a credential-less null guard, and a `$PORT` start script; no search
+logic touched):
+
+- Reproduced finding: stale discover response overwrites newer Inception
+  search results, confirmed 3-of-3, with `src/App.jsx` fetch logic cited.
+
+## Demo without a key
+
+```sh
+pnpm install
+RACES_DIR=/tmp/races-demo node scripts/import-run.cjs /path/to/demo-bundle
+RACES_DIR=/tmp/races-demo PORT=3101 pnpm --filter web start
+# open http://127.0.0.1:3101/runs/<runId>
+```
+
+Every tab replays from persisted evidence: timeline, findings, patch,
+verification, and the labelled Muse Spark vision note. No model calls,
+no target app, nothing invented.
 
 ## Layout
 
@@ -21,6 +117,8 @@ packages/db         Drizzle + SQLite (better-sqlite3) schema, migrations, query 
 packages/core       Server-side investigation modules (Executor, trial runner, matchers)
 tooling/tsconfig    Shared strict TypeScript configs
 fixtures/stale-search  Controlled stale-results demo (buggy `/` + guarded `/fixed` control)
+fixtures/stale-bank    Canonical bank lost-update demo (buggy `/` + guarded `/fixed` control)
+fixtures/stale-odds    WebSocket odds-race demo (buggy `/` + guarded `/fixed` control)
 scripts/            Run-bundle export/import for the recorded demo fallback
 .races/             Runtime data (SQLite DB + artifacts), gitignored, created on first run
 ```
@@ -55,8 +153,8 @@ pnpm dev:web     # Next.js only, bound to loopback
 pnpm dev:worker  # worker skeleton only
 pnpm db:migrate  # apply pending SQLite migrations to .races/races.db
 pnpm typecheck   # strict tsc across all packages
-pnpm test        # vitest suites (isolated temp databases; excludes the fixture target)
-pnpm test:fixture # stale-search fixture suite: 1 test fails by design until the race is repaired
+pnpm test        # vitest suites (isolated temp databases; excludes the fixture targets)
+pnpm test:fixture # fixture suites: 1 test each fails by design until the race is repaired
 pnpm build       # packages + production Next.js build + worker build
 ```
 
@@ -72,9 +170,9 @@ All variables are optional; see `.env.example`. Defaults work out of the box.
 | `RACES_DIR` | `<repo>/.races` (resolved from the workspace root regardless of cwd) | `apps/web`, `apps/worker` |
 | `PORT` | `3000` | `apps/web` (Next.js convention) |
 | `RACES_MODEL_API_KEY` | unset → runs fail `MODEL_UNAVAILABLE` | `apps/worker` only (loaded from `.env`, never committed) |
-| `RACES_MODEL` | `claude-sonnet-4-5-20250929` | `apps/worker` only |
-| `RACES_MODEL_PROVIDER` | `anthropic` (`openai-responses` supported) | `apps/worker` only |
-| `RACES_MODEL_BASE_URL` | provider default | `apps/worker` only |
+| `RACES_MODEL` | `muse-spark-1.3-contributor` | `apps/worker` only |
+| `RACES_MODEL_PROVIDER` | `openai-responses` (Meta Muse Spark; `anthropic` is an optional fallback) | `apps/worker` only |
+| `RACES_MODEL_BASE_URL` | `https://api.meta.ai/v1` for Meta | `apps/worker` only |
 | `RACES_ARTIFACT_CAP_MB` | `250` per run | `apps/worker` (evidence budget; excess captures are skipped and labeled) |
 
 Never expose a model key through a `NEXT_PUBLIC_*` variable — that prefix bundles the value
@@ -133,3 +231,6 @@ it. If a worktree outlives a crash, `git worktree prune` it from the target repo
 - `docs/submission-checklist.md`: release checklist, including the organiser
   items that must be verified from the event portal (deadline, timezone,
   eligibility, video upload).
+- `docs/submission.md`: paste-ready portal copy (pitch, Meta tooling,
+  disclosures, links).
+- `docs/sequence-diagram.md`: the architecture sequence in standalone form.

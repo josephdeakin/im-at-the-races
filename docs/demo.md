@@ -9,14 +9,16 @@ pnpm --filter @races/core exec playwright install chromium
 pnpm demo
 ```
 
-`pnpm demo` (scripts/demo.cjs) prepares a fresh stale-search checkout at
-/tmp/races-demo-target, starts the fixture (:4100), web (:3100), and worker
-under /tmp/races-demo-live, queues the canonical investigate-repair run, and
-opens the run page when the first finding lands. Logs live in
-/tmp/races-demo-live/logs/; `pnpm demo:stop` stops everything. Flags:
-`-- --setup-only` (start + seed, no wait), `-- --no-open` (no browser),
-`-- --keep` (reuse state), `-- --timeout-mins N` (finding wait, default 20),
-`-- --fixture-port N` / `-- --web-port N` (defaults 4100/3100).
+`pnpm demo` (scripts/demo.cjs) prepares a fresh stale-bank checkout at
+/tmp/races-demo-target-bank, starts the fixture (:4100), web (:3100), and
+worker under /tmp/races-demo-live-bank, queues the canonical
+investigate-repair run, and opens the run page when the first finding lands.
+Logs live in /tmp/races-demo-live-bank/logs/; `pnpm demo:stop` stops
+everything. Flags: `-- --fixture bank|odds` (default bank; odds races
+WebSocket pushes on fixture :4130 / web :3130), `-- --setup-only` (start +
+seed, no wait), `-- --no-open` (no browser), `-- --keep` (reuse state),
+`-- --timeout-mins N` (finding wait, default 20), `-- --fixture-port N` /
+`-- --web-port N` (defaults depend on the fixture).
 
 The empty projects page advertises the same command for new users.
 
@@ -31,7 +33,7 @@ pnpm --filter @races/core exec playwright install chromium
 Terminal 1 — fixture target (a git checkout; repair snapshots it):
 
 ```sh
-cd /tmp/races-demo-target   # any git clone of fixtures/stale-search
+cd /tmp/races-demo-target   # any git clone of fixtures/stale-bank
 pnpm install && pnpm build
 PORT=4100 node server.mjs   # buggy / + guarded /fixed control
 ```
@@ -48,16 +50,18 @@ Create a project (repository `/tmp/races-demo-target`, target
 
 ## 3-minute script
 
-0:00 — The problem: search results belong to an older query when responses
+0:00 — The problem: the balance resurrects money when transfer responses
 arrive out of order. Show the fixture `/` route misbehaving by hand
-(delay 800 → type alpha; delay 0 → type beta; alpha overwrites beta).
+($30 to rent with delay 800, then $30 to savings with delay 0: the balance
+shows $40.00, then jumps back to $70.00 while the ledger shows $60 out).
 
 0:30 — Start (or open) the run. Timeline tab: the agent's own experiment —
-baseline passes on beta, the intervention holds alpha's response until beta
-completes, and the assertion fails showing alpha. Confirmation tally 3/3.
+baseline passes at $40.00, the intervention holds rent's response until
+savings completes, and the assertion fails showing $70.00. Confirmation
+tally 3/3.
 
 1:15 — Findings tab: the reproduced finding with expectation provenance
-("results shown belong to the last query typed"), implicated file, and links
+("balance reflects both transfers"), implicated file, and links
 back to the evidence trials.
 
 1:40 — Patch tab: the one-line generated diff (stale guard applied

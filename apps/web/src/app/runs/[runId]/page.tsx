@@ -12,13 +12,8 @@ import {
   listVerificationChecksByRun,
   type TrialRow,
 } from '@races/db';
-import { RUN_MODE_LABELS } from '@races/contracts';
-import { Card } from '@astryxdesign/core/Card';
-import { EmptyState } from '@astryxdesign/core/EmptyState';
-import { Grid } from '@astryxdesign/core/Grid';
 import { Heading } from '@astryxdesign/core/Heading';
 import { Link } from '@astryxdesign/core/Link';
-import { MetadataList, MetadataListItem } from '@astryxdesign/core/MetadataList';
 import { Text } from '@astryxdesign/core/Text';
 import { VStack } from '@astryxdesign/core/VStack';
 import { getDb } from '@/lib/server/db';
@@ -34,7 +29,6 @@ import {
   toTrialJson,
   toVerificationCheckJson,
 } from '@/lib/server/serializers';
-import { formatDateTime, formatDurationMs } from '@/lib/format';
 import { RunWorkspace } from '@/components/RunWorkspace';
 
 export default async function RunPage({
@@ -87,40 +81,6 @@ export default async function RunPage({
         <Text type="code">{run.id}</Text>
       </VStack>
 
-      <Card>
-        <MetadataList title="Run details" columns={2}>
-          <MetadataListItem label="Task">{run.task}</MetadataListItem>
-          <MetadataListItem label="Mode">
-            {RUN_MODE_LABELS[run.mode]} <Text type="supporting">(stored intent)</Text>
-          </MetadataListItem>
-          <MetadataListItem label="Phase">
-            <Text type="code">{run.phase}</Text>
-          </MetadataListItem>
-          <MetadataListItem label="Limits">
-            {formatDurationMs(run.limits.durationMs)} · {run.limits.modelCalls} model calls ·{' '}
-            {run.limits.experiments} experiments
-          </MetadataListItem>
-          <MetadataListItem label="Timestamps">
-            <VStack gap={0}>
-              <Text>Created: {formatDateTime(run.createdAt)}</Text>
-              <Text>Started: {formatDateTime(run.startedAt)}</Text>
-              <Text>Finished: {formatDateTime(run.finishedAt)}</Text>
-              {run.cancelRequestedAt && (
-                <Text>Cancellation requested: {formatDateTime(run.cancelRequestedAt)}</Text>
-              )}
-            </VStack>
-          </MetadataListItem>
-          {run.errorMessage && (
-            <MetadataListItem label="Error">
-              <Text type="code">
-                {run.errorCode ? `${run.errorCode}: ` : ''}
-                {run.errorMessage}
-              </Text>
-            </MetadataListItem>
-          )}
-        </MetadataList>
-      </Card>
-
       <RunWorkspace
         initialRun={run}
         initialEvents={events}
@@ -129,48 +89,9 @@ export default async function RunPage({
         initialFindings={findings}
         initialTrialId={typeof trialParam === 'string' ? trialParam : null}
         initialRepair={initialRepair}
+        initialArtifacts={artifacts.map(toArtifactJson)}
         repositoryPath={project?.repositoryPath ?? null}
       />
-
-      <VStack gap={2}>
-        <Heading level={2}>Run artifacts</Heading>
-        {artifacts.length === 0 ? (
-          <EmptyState
-            title="Nothing here yet"
-            description="Screenshots and recorded values will appear here once the run executes trials."
-          />
-        ) : (
-          <Grid columns={{ minWidth: 300, max: 2 }} gap={4}>
-            {artifacts.map((artifact) => (
-              <Card key={artifact.id}>
-                <VStack gap={2}>
-                  {artifact.mimeType.startsWith('image/') ? (
-                    <a href={`/api/artifacts/${artifact.id}`} target="_blank" rel="noreferrer">
-                      {/* Plain img: artifact bytes are local evidence, not optimized assets. */}
-                      <img
-                        src={`/api/artifacts/${artifact.id}`}
-                        alt={`${artifact.kind} evidence: ${artifact.relativePath}`}
-                        className="aspect-video w-full rounded-md object-cover object-top"
-                      />
-                    </a>
-                  ) : (
-                    <Link
-                      href={`/api/artifacts/${artifact.id}`}
-                      target="_blank"
-                      isStandalone
-                    >
-                      Open {artifact.kind} ({artifact.mimeType})
-                    </Link>
-                  )}
-                  <Text type="code">
-                    {artifact.kind} · {artifact.relativePath}
-                  </Text>
-                </VStack>
-              </Card>
-            ))}
-          </Grid>
-        )}
-      </VStack>
     </VStack>
   );
 }

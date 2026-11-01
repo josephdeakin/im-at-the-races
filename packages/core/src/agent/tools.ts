@@ -620,10 +620,10 @@ export const AGENT_TOOL_DEFINITIONS: ModelToolDefinition[] = [
       'Execute a timing experiment: baseline trial (natural delivery) plus intervention trial (held/reordered delivery) with identical actions and assertions.',
       'Explore mode runs a full plan {schemaVersion: 1, id, hypothesis, startUrl, actions, requests, schedule, assertions, timeouts, requiredCapabilities}.',
       'Actions: [{id, kind: fill|click, testId, value?}] using data-testid selectors discovered via observePage. Use distinct input values per action so requests are distinguishable.',
-      'Requests: [{id, method, urlPattern (regex on full URL), query?: {param: substring}, bodyContains?, occurrence (1-based), afterAction?}]. Match with method plus URL/query/body predicates, never a bare URL when calls share an endpoint.',
+      'Requests: [{id, method, urlPattern (regex on full URL), query?: {param: substring}, bodyContains?, occurrence (1-based), afterAction?}]. Match with method plus URL/query/body predicates, never a bare URL when calls share an endpoint. For races over a socket use method WS: it matches server-to-client WebSocket frames on sockets whose URL matches urlPattern, with bodyContains against the frame text; holds delay frame delivery to the page.',
       'Schedule (intervention): {hold: [requestId], releases: [{request, afterResponse: otherRequestId, settleMs, timeoutMs}]}. The earlier response is held until the later response completes, then released.',
       'Assertions: [{id, description, type: textContains|textEquals, testId, expected}]. Each is polled until it passes or the observation window elapses; state what the final UI must show for the LATEST input.',
-      'Timeouts default to {actionMs: 10000, observationMs: 10000, trialMs: 120000, maxHoldMs: 15000}; requiredCapabilities is ["http-hold-release"].',
+      'Timeouts default to {actionMs: 10000, observationMs: 10000, trialMs: 120000, maxHoldMs: 15000}; requiredCapabilities is ["http-hold-release"], or ["ws-hold-release"] when every request uses method WS.',
       'Confirm mode re-runs a recorded experiment plan N more baseline+intervention pairs and reports X-of-Y reproduced status: {mode: "confirm", experimentId, attempts? default 3}.',
     ].join(' '),
     input_schema: {
@@ -674,7 +674,11 @@ export const AGENT_TOOL_DEFINITIONS: ModelToolDefinition[] = [
                   type: 'object',
                   properties: {
                     path: { type: 'string' },
-                    excerpt: { type: 'string' },
+                    excerpt: {
+                      type: 'string',
+                      description:
+                        'Verbatim lines (3-8) showing the defect: the state write that applies a response plus the missing guard around it. Quote the assignment, not just the function signature.',
+                    },
                   },
                   required: ['path'],
                 },
