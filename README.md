@@ -33,6 +33,21 @@ fast with `MODEL_UNAVAILABLE`.
 > Model API key. Full pitch: [docs/submission.md](docs/submission.md);
 > 3-minute script: [docs/demo.md](docs/demo.md).
 
+## System overview
+
+```mermaid
+flowchart LR
+    DEV([Developer]) --> WEB[Web UI<br/>Next.js + JSON API]
+    WEB <--> DB[(SQLite + artifacts<br/>.races/)]
+    WRK[Worker<br/>claim / execute / finish] <--> DB
+    WRK --> CORE[Agent core<br/>orchestrator + trial runner]
+    CORE <--> TGT[Target app<br/>repo + running server]
+    CORE --> META[(Muse Spark<br/>Meta Model API)]
+    META -.->|vision note| CORE
+    TGT --- FIX[Fixtures / proof targets<br/>stale-search · bank · odds]
+    WEB --> DEV
+```
+
 ## How it works
 
 ```mermaid
