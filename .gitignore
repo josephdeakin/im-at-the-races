@@ -33,6 +33,12 @@ logs/
 .DS_Store
 Thumbs.db
 
+# Local planning (not for submission).
+/PRIZE-PLAN.md
+
+# Scratch image generation output.
+/generated_images/
+
 # Editor noise.
 .idea/
 *.swp

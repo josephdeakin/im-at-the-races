@@ -6,7 +6,7 @@ the ledger shows $60 out. Money created from thin air, by nothing more exotic
 than responses arriving out of order.
 
 The same bug class silently corrupts checkout totals, inventory counts, live
-odds, and search results. Happy-path tests miss it because every response is
+prices, and search results. Happy-path tests miss it because every response is
 individually correct. I'm at the Races is a local developer tool that hunts it
 on purpose.
 
@@ -32,6 +32,14 @@ fast with `MODEL_UNAVAILABLE`.
 > [Demo without a key](#demo-without-a-key) below. Live runs need a Meta
 > Model API key. Full pitch: [docs/submission.md](docs/submission.md);
 > 3-minute script: [docs/demo.md](docs/demo.md).
+
+![Verification: before $70.00 failed, after $40.00 passed](docs/assets/verification.png)
+
+*The canonical Muse Spark run, replayed from `demo-bundle/`: the frozen
+check fails at $70.00 on the original app and passes at $40.00 on the
+patched app. Model badge, call count, and token usage are in frame.*
+
+![Findings: reproduced 3 of 3](docs/assets/findings.png)
 
 ## System overview
 
@@ -113,9 +121,9 @@ logic touched):
 
 ```sh
 pnpm install
-RACES_DIR=/tmp/races-demo node scripts/import-run.cjs /path/to/demo-bundle
+RACES_DIR=/tmp/races-demo node scripts/import-run.cjs demo-bundle
 RACES_DIR=/tmp/races-demo PORT=3101 pnpm --filter web start
-# open http://127.0.0.1:3101/runs/<runId>
+# open http://127.0.0.1:3101/runs/14490d7a-7072-4626-ab5d-f24cce7bae23
 ```
 
 Every tab replays from persisted evidence: timeline, findings, patch,
