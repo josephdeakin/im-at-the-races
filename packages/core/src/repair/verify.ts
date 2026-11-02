@@ -13,7 +13,7 @@ import type { ArtifactStore, EventSink } from '../index.js';
 import type { ExperimentStore } from '../runner/experiment.js';
 import type { AgentTrialRunner } from '../agent/tools.js';
 import { generateReproBundle, sha256Hex } from '../repro/generate.js';
-import { runReproSpec } from '../repro/run.js';
+import type { ReproRunResult } from '../repro/run.js';
 
 export interface RepairStore {
   createReproducer(input: {
@@ -246,6 +246,12 @@ export interface VerificationInput extends TrialExecution {
   /** Baseline outputs captured on the pristine snapshot, by check name. */
   baselineChecks: Map<string, { exitCode: number | null; output: string }>;
   scriptsPresent: Set<string>;
+  /**
+   * Run the exported frozen reproducer spec itself against the patched app.
+   * Optional for callers without a frozen bundle on disk; when provided, a
+   * spec that still fails for the frozen check fails verification.
+   */
+  runExportedSpec?: (patchedUrl: string) => Promise<ReproRunResult>;
 }
 
 export interface VerificationResult {
@@ -287,6 +293,23 @@ export async function verifyPatchedApp(input: VerificationInput): Promise<Verifi
   const note = (text: string): void => {
     failures.push(text);
   };
+
+  if (input.runExportedSpec) {
+    input.signal.throwIfAborted();
+    const specResult = await input.runExportedSpec(input.patchedUrl);
+    const status: VerificationCheckStatus =
+      specResult.status === 'passed' ? 'pass' : specResult.status === 'failed-for-check' ? 'fail' : 'incomplete';
+    await recordCheck(input, 'exported-repro-spec', status, {
+      reproStatus: specResult.status,
+      exitCode: specResult.exitCode,
+      outputTail: specResult.output.slice(-2000),
+      durationMs: specResult.durationMs,
+      targetUrl: input.patchedUrl,
+    });
+    if (status !== 'pass') {
+      note(`exported reproducer spec on patched app: ${specResult.status}`);
+    }
+  }
 
   for (let rep = 0; rep < 3; rep += 1) {
     input.signal.throwIfAborted();

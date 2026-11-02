@@ -921,6 +921,8 @@ export class AgentExecutor implements Executor {
             ),
           baselineChecks,
           scriptsPresent: scripts,
+          runExportedSpec: (url) =>
+            runReproSpec(bundle.specPath, url, checkId, { signal: ctx.signal }),
         });
         if (result.verified) {
           await log(`Verification passed for attempt ${attempt}: ${result.summary.join(' ')}`);

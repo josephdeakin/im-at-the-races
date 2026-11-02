@@ -4,6 +4,7 @@
 // Refuses to overwrite an existing run with the same ID. Files are copied
 // before the insert transaction, and removed again if the insert fails, so
 // a failed import leaves no half-imported run behind.
+const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
 const db = require('../packages/db/dist/index.js');
@@ -48,12 +49,21 @@ const bundle = {
 };
 
 // Old bundles predate artifact size accounting; backfill from the files.
+// Verify every recorded hash against the bundled bytes: a bundle whose
+// files do not match its manifest is corrupt or tampered, never imported.
 for (const artifact of bundle.artifacts) {
+  const file = path.join(bundleDir, 'files', artifact.relative_path);
   if (artifact.size_bytes === undefined || artifact.size_bytes === null) {
-    const file = path.join(bundleDir, 'files', artifact.relative_path);
     artifact.size_bytes = fs.existsSync(file) ? fs.statSync(file).size : 0;
   }
-  if (artifact.sha256 === undefined || artifact.sha256 === null) artifact.sha256 = '';
+  if (!fs.existsSync(file)) continue;
+  const actual = `sha256:${crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex')}`;
+  if (artifact.sha256 === undefined || artifact.sha256 === null || artifact.sha256 === '') {
+    artifact.sha256 = actual;
+  } else if (artifact.sha256 !== actual) {
+    console.error(`Artifact hash mismatch for ${artifact.relative_path}: manifest ${artifact.sha256}, file ${actual}. Refusing to import.`);
+    process.exit(1);
+  }
 }
 
 // Copy artifact bytes first; the database insert below is the commit point.

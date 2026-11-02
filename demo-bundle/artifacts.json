@@ -1,0 +1,492 @@
+[
+  {
+    "id": "66a917cd-40b6-4c6d-b1e0-9c2919104c18",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "observation",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/observation-1.png",
+    "mime_type": "image/png",
+    "created_at": 1793555674741,
+    "size_bytes": 25561,
+    "sha256": "sha256:e62f4513151ed6254f84c5f3014455695c7c9063d08dcced8c10570358b622a3"
+  },
+  {
+    "id": "c2bfb209-4ca5-42bd-b2af-b823f2e0ebd0",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "screenshot",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-baseline-4899d83c-after-actions.png",
+    "mime_type": "image/png",
+    "created_at": 1793555719764,
+    "size_bytes": 28167,
+    "sha256": "sha256:56330675510cacdb886edfdaf57ae1430ce1fa219be6f9fd3a5044d649201262"
+  },
+  {
+    "id": "159e0521-a851-4beb-82aa-eff041f6a7c7",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "values",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-baseline-4899d83c-values.json",
+    "mime_type": "application/json",
+    "created_at": 1793555719766,
+    "size_bytes": 171,
+    "sha256": "sha256:e1da44a4045156d946517fbd379abb4b894885bcae03bd3e070c0fc0441fc6b7"
+  },
+  {
+    "id": "e263d92c-dc00-47bb-adbe-044472cf78f7",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "screenshot",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-intervention-ce2c346c-post-release.png",
+    "mime_type": "image/png",
+    "created_at": 1793555720595,
+    "size_bytes": 31174,
+    "sha256": "sha256:817747ebc1e26d4c0f8fd8cdcd966a3f40ace8280f29578dd910911b1ca2c5ff"
+  },
+  {
+    "id": "7075bb81-357f-407d-b8bf-f64b87b5acab",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "values",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-intervention-ce2c346c-values.json",
+    "mime_type": "application/json",
+    "created_at": 1793555720597,
+    "size_bytes": 175,
+    "sha256": "sha256:45432d914730c7fd46b8db4bdec13cd0c850222765b31ec8f70663c51cedbc41"
+  },
+  {
+    "id": "9ab62421-d5bc-4002-9a68-d596b6f57e95",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "screenshot",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-intervention-ce2c346c-assertion-failed.png",
+    "mime_type": "image/png",
+    "created_at": 1793555730695,
+    "size_bytes": 31174,
+    "sha256": "sha256:817747ebc1e26d4c0f8fd8cdcd966a3f40ace8280f29578dd910911b1ca2c5ff"
+  },
+  {
+    "id": "ac08298e-9c8e-4df5-a9bd-766a6bbd3301",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "screenshot",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-baseline-35156b3b-after-actions.png",
+    "mime_type": "image/png",
+    "created_at": 1793555732917,
+    "size_bytes": 28167,
+    "sha256": "sha256:56330675510cacdb886edfdaf57ae1430ce1fa219be6f9fd3a5044d649201262"
+  },
+  {
+    "id": "6988a11f-69d2-484b-bcae-76325bf2ae5f",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "values",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-baseline-35156b3b-values.json",
+    "mime_type": "application/json",
+    "created_at": 1793555732919,
+    "size_bytes": 171,
+    "sha256": "sha256:1da8b957af18b2e0a79b633c070203ecf64a66469b69d4940ec8c1610b5d15d6"
+  },
+  {
+    "id": "78b22a28-91be-4424-8e40-755bc234511a",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "screenshot",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-intervention-2aacd9f7-post-release.png",
+    "mime_type": "image/png",
+    "created_at": 1793555733745,
+    "size_bytes": 31174,
+    "sha256": "sha256:817747ebc1e26d4c0f8fd8cdcd966a3f40ace8280f29578dd910911b1ca2c5ff"
+  },
+  {
+    "id": "96293626-b11d-4530-accb-c1b556789033",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "values",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-intervention-2aacd9f7-values.json",
+    "mime_type": "application/json",
+    "created_at": 1793555733747,
+    "size_bytes": 175,
+    "sha256": "sha256:c182cd6d2d4fc58258f18b930489b048ac38ee2c6a152a203f31db9804a7430e"
+  },
+  {
+    "id": "2c1fe6d9-4c5e-4089-9c83-120aef0348e5",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "screenshot",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-intervention-2aacd9f7-assertion-failed.png",
+    "mime_type": "image/png",
+    "created_at": 1793555743842,
+    "size_bytes": 31174,
+    "sha256": "sha256:817747ebc1e26d4c0f8fd8cdcd966a3f40ace8280f29578dd910911b1ca2c5ff"
+  },
+  {
+    "id": "8fe82b6c-f133-4ce3-a1d2-ab73ed1d3cce",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "screenshot",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-baseline-b9acbb6e-after-actions.png",
+    "mime_type": "image/png",
+    "created_at": 1793555744013,
+    "size_bytes": 28167,
+    "sha256": "sha256:56330675510cacdb886edfdaf57ae1430ce1fa219be6f9fd3a5044d649201262"
+  },
+  {
+    "id": "abe36e9c-0778-4cdd-8456-9bb7b4034a08",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "values",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-baseline-b9acbb6e-values.json",
+    "mime_type": "application/json",
+    "created_at": 1793555744015,
+    "size_bytes": 171,
+    "sha256": "sha256:204e965932ae025e4b85f4ec7ea3c3cbc33b8d3617a167b61648cd1e9d9b5e0b"
+  },
+  {
+    "id": "4e8786cf-82ca-498e-9541-270736b45ad7",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "screenshot",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-intervention-d6f2eca6-post-release.png",
+    "mime_type": "image/png",
+    "created_at": 1793555744837,
+    "size_bytes": 31174,
+    "sha256": "sha256:817747ebc1e26d4c0f8fd8cdcd966a3f40ace8280f29578dd910911b1ca2c5ff"
+  },
+  {
+    "id": "856a321e-b4b8-4ea9-874c-820ee0e3e64a",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "values",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-intervention-d6f2eca6-values.json",
+    "mime_type": "application/json",
+    "created_at": 1793555744839,
+    "size_bytes": 175,
+    "sha256": "sha256:88757d38c315b701d08dc37b03a8b6aeaadd7b4bb0972776290b39b68f2dfce5"
+  },
+  {
+    "id": "5ba4d1f4-247f-4808-90e1-ca678c5d901e",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "screenshot",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-intervention-d6f2eca6-assertion-failed.png",
+    "mime_type": "image/png",
+    "created_at": 1793555754924,
+    "size_bytes": 31174,
+    "sha256": "sha256:817747ebc1e26d4c0f8fd8cdcd966a3f40ace8280f29578dd910911b1ca2c5ff"
+  },
+  {
+    "id": "beb9872e-5cf1-4e00-9abb-eb30a5d08029",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "screenshot",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-baseline-7c9e45c9-after-actions.png",
+    "mime_type": "image/png",
+    "created_at": 1793555755113,
+    "size_bytes": 28167,
+    "sha256": "sha256:56330675510cacdb886edfdaf57ae1430ce1fa219be6f9fd3a5044d649201262"
+  },
+  {
+    "id": "7a1ab97e-8835-4879-9fb6-db1f1fd75813",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "values",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-baseline-7c9e45c9-values.json",
+    "mime_type": "application/json",
+    "created_at": 1793555755115,
+    "size_bytes": 171,
+    "sha256": "sha256:3919c8444b9e2f11c19045caf0cd3dd236a17b24ebf5308f34da996ee1a133d3"
+  },
+  {
+    "id": "378e9bcb-c5c7-4d4b-84c0-9aca67f8969a",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "screenshot",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-intervention-3cffb0c9-post-release.png",
+    "mime_type": "image/png",
+    "created_at": 1793555755938,
+    "size_bytes": 31174,
+    "sha256": "sha256:817747ebc1e26d4c0f8fd8cdcd966a3f40ace8280f29578dd910911b1ca2c5ff"
+  },
+  {
+    "id": "bed72973-9a32-41bd-a69e-d17c66197aae",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "values",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-intervention-3cffb0c9-values.json",
+    "mime_type": "application/json",
+    "created_at": 1793555755939,
+    "size_bytes": 175,
+    "sha256": "sha256:f1a01a34fac276cf7346313f89a5acfadd984f8aac75c9d6e87301bdf3d95d7d"
+  },
+  {
+    "id": "0e3ddfc9-4537-48bd-9335-9aa58852bb6e",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "screenshot",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-intervention-3cffb0c9-assertion-failed.png",
+    "mime_type": "image/png",
+    "created_at": 1793555766024,
+    "size_bytes": 31174,
+    "sha256": "sha256:817747ebc1e26d4c0f8fd8cdcd966a3f40ace8280f29578dd910911b1ca2c5ff"
+  },
+  {
+    "id": "47a83548-e039-4c58-b326-0fe7be8dfe98",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "repro-spec",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/repro.spec.ts",
+    "mime_type": "text/plain",
+    "created_at": 1793555780647,
+    "size_bytes": 6931,
+    "sha256": "sha256:984248bfa762a27ee9cf57b3aa62a8480d5d487568de3e4a98f8771dbcf0df81"
+  },
+  {
+    "id": "0d9edf89-0a1a-48aa-9f9f-67b348e9775f",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "repro-plan",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/plan.json",
+    "mime_type": "application/json",
+    "created_at": 1793555780648,
+    "size_bytes": 1960,
+    "sha256": "sha256:7f00dc8fa7ce49efa856685ce939b521a2142bd85e52cdb9c4bd6611909b477f"
+  },
+  {
+    "id": "56bc2a35-0641-4c88-93b4-7493172f0406",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "repro-readme",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/README.md",
+    "mime_type": "text/markdown",
+    "created_at": 1793555780648,
+    "size_bytes": 980,
+    "sha256": "sha256:f11ebeb5b9231ca4d54b54b75268a756c51030d3d867f822871abf7dc3d66071"
+  },
+  {
+    "id": "6e250a84-033a-4890-b1f7-860f33caed71",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "repro-manifest",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/manifest.json",
+    "mime_type": "application/json",
+    "created_at": 1793555780648,
+    "size_bytes": 528,
+    "sha256": "sha256:308ab1b4cc2961ad17fbe07f9d3586f13e0a942627dbea3532869edfd95eb789"
+  },
+  {
+    "id": "e3cc058d-7600-4b62-87dc-cb9f96d063f4",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "screenshot",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-baseline-5a55821c-after-actions.png",
+    "mime_type": "image/png",
+    "created_at": 1793555834231,
+    "size_bytes": 28369,
+    "sha256": "sha256:ca11f82a8dfc4c0e14dc1073926a168ffa0866243d82fcd656e72c19bc6a775d"
+  },
+  {
+    "id": "6a6bc567-b35b-42cd-9d3d-06393c3bc7d4",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "values",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-baseline-5a55821c-values.json",
+    "mime_type": "application/json",
+    "created_at": 1793555834233,
+    "size_bytes": 171,
+    "sha256": "sha256:2ca62f3573a05e55cb5fd2d4c2221fae6e27d14799cc4c97bc8229c4d91cf065"
+  },
+  {
+    "id": "8c525f20-3ab5-43f5-af08-37d0eadbf25d",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "screenshot",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-intervention-6381f89c-post-release.png",
+    "mime_type": "image/png",
+    "created_at": 1793555834842,
+    "size_bytes": 31178,
+    "sha256": "sha256:3e23251c31739c97a5709e27c0d459bd68d1a163af3b115782062e21105a8cdf"
+  },
+  {
+    "id": "a7c82427-8fad-40f3-846c-a156545a8af8",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "values",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-intervention-6381f89c-values.json",
+    "mime_type": "application/json",
+    "created_at": 1793555834845,
+    "size_bytes": 175,
+    "sha256": "sha256:cc58ada9b9dae14df165531b550ee98a7736244ab3d8109503b010a42af10789"
+  },
+  {
+    "id": "118679b3-b06e-4293-85e4-93a83bd5e9ed",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "screenshot",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-baseline-ec9b08f0-after-actions.png",
+    "mime_type": "image/png",
+    "created_at": 1793555835030,
+    "size_bytes": 28369,
+    "sha256": "sha256:ca11f82a8dfc4c0e14dc1073926a168ffa0866243d82fcd656e72c19bc6a775d"
+  },
+  {
+    "id": "e9daae6d-03fd-4d77-8cc6-a899a08f3ed9",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "values",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-baseline-ec9b08f0-values.json",
+    "mime_type": "application/json",
+    "created_at": 1793555835032,
+    "size_bytes": 171,
+    "sha256": "sha256:04213d1ea6bab1800fe41489536a32a3be117b804d29585be463a0486db6da71"
+  },
+  {
+    "id": "50846eb1-7dd8-4b86-9920-ec0ce0ada650",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "screenshot",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-intervention-a3dccbf2-post-release.png",
+    "mime_type": "image/png",
+    "created_at": 1793555835627,
+    "size_bytes": 31178,
+    "sha256": "sha256:3e23251c31739c97a5709e27c0d459bd68d1a163af3b115782062e21105a8cdf"
+  },
+  {
+    "id": "56a66943-3f1a-438b-b0f2-45f452cfa428",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "values",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-intervention-a3dccbf2-values.json",
+    "mime_type": "application/json",
+    "created_at": 1793555835630,
+    "size_bytes": 175,
+    "sha256": "sha256:dc36e0e26718ec871642a856ca4ad94f8a110d0d0825ebcaf813fa460937f34c"
+  },
+  {
+    "id": "aebc8350-dc34-45e4-a3c1-b2185d5477e9",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "screenshot",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-baseline-8dd4b340-after-actions.png",
+    "mime_type": "image/png",
+    "created_at": 1793555835810,
+    "size_bytes": 28369,
+    "sha256": "sha256:ca11f82a8dfc4c0e14dc1073926a168ffa0866243d82fcd656e72c19bc6a775d"
+  },
+  {
+    "id": "f84d9a17-1eb9-4861-920e-58b1986f8ff7",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "values",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-baseline-8dd4b340-values.json",
+    "mime_type": "application/json",
+    "created_at": 1793555835812,
+    "size_bytes": 172,
+    "sha256": "sha256:45b91683b2cbbdc57cfb59d80ed39a936753ae293e913117fd244bcb50f4dbfe"
+  },
+  {
+    "id": "05f6dbfc-6d93-4dca-9272-c6611d99c0ab",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "screenshot",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-intervention-21999402-post-release.png",
+    "mime_type": "image/png",
+    "created_at": 1793555836644,
+    "size_bytes": 31178,
+    "sha256": "sha256:3e23251c31739c97a5709e27c0d459bd68d1a163af3b115782062e21105a8cdf"
+  },
+  {
+    "id": "a28a700d-b438-4b13-843b-2d719d340a9b",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "values",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-intervention-21999402-values.json",
+    "mime_type": "application/json",
+    "created_at": 1793555836647,
+    "size_bytes": 175,
+    "sha256": "sha256:15e109f503f872c724279c1c7c009d1f1b2c58688a85719a95ca068aecf5f3d2"
+  },
+  {
+    "id": "cb446442-604a-4a02-8e3b-5b4325b2349b",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "screenshot",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-baseline-4e04f556-after-actions.png",
+    "mime_type": "image/png",
+    "created_at": 1793555836826,
+    "size_bytes": 28369,
+    "sha256": "sha256:ca11f82a8dfc4c0e14dc1073926a168ffa0866243d82fcd656e72c19bc6a775d"
+  },
+  {
+    "id": "88e9ada1-886d-4254-928c-d8b14efca340",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "values",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-baseline-4e04f556-values.json",
+    "mime_type": "application/json",
+    "created_at": 1793555836828,
+    "size_bytes": 172,
+    "sha256": "sha256:b2ef4c8974cfe921ccc65879be68a2ebe307429c9f84105f144f4c35d7d6630f"
+  },
+  {
+    "id": "a8b923c9-2de9-402c-82c0-88d29114a81f",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "screenshot",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-intervention-dd8737df-post-release.png",
+    "mime_type": "image/png",
+    "created_at": 1793555837209,
+    "size_bytes": 28369,
+    "sha256": "sha256:ca11f82a8dfc4c0e14dc1073926a168ffa0866243d82fcd656e72c19bc6a775d"
+  },
+  {
+    "id": "4dae7124-ba83-49c1-919f-285b7dac2b57",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "values",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-intervention-dd8737df-values.json",
+    "mime_type": "application/json",
+    "created_at": 1793555837211,
+    "size_bytes": 176,
+    "sha256": "sha256:fcfe1d4901f5180a0ba3625b00d08fd7df592756b9938df6b5f711312c83322b"
+  },
+  {
+    "id": "30d50b80-9faf-4d65-a2ad-484766d9cb63",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "screenshot",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-baseline-905f424d-after-actions.png",
+    "mime_type": "image/png",
+    "created_at": 1793555837610,
+    "size_bytes": 28369,
+    "sha256": "sha256:ca11f82a8dfc4c0e14dc1073926a168ffa0866243d82fcd656e72c19bc6a775d"
+  },
+  {
+    "id": "6b19dc1a-d8c2-497f-b169-384c2a1d0635",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "values",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-baseline-905f424d-values.json",
+    "mime_type": "application/json",
+    "created_at": 1793555837611,
+    "size_bytes": 172,
+    "sha256": "sha256:4038e58c86f339401dde84e9ad32db144b726533c95224e26e12490237403c8f"
+  },
+  {
+    "id": "e89fa827-999a-48d8-8c1a-a3c7a34684c3",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "screenshot",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-intervention-cb250fbc-post-release.png",
+    "mime_type": "image/png",
+    "created_at": 1793555838114,
+    "size_bytes": 31178,
+    "sha256": "sha256:3e23251c31739c97a5709e27c0d459bd68d1a163af3b115782062e21105a8cdf"
+  },
+  {
+    "id": "12785f6d-4e4c-4c84-b03e-b4f5839b37a7",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "values",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-intervention-cb250fbc-values.json",
+    "mime_type": "application/json",
+    "created_at": 1793555838116,
+    "size_bytes": 175,
+    "sha256": "sha256:6a9cbf71320e6495b46e43ea65274590238d7c4e9bcc95007711bb51bb8a95ec"
+  },
+  {
+    "id": "7e74a982-5aa9-404c-9a36-209e15ba988f",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "screenshot",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-baseline-89ae8f0f-after-actions.png",
+    "mime_type": "image/png",
+    "created_at": 1793555838293,
+    "size_bytes": 28369,
+    "sha256": "sha256:ca11f82a8dfc4c0e14dc1073926a168ffa0866243d82fcd656e72c19bc6a775d"
+  },
+  {
+    "id": "4b356e01-e1b5-47cb-88a7-9697cac2e405",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "values",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-baseline-89ae8f0f-values.json",
+    "mime_type": "application/json",
+    "created_at": 1793555838295,
+    "size_bytes": 172,
+    "sha256": "sha256:518849c7772e1ea4cc65001b9b436266bde46c52372829e1df5b572abf6ad818"
+  },
+  {
+    "id": "41c51798-f890-4098-a2c8-e9530d946fb8",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "screenshot",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-intervention-7148a970-post-release.png",
+    "mime_type": "image/png",
+    "created_at": 1793555839420,
+    "size_bytes": 31178,
+    "sha256": "sha256:3e23251c31739c97a5709e27c0d459bd68d1a163af3b115782062e21105a8cdf"
+  },
+  {
+    "id": "8be2991d-39ab-48cf-9071-4ddf5eba8420",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "kind": "values",
+    "relative_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/trial-intervention-7148a970-values.json",
+    "mime_type": "application/json",
+    "created_at": 1793555839422,
+    "size_bytes": 175,
+    "sha256": "sha256:87cdfb5ba95e9ca2236614615e3854fa9e04c1e63f67a7b7f4099fd3ebd4ac42"
+  }
+]

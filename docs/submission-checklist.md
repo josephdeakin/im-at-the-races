@@ -24,9 +24,16 @@
 - [x] Canonical Meta run recorded live (run `14490d7a`, stale-bank):
       reproduced finding, verified patch in 1 attempt, all required
       verification gates green, 18 model calls (125,746 in / 9,914 out
-      tokens), vision note appended. Fallback bundle exported to
-      `/tmp/demo-bundle-canonical` (366 events, 49 files).
-- [x] Paste-ready portal copy in `docs/submission.md`.
+      tokens), vision note appended. Fallback bundle committed at
+      `demo-bundle/` (366 events, 49 files; replay verified keyless).
+- [x] Paste-ready portal copy in `docs/submission.md` (Indie Developer,
+      Build for Your World, hackathon-built disclosure; video URLs TODO).
+- [x] Post-audit fixes (2026-11-02): `.env.example` Meta-first, LICENSE
+      (MIT) added, `generated_images/` + PRD .docx removed, odds copy
+      renamed to price feed, `verifyPatchedApp` runs the exported repro
+      spec, generated-spec matcher counting matches RequestTracker,
+      `scripts/demo.cjs` per-fixture health check, `scripts/import-run.cjs`
+      verifies artifact sha256, verdict tests added, runs index drift fixed.
 - [x] Gates re-run 2026-11-01 after the Meta-first pass: `pnpm typecheck`,
       `pnpm test` (195 tests), `pnpm build` all green.
 

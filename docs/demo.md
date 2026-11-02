@@ -81,10 +81,10 @@ If the live run stalls, import the recorded bundle and browse the identical
 completed run (IDs and source identity preserved):
 
 ```sh
-RACES_DIR=/tmp/races-m5 node scripts/export-run.cjs <runId> /tmp/demo-bundle
-RACES_DIR=/tmp/races-demo node scripts/import-run.cjs /tmp/demo-bundle
+# Committed canonical bundle (run 14490d7a) — no export step needed:
+RACES_DIR=/tmp/races-demo node scripts/import-run.cjs demo-bundle
 RACES_DIR=/tmp/races-demo PORT=3101 pnpm --filter web start
-# open http://127.0.0.1:3101/runs/<runId>
+# open http://127.0.0.1:3101/runs/14490d7a-7072-4626-ab5d-f24cce7bae23
 ```
 
 Rehearsed with the M5 verified run (`6b3ebe6b-…`, 304 events, 49 files):

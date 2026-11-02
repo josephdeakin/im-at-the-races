@@ -28,6 +28,7 @@ const numAfter = (name, fallback) => {
 const FIXTURES = {
   bank: {
     dir: 'stale-bank',
+    healthPath: 'api/balance',
     fixturePort: 4100,
     webPort: 3100,
     commit: 'stale-bank fixture (demo target)',
@@ -39,15 +40,16 @@ const FIXTURES = {
   },
   odds: {
     dir: 'stale-odds',
+    healthPath: 'api/odds',
     fixturePort: 4130,
     webPort: 3130,
     commit: 'stale-odds fixture (demo target)',
     project: 'guided demo (stale-odds)',
     task:
-      'The odds page shows a home-win price pushed over a WebSocket. Each Request ' +
+      'The price page shows a streamed price pushed over a WebSocket. Each Request ' +
       'update takes a push-delay in ms; the server versions pushes in arrival ' +
       'order. Design and run an experiment that proves or disproves a ' +
-      'stale-overwrite race on the displayed odds using the delay control, then ' +
+      'stale-overwrite race on the displayed price using the delay control, then ' +
       'repair it.',
   },
 };
@@ -130,8 +132,8 @@ async function preflight() {
   log('preflight ok (deps, model key, ports, chromium check next)');
   const probe = spawnSync(
     'node',
-    ['-e', 'require("./packages/core/node_modules/playwright").chromium.launch().then((b) => b.close())'],
-    { cwd: ROOT, timeout: 60000, stdio: 'pipe', encoding: 'utf8' },
+    ['-e', 'require("playwright").chromium.launch().then((b) => b.close())'],
+    { cwd: path.join(ROOT, 'packages', 'core'), timeout: 60000, stdio: 'pipe', encoding: 'utf8' },
   );
   if (probe.status !== 0) {
     die(
@@ -156,7 +158,8 @@ function prepareTarget() {
       recursive: true,
     });
   }
-  run('git init -q -b main .', { cwd: TARGET_DIR });
+  run('git init -q .', { cwd: TARGET_DIR });
+  run('git symbolic-ref HEAD refs/heads/main', { cwd: TARGET_DIR });
   run('git add -A', { cwd: TARGET_DIR });
   run(`git -c user.email=demo@local -c user.name=demo commit -qm "${FIXTURE.commit}"`, {
     cwd: TARGET_DIR,
@@ -275,7 +278,7 @@ async function start() {
   pids.worker = startDetached('worker', 'pnpm', ['--filter', 'worker', 'start'], { RACES_DIR });
   fs.writeFileSync(PIDS_FILE, JSON.stringify(pids, null, 2));
 
-  await waitFor(`${TARGET_URL}api/balance`, 60000, 'fixture');
+  await waitFor(`${TARGET_URL}${FIXTURE.healthPath}`, 60000, 'fixture');
   log(`fixture serving at ${TARGET_URL}`);
   await waitFor(`${WEB_URL}/api/projects`, 120000, 'web');
   log(`web serving at ${WEB_URL}`);

@@ -1,0 +1,15 @@
+{
+  "id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+  "project_id": "82f9eaff-3b20-46a3-81c1-8265c7e0d9fe",
+  "task": "The bank page may show a stale balance when transfer responses arrive out of order. Design and run an experiment that proves or disproves a stale-overwrite lost update on the balance display, then repair it.",
+  "mode": "investigate-repair",
+  "status": "completed",
+  "phase": "done",
+  "limits": "{\"durationMs\":600000,\"modelCalls\":30,\"experiments\":6}",
+  "cancel_requested_at": null,
+  "created_at": 1793555671713,
+  "started_at": 1793555671969,
+  "finished_at": 1793555850591,
+  "error_code": null,
+  "error_message": null
+}

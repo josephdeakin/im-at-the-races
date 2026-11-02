@@ -1,0 +1,14 @@
+[
+  {
+    "id": "0411b1fe-fe0c-4584-a43d-dcdfec35bf4f",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "experiment_id": "1e6e063c-f881-468d-81b0-3d06ec3158c8",
+    "title": "Stale transfer response overwrites newer balance (lost update)",
+    "status": "reproduced",
+    "expectation_provenance": "Source behaviour in src/Bank.tsx plus existing test src/Bank.test.tsx FAIL_TO_PASS gate plus observed normal behaviour: baseline in-order delivery shows $40.00 after two $30 transfers from $100. Correct final UI must show latest $40.00.",
+    "explanation": "Two $30 transfers (rent then savings) from $100: baseline in-order shows $40.00. When early rent response (balanceCents 7000) held until after late savings response (balanceCents 4000) completes, final display is $70.00 instead of $40.00. 3-of-3 reproductions. Server books stay correct; client unconditionally applies stale balance.",
+    "implicated_code": "[{\"path\":\"src/Bank.tsx\",\"excerpt\":\"latestSequence.current += 1; const sequence = latestSequence.current; void transferRequest(...).then((response) => { setLedger(...); if (mode === 'fixed' && sequence !== latestSequence.current) return; setBalanceCents(response.balanceCents); })\",\"exists\":true}]",
+    "source_identity": "git:fe172c4713d5c7a6326f34ab92298fc631ff40a1:dirty",
+    "created_at": 1793555779847
+  }
+]

@@ -71,6 +71,11 @@ interface ArtifactsResponse {
   artifacts: Artifact[];
 }
 
+interface EventsResponse {
+  events: RunEvent[];
+  nextAfter: number;
+}
+
 export function RunWorkspace({
   initialRun,
   initialEvents,
@@ -92,12 +97,20 @@ export function RunWorkspace({
   initialArtifacts: Artifact[];
   repositoryPath: string | null;
 }) {
-  const [tab, setTab] = useState<Tab>(initialExperiments.length > 0 ? 'timeline' : 'activity');
+  const [tab, setTab] = useState<Tab>(
+    initialFindings.some((f) => f.status === 'reproduced')
+      ? 'findings'
+      : initialExperiments.length > 0
+        ? 'timeline'
+        : 'activity',
+  );
   const [repair, setRepair] = useState<RepairSnapshot>(initialRepair);
   const [findings, setFindings] = useState<Finding[]>(initialFindings);
   const [artifacts, setArtifacts] = useState<Artifact[]>(initialArtifacts);
   const [liveExperiments, setLiveExperiments] =
     useState<ExperimentWithTrials[]>(initialExperiments);
+  const [liveEvents, setLiveEvents] = useState<RunEvent[]>(initialEvents);
+  const eventCursorRef = useRef<number>(initialNextAfter);
   const [run, setRun] = useState<Run>(initialRun);
   const isTerminal = isTerminalRunStatus(run.status);
   const knownExperimentIdsRef = useRef<Set<string>>(
@@ -130,13 +143,23 @@ export function RunWorkspace({
     const poll = async () => {
       if (stopped) return;
       try {
-        const [runRes, repairRes, findingsRes, artifactsRes] = await Promise.all([
+        const [runRes, repairRes, findingsRes, artifactsRes, eventsRes] = await Promise.all([
           fetch(`/api/runs/${initialRun.id}`, { cache: 'no-store' }).catch(() => null),
           fetch(`/api/runs/${initialRun.id}/repair`, { cache: 'no-store' }).catch(() => null),
           fetch(`/api/runs/${initialRun.id}/findings`, { cache: 'no-store' }).catch(() => null),
           fetch(`/api/runs/${initialRun.id}/artifacts`, { cache: 'no-store' }).catch(() => null),
+          fetch(`/api/runs/${initialRun.id}/events?after=${eventCursorRef.current}`, {
+            cache: 'no-store',
+          }).catch(() => null),
         ]);
         if (stopped) return;
+        if (eventsRes?.ok) {
+          const data = (await eventsRes.json()) as EventsResponse;
+          eventCursorRef.current = data.nextAfter;
+          if (data.events.length > 0) {
+            setLiveEvents((prev) => [...prev, ...data.events]);
+          }
+        }
         if (repairRes?.ok) setRepair((await repairRes.json()) as RepairSnapshot);
         if (artifactsRes?.ok) {
           setArtifacts(((await artifactsRes.json()) as ArtifactsResponse).artifacts);
@@ -184,7 +207,7 @@ export function RunWorkspace({
     if (focusRequest) panelRef.current?.focus();
   }, [focusRequest]);
 
-  const modelBadge = modelBadgeFromEvents(initialEvents);
+  const modelBadge = modelBadgeFromEvents(liveEvents);
 
   const counts: Partial<Record<Tab, number>> = {
     findings: findings.length,
@@ -235,6 +258,7 @@ export function RunWorkspace({
       <HStack gap={3} justify="between" wrap="wrap">
         <HStack gap={3}>
           <StatusBadge status={run.status} />
+          <Badge variant="neutral" label={modelBadge.label} />
           <Text>
             Phase <Text type="code">{run.phase}</Text>
           </Text>
@@ -308,7 +332,7 @@ export function RunWorkspace({
             findings={findings}
             experiments={liveExperiments}
             runStatus={run.status}
-            visionNotes={visionNotesFromEvents(initialEvents)}
+            visionNotes={visionNotesFromEvents(liveEvents)}
             onOpenTrial={(trialId) => {
               setFocusRequest((prev) => ({ trialId, nonce: (prev?.nonce ?? 0) + 1 }));
               setTab('timeline');

@@ -1,0 +1,13 @@
+{
+  "generator": "im-at-the-races repro m5.2",
+  "planSchemaVersion": 1,
+  "playwrightVersion": "1.49.1",
+  "sourceIdentity": "git:fe172c4713d5c7a6326f34ab92298fc631ff40a1:subpath-clean+1-untracked",
+  "targetUrlDefault": "http://127.0.0.1:4110/",
+  "checkId": "balance-correct",
+  "createdAt": "2026-11-01T17:56:20.647Z",
+  "files": {
+    "repro.spec.ts": "sha256:984248bfa762a27ee9cf57b3aa62a8480d5d487568de3e4a98f8771dbcf0df81",
+    "plan.json": "sha256:7f00dc8fa7ce49efa856685ce939b521a2142bd85e52cdb9c4bd6611909b477f"
+  }
+}

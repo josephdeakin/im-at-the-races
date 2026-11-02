@@ -1,0 +1,2930 @@
+[
+  {
+    "id": "8a9f4aaf-45f5-4de5-90d6-b1805863d2ce",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 0,
+    "kind": "run.created",
+    "payload": "{\"task\":\"The bank page may show a stale balance when transfer responses arrive out of order. Design and run an experiment that proves or disproves a stale-overwrite lost update on the balance display, then repair it.\",\"mode\":\"investigate-repair\",\"limits\":{\"durationMs\":600000,\"modelCalls\":30,\"experiments\":6}}",
+    "created_at": 1793555671713
+  },
+  {
+    "id": "4f641fd4-90d2-4b7f-998f-6c495b7ac38a",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 1,
+    "kind": "run.started",
+    "payload": "{\"workerId\":\"worker-03ab92e6\"}",
+    "created_at": 1793555671970
+  },
+  {
+    "id": "3058ebef-1173-4a64-b92c-c6df1df5e01d",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 2,
+    "kind": "run.log",
+    "payload": "{\"message\":\"Agent investigation started (model muse-spark-1.3-contributor, source git:fe172c4713d5c7a6326f34ab92298fc631ff40a1:dirty).\"}",
+    "created_at": 1793555672017
+  },
+  {
+    "id": "4aad6b03-e1a4-48f7-99b8-eac573bbc1ba",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 3,
+    "kind": "run.phase",
+    "payload": "{\"phase\":\"inspecting\"}",
+    "created_at": 1793555672018
+  },
+  {
+    "id": "a1ae53e3-7ca0-4c5e-aa7a-b2aea3fa33ed",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 4,
+    "kind": "run.log",
+    "payload": "{\"message\":\"agent: listFiles (path=\\\".\\\")\"}",
+    "created_at": 1793555674486
+  },
+  {
+    "id": "9eb88b4f-b529-4411-8c30-54e94805385b",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 5,
+    "kind": "run.log",
+    "payload": "{\"message\":\"agent: observePage (url=\\\"http://127.0.0.1:4110/\\\")\"}",
+    "created_at": 1793555674489
+  },
+  {
+    "id": "b73737c6-bdf0-4b30-9f3a-03f7d15227c1",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 6,
+    "kind": "run.log",
+    "payload": "{\"message\":\"agent: readFile (path=\\\"src/Bank.tsx\\\" offset=1 limit=300)\"}",
+    "created_at": 1793555676555
+  },
+  {
+    "id": "aea106a9-820d-4413-8451-b6a418e498ff",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 7,
+    "kind": "run.log",
+    "payload": "{\"message\":\"agent: readFile (path=\\\"src/api.ts\\\" offset=1 limit=100)\"}",
+    "created_at": 1793555678298
+  },
+  {
+    "id": "5c983490-2eba-46ca-bb6a-8563d3df067e",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 8,
+    "kind": "run.log",
+    "payload": "{\"message\":\"agent: readFile (path=\\\"server.mjs\\\" offset=1 limit=150)\"}",
+    "created_at": 1793555680064
+  },
+  {
+    "id": "416b4431-109d-4484-9b05-b3282a446a1b",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 9,
+    "kind": "run.log",
+    "payload": "{\"message\":\"agent: readFile (path=\\\"src/App.tsx\\\" offset=1 limit=50)\"}",
+    "created_at": 1793555681494
+  },
+  {
+    "id": "813c1d28-63a7-4b33-800d-ee5fe9ede27c",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 10,
+    "kind": "run.log",
+    "payload": "{\"message\":\"agent: readFile (path=\\\"src/Bank.test.tsx\\\" offset=1 limit=100)\"}",
+    "created_at": 1793555689636
+  },
+  {
+    "id": "6dd2af7c-bf36-46f9-8139-8f0680d07727",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 11,
+    "kind": "run.log",
+    "payload": "{\"message\":\"agent: readFile (path=\\\"src/Bank.test.tsx\\\" offset=100 limit=60)\"}",
+    "created_at": 1793555699138
+  },
+  {
+    "id": "60b46fcb-abcc-4938-9688-a0b0be63c93a",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 12,
+    "kind": "run.log",
+    "payload": "{\"message\":\"agent: runExperiment (mode=\\\"explore\\\" plan=\\\"bank-stale-race-1\\\")\"}",
+    "created_at": 1793555719524
+  },
+  {
+    "id": "4c6d02df-e8d7-4091-9de3-0b0e268a71e1",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 13,
+    "kind": "run.phase",
+    "payload": "{\"phase\":\"experimenting\"}",
+    "created_at": 1793555719532
+  },
+  {
+    "id": "f9204627-3f91-43c3-9c67-c591fd49b107",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 14,
+    "kind": "experiment.started",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"planId\":\"bank-stale-race-1\",\"hypothesis\":\"Buggy Bank applies every transfer response unconditionally, so a slow earlier transfer overwrites the newer balance (lost update). Expectation justified by source behaviour in src/Bank.tsx buggy path plus existing test FAIL_TO_PASS gate; correct final balance after two $30 transfers from $100 must be $40.00.\"}",
+    "created_at": 1793555719535
+  },
+  {
+    "id": "aa856a78-129b-4323-b07d-721f17dcdd55",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 15,
+    "kind": "trial.started",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"4899d83c-644b-4d08-9973-bf729e99c9dc\",\"trialKind\":\"baseline\",\"planId\":\"bank-stale-race-1\",\"startUrl\":\"http://127.0.0.1:4110/\",\"attempt\":0}",
+    "created_at": 1793555719573
+  },
+  {
+    "id": "fe8e994d-7c2f-4f11-9614-2af2e39f47e9",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 16,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"4899d83c-644b-4d08-9973-bf729e99c9dc\",\"trialKind\":\"baseline\",\"actionId\":\"amt1\",\"kind\":\"fill\",\"testId\":\"amount-input\"}",
+    "created_at": 1793555719621
+  },
+  {
+    "id": "9723cd2d-eb55-42bc-b4e2-cd9551cc9e3a",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 17,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"4899d83c-644b-4d08-9973-bf729e99c9dc\",\"trialKind\":\"baseline\",\"actionId\":\"to1\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555719625
+  },
+  {
+    "id": "3291d413-37e0-48a1-a476-29400275cfe9",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 18,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"4899d83c-644b-4d08-9973-bf729e99c9dc\",\"trialKind\":\"baseline\",\"requestId\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4110/api/transfer\"}",
+    "created_at": 1793555719657
+  },
+  {
+    "id": "8443b3a6-6465-43c2-81d2-ebc6ca457704",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 19,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"4899d83c-644b-4d08-9973-bf729e99c9dc\",\"trialKind\":\"baseline\",\"actionId\":\"xfer1\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555719658
+  },
+  {
+    "id": "ce035998-c350-4a0d-9019-84b5e54354f3",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 20,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"4899d83c-644b-4d08-9973-bf729e99c9dc\",\"trialKind\":\"baseline\",\"actionId\":\"to2\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555719663
+  },
+  {
+    "id": "8bc08391-c366-4d25-9726-d4b8349f9613",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 21,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"4899d83c-644b-4d08-9973-bf729e99c9dc\",\"trialKind\":\"baseline\",\"requestId\":\"early\",\"status\":200,\"held\":false}",
+    "created_at": 1793555719714
+  },
+  {
+    "id": "339cce57-19d8-4240-a7a3-a77a7e27451a",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 22,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"4899d83c-644b-4d08-9973-bf729e99c9dc\",\"trialKind\":\"baseline\",\"requestId\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4110/api/transfer\"}",
+    "created_at": 1793555719717
+  },
+  {
+    "id": "df6fb505-e564-4d9d-8d66-63ebfe8ff344",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 23,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"4899d83c-644b-4d08-9973-bf729e99c9dc\",\"trialKind\":\"baseline\",\"actionId\":\"xfer2\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555719718
+  },
+  {
+    "id": "882c1dda-a237-4639-84d9-6ea84513a658",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 24,
+    "kind": "screenshot.captured",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"4899d83c-644b-4d08-9973-bf729e99c9dc\",\"trialKind\":\"baseline\",\"artifactId\":\"c2bfb209-4ca5-42bd-b2af-b823f2e0ebd0\",\"filename\":\"trial-baseline-4899d83c-after-actions.png\",\"label\":\"after-actions\"}",
+    "created_at": 1793555719764
+  },
+  {
+    "id": "343b6dd0-3024-48c8-8957-afa3ab9788da",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 25,
+    "kind": "values.captured",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"4899d83c-644b-4d08-9973-bf729e99c9dc\",\"trialKind\":\"baseline\",\"artifactId\":\"159e0521-a851-4beb-82aa-eff041f6a7c7\",\"filename\":\"trial-baseline-4899d83c-values.json\",\"values\":{\"balance-amount\":\"$70.00\"}}",
+    "created_at": 1793555719766
+  },
+  {
+    "id": "818d9c3b-57ec-4a9a-b7c8-c121ec803f92",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 26,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"4899d83c-644b-4d08-9973-bf729e99c9dc\",\"trialKind\":\"baseline\",\"requestId\":\"late\",\"status\":200,\"held\":false}",
+    "created_at": 1793555719772
+  },
+  {
+    "id": "ed0a03d0-64ae-4571-a110-cb87a1c29f51",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 27,
+    "kind": "assertion.evaluated",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"4899d83c-644b-4d08-9973-bf729e99c9dc\",\"trialKind\":\"baseline\",\"assertionId\":\"balance-correct\",\"passed\":true,\"expected\":\"$40.00\",\"observed\":\"$40.00\"}",
+    "created_at": 1793555719973
+  },
+  {
+    "id": "6d380b41-5a08-4576-a4ce-735d1d549676",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 28,
+    "kind": "trial.completed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"4899d83c-644b-4d08-9973-bf729e99c9dc\",\"trialKind\":\"baseline\",\"outcome\":\"pass\"}",
+    "created_at": 1793555719976
+  },
+  {
+    "id": "a9690d6e-9531-43ec-a6c2-c9045cd32df7",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 29,
+    "kind": "trial.started",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"ce2c346c-0b47-4e83-ad36-bf2f08bda983\",\"trialKind\":\"intervention\",\"planId\":\"bank-stale-race-1\",\"startUrl\":\"http://127.0.0.1:4110/\",\"attempt\":0}",
+    "created_at": 1793555720022
+  },
+  {
+    "id": "f6648c64-bfb4-4cb7-a9be-185492c1948e",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 30,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"ce2c346c-0b47-4e83-ad36-bf2f08bda983\",\"trialKind\":\"intervention\",\"actionId\":\"amt1\",\"kind\":\"fill\",\"testId\":\"amount-input\"}",
+    "created_at": 1793555720052
+  },
+  {
+    "id": "014694e1-3f1c-4783-aff5-21cf9dc06095",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 31,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"ce2c346c-0b47-4e83-ad36-bf2f08bda983\",\"trialKind\":\"intervention\",\"actionId\":\"to1\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555720054
+  },
+  {
+    "id": "d10aa9e8-5d35-4730-ae7b-be6d04647495",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 32,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"ce2c346c-0b47-4e83-ad36-bf2f08bda983\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4110/api/transfer\"}",
+    "created_at": 1793555720082
+  },
+  {
+    "id": "39ee1791-28ad-432e-8bdf-80a0d216a625",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 33,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"ce2c346c-0b47-4e83-ad36-bf2f08bda983\",\"trialKind\":\"intervention\",\"actionId\":\"xfer1\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555720083
+  },
+  {
+    "id": "5e49a18b-d227-4c65-bc3a-5a3ab249210c",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 34,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"ce2c346c-0b47-4e83-ad36-bf2f08bda983\",\"trialKind\":\"intervention\",\"actionId\":\"to2\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555720085
+  },
+  {
+    "id": "4bb4b250-3232-417e-9af4-64e8ced74fe7",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 35,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"ce2c346c-0b47-4e83-ad36-bf2f08bda983\",\"trialKind\":\"intervention\",\"requestId\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4110/api/transfer\"}",
+    "created_at": 1793555720116
+  },
+  {
+    "id": "d834f8ad-03c6-4bbe-980b-5774e30634e1",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 36,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"ce2c346c-0b47-4e83-ad36-bf2f08bda983\",\"trialKind\":\"intervention\",\"actionId\":\"xfer2\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555720117
+  },
+  {
+    "id": "90e41005-ce01-46d4-bdf8-977cb15ae6d4",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 37,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"ce2c346c-0b47-4e83-ad36-bf2f08bda983\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"status\":200,\"held\":true}",
+    "created_at": 1793555720137
+  },
+  {
+    "id": "53f8ec78-8496-480c-8b3b-a1aade7716f6",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 38,
+    "kind": "request.held",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"ce2c346c-0b47-4e83-ad36-bf2f08bda983\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"status\":200,\"maxHoldMs\":15000}",
+    "created_at": 1793555720137
+  },
+  {
+    "id": "1388d266-306e-4b37-90f4-3fb6693a79cb",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 39,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"ce2c346c-0b47-4e83-ad36-bf2f08bda983\",\"trialKind\":\"intervention\",\"requestId\":\"late\",\"status\":200,\"held\":false}",
+    "created_at": 1793555720169
+  },
+  {
+    "id": "522dd551-f0a6-4193-b918-eeddc1416495",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 40,
+    "kind": "trigger.satisfied",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"ce2c346c-0b47-4e83-ad36-bf2f08bda983\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"afterResponse\":\"late\"}",
+    "created_at": 1793555720218
+  },
+  {
+    "id": "ec129838-505d-4bdc-8750-9e595293c9e4",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 41,
+    "kind": "request.released",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"ce2c346c-0b47-4e83-ad36-bf2f08bda983\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"reason\":\"after-late\"}",
+    "created_at": 1793555720522
+  },
+  {
+    "id": "3cb0de33-ea53-4bb1-ae40-c88b43140c0e",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 42,
+    "kind": "screenshot.captured",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"ce2c346c-0b47-4e83-ad36-bf2f08bda983\",\"trialKind\":\"intervention\",\"artifactId\":\"e263d92c-dc00-47bb-adbe-044472cf78f7\",\"filename\":\"trial-intervention-ce2c346c-post-release.png\",\"label\":\"post-release\"}",
+    "created_at": 1793555720595
+  },
+  {
+    "id": "de1143da-ffc2-44f8-85fa-1c1d2b176ff0",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 43,
+    "kind": "values.captured",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"ce2c346c-0b47-4e83-ad36-bf2f08bda983\",\"trialKind\":\"intervention\",\"artifactId\":\"7075bb81-357f-407d-b8bf-f64b87b5acab\",\"filename\":\"trial-intervention-ce2c346c-values.json\",\"values\":{\"balance-amount\":\"$70.00\"}}",
+    "created_at": 1793555720598
+  },
+  {
+    "id": "c800dba9-bab0-4771-8ef1-0fbca0a6f26a",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 44,
+    "kind": "assertion.evaluated",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"ce2c346c-0b47-4e83-ad36-bf2f08bda983\",\"trialKind\":\"intervention\",\"assertionId\":\"balance-correct\",\"passed\":false,\"expected\":\"$40.00\",\"observed\":\"$70.00\"}",
+    "created_at": 1793555730628
+  },
+  {
+    "id": "08b86196-8b9e-4364-89ca-050c8a750983",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 45,
+    "kind": "screenshot.captured",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"ce2c346c-0b47-4e83-ad36-bf2f08bda983\",\"trialKind\":\"intervention\",\"artifactId\":\"9ab62421-d5bc-4002-9a68-d596b6f57e95\",\"filename\":\"trial-intervention-ce2c346c-assertion-failed.png\",\"label\":\"assertion-failed\"}",
+    "created_at": 1793555730696
+  },
+  {
+    "id": "bf78a1b8-f01e-48b2-abf2-965ef2657ee3",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 46,
+    "kind": "trial.completed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"ce2c346c-0b47-4e83-ad36-bf2f08bda983\",\"trialKind\":\"intervention\",\"outcome\":\"violation\"}",
+    "created_at": 1793555730696
+  },
+  {
+    "id": "266e1e6a-802c-4d07-a13b-1af282b0e647",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 47,
+    "kind": "experiment.completed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"planId\":\"bank-stale-race-1\",\"status\":\"completed\",\"baseline\":\"pass\",\"intervention\":\"violation\"}",
+    "created_at": 1793555730699
+  },
+  {
+    "id": "b32a60e4-871b-4a4e-ae42-6f8dafc82438",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 48,
+    "kind": "run.log",
+    "payload": "{\"message\":\"agent: runExperiment (mode=\\\"confirm\\\" experimentId=\\\"1e6e063c-f881-468d-81b0-3d06ec3158c8\\\")\"}",
+    "created_at": 1793555732705
+  },
+  {
+    "id": "8863dc4d-fa18-4aa1-8e15-48e93473f106",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 49,
+    "kind": "trial.started",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"35156b3b-4c0c-4a41-ac8b-44d4ff9d1d01\",\"trialKind\":\"baseline\",\"planId\":\"bank-stale-race-1\",\"startUrl\":\"http://127.0.0.1:4110/\",\"attempt\":1}",
+    "created_at": 1793555732762
+  },
+  {
+    "id": "1b2901f7-b6fc-4826-98be-1ea897db6b3d",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 50,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"35156b3b-4c0c-4a41-ac8b-44d4ff9d1d01\",\"trialKind\":\"baseline\",\"actionId\":\"amt1\",\"kind\":\"fill\",\"testId\":\"amount-input\"}",
+    "created_at": 1793555732793
+  },
+  {
+    "id": "d9840226-8f2a-43df-b44b-f621c220bd94",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 51,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"35156b3b-4c0c-4a41-ac8b-44d4ff9d1d01\",\"trialKind\":\"baseline\",\"actionId\":\"to1\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555732797
+  },
+  {
+    "id": "cecbbc61-1860-4b33-a96a-e8a4dd8ac4ab",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 52,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"35156b3b-4c0c-4a41-ac8b-44d4ff9d1d01\",\"trialKind\":\"baseline\",\"requestId\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4110/api/transfer\"}",
+    "created_at": 1793555732830
+  },
+  {
+    "id": "e2db2b8a-f5d8-47e3-b2d2-667f842c08b0",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 53,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"35156b3b-4c0c-4a41-ac8b-44d4ff9d1d01\",\"trialKind\":\"baseline\",\"actionId\":\"xfer1\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555732831
+  },
+  {
+    "id": "fffbacfb-8d47-46b4-8146-75441cb73ef2",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 54,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"35156b3b-4c0c-4a41-ac8b-44d4ff9d1d01\",\"trialKind\":\"baseline\",\"actionId\":\"to2\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555732834
+  },
+  {
+    "id": "e53180a9-7d8d-4b30-be29-5b932143ecd9",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 55,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"35156b3b-4c0c-4a41-ac8b-44d4ff9d1d01\",\"trialKind\":\"baseline\",\"requestId\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4110/api/transfer\"}",
+    "created_at": 1793555732869
+  },
+  {
+    "id": "aacffa5a-7337-4b89-ac39-165b9c947992",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 56,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"35156b3b-4c0c-4a41-ac8b-44d4ff9d1d01\",\"trialKind\":\"baseline\",\"actionId\":\"xfer2\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555732869
+  },
+  {
+    "id": "3149a050-7f2b-4c98-9c1c-68b0de3d7f72",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 57,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"35156b3b-4c0c-4a41-ac8b-44d4ff9d1d01\",\"trialKind\":\"baseline\",\"requestId\":\"early\",\"status\":200,\"held\":false}",
+    "created_at": 1793555732885
+  },
+  {
+    "id": "b02e59c0-0322-4590-8393-31f21d527e70",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 58,
+    "kind": "screenshot.captured",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"35156b3b-4c0c-4a41-ac8b-44d4ff9d1d01\",\"trialKind\":\"baseline\",\"artifactId\":\"ac08298e-9c8e-4df5-a9bd-766a6bbd3301\",\"filename\":\"trial-baseline-35156b3b-after-actions.png\",\"label\":\"after-actions\"}",
+    "created_at": 1793555732918
+  },
+  {
+    "id": "0c39124d-ea0e-45ac-96a0-dc1d12a6fe08",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 59,
+    "kind": "values.captured",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"35156b3b-4c0c-4a41-ac8b-44d4ff9d1d01\",\"trialKind\":\"baseline\",\"artifactId\":\"6988a11f-69d2-484b-bcae-76325bf2ae5f\",\"filename\":\"trial-baseline-35156b3b-values.json\",\"values\":{\"balance-amount\":\"$70.00\"}}",
+    "created_at": 1793555732920
+  },
+  {
+    "id": "07e25b18-e5cd-4bda-9573-cbe774c7c484",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 60,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"35156b3b-4c0c-4a41-ac8b-44d4ff9d1d01\",\"trialKind\":\"baseline\",\"requestId\":\"late\",\"status\":200,\"held\":false}",
+    "created_at": 1793555732921
+  },
+  {
+    "id": "7698a0c4-2b4d-4eba-9dfd-86fcb5f0210d",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 61,
+    "kind": "assertion.evaluated",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"35156b3b-4c0c-4a41-ac8b-44d4ff9d1d01\",\"trialKind\":\"baseline\",\"assertionId\":\"balance-correct\",\"passed\":true,\"expected\":\"$40.00\",\"observed\":\"$40.00\"}",
+    "created_at": 1793555733124
+  },
+  {
+    "id": "50407762-8906-4069-8012-a0e764b20ef6",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 62,
+    "kind": "trial.completed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"35156b3b-4c0c-4a41-ac8b-44d4ff9d1d01\",\"trialKind\":\"baseline\",\"outcome\":\"pass\"}",
+    "created_at": 1793555733125
+  },
+  {
+    "id": "a13b7430-6686-4c2e-b8e5-2e380900d499",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 63,
+    "kind": "trial.started",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"2aacd9f7-8a80-4f7a-9de9-35e9b31cc158\",\"trialKind\":\"intervention\",\"planId\":\"bank-stale-race-1\",\"startUrl\":\"http://127.0.0.1:4110/\",\"attempt\":1}",
+    "created_at": 1793555733165
+  },
+  {
+    "id": "3f05f77f-8ea3-4a37-a227-8cfba744a299",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 64,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"2aacd9f7-8a80-4f7a-9de9-35e9b31cc158\",\"trialKind\":\"intervention\",\"actionId\":\"amt1\",\"kind\":\"fill\",\"testId\":\"amount-input\"}",
+    "created_at": 1793555733198
+  },
+  {
+    "id": "eaf5ac53-a21e-4dfd-add8-f042efb24738",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 65,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"2aacd9f7-8a80-4f7a-9de9-35e9b31cc158\",\"trialKind\":\"intervention\",\"actionId\":\"to1\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555733200
+  },
+  {
+    "id": "5fd63ccd-47b4-4f04-893a-9490366bd757",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 66,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"2aacd9f7-8a80-4f7a-9de9-35e9b31cc158\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4110/api/transfer\"}",
+    "created_at": 1793555733230
+  },
+  {
+    "id": "7f6fd7a8-d7ec-4fe5-9a17-28edf32bab27",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 67,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"2aacd9f7-8a80-4f7a-9de9-35e9b31cc158\",\"trialKind\":\"intervention\",\"actionId\":\"xfer1\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555733231
+  },
+  {
+    "id": "e5e24f87-c391-49d2-b54f-0e8695401f63",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 68,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"2aacd9f7-8a80-4f7a-9de9-35e9b31cc158\",\"trialKind\":\"intervention\",\"actionId\":\"to2\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555733234
+  },
+  {
+    "id": "1fa198e0-5f42-40a6-8fa5-e34fba89d57a",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 69,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"2aacd9f7-8a80-4f7a-9de9-35e9b31cc158\",\"trialKind\":\"intervention\",\"requestId\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4110/api/transfer\"}",
+    "created_at": 1793555733266
+  },
+  {
+    "id": "29b7073e-ee18-48e3-affd-4f0f3216f56d",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 70,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"2aacd9f7-8a80-4f7a-9de9-35e9b31cc158\",\"trialKind\":\"intervention\",\"actionId\":\"xfer2\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555733267
+  },
+  {
+    "id": "5bd5ad8a-46b7-4fed-a2b1-835c49edd332",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 71,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"2aacd9f7-8a80-4f7a-9de9-35e9b31cc158\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"status\":200,\"held\":true}",
+    "created_at": 1793555733285
+  },
+  {
+    "id": "3e13f232-e316-458b-88d2-d1c786e50718",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 72,
+    "kind": "request.held",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"2aacd9f7-8a80-4f7a-9de9-35e9b31cc158\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"status\":200,\"maxHoldMs\":15000}",
+    "created_at": 1793555733285
+  },
+  {
+    "id": "1a76575b-7738-4b9c-a574-b513ac21aecf",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 73,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"2aacd9f7-8a80-4f7a-9de9-35e9b31cc158\",\"trialKind\":\"intervention\",\"requestId\":\"late\",\"status\":200,\"held\":false}",
+    "created_at": 1793555733319
+  },
+  {
+    "id": "e1ccf0ec-8c56-4474-b282-ee6c6937ef20",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 74,
+    "kind": "trigger.satisfied",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"2aacd9f7-8a80-4f7a-9de9-35e9b31cc158\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"afterResponse\":\"late\"}",
+    "created_at": 1793555733369
+  },
+  {
+    "id": "3f017e68-8479-4480-9757-5c8eae29a63a",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 75,
+    "kind": "request.released",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"2aacd9f7-8a80-4f7a-9de9-35e9b31cc158\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"reason\":\"after-late\"}",
+    "created_at": 1793555733676
+  },
+  {
+    "id": "ca0eea74-baef-440d-9cb8-bf291ae384ad",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 76,
+    "kind": "screenshot.captured",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"2aacd9f7-8a80-4f7a-9de9-35e9b31cc158\",\"trialKind\":\"intervention\",\"artifactId\":\"78b22a28-91be-4424-8e40-755bc234511a\",\"filename\":\"trial-intervention-2aacd9f7-post-release.png\",\"label\":\"post-release\"}",
+    "created_at": 1793555733745
+  },
+  {
+    "id": "31d6e5ca-1a45-4494-b2fe-27338f56d540",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 77,
+    "kind": "values.captured",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"2aacd9f7-8a80-4f7a-9de9-35e9b31cc158\",\"trialKind\":\"intervention\",\"artifactId\":\"96293626-b11d-4530-accb-c1b556789033\",\"filename\":\"trial-intervention-2aacd9f7-values.json\",\"values\":{\"balance-amount\":\"$70.00\"}}",
+    "created_at": 1793555733747
+  },
+  {
+    "id": "2c96a699-65d7-47e7-8361-a0e910924467",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 78,
+    "kind": "assertion.evaluated",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"2aacd9f7-8a80-4f7a-9de9-35e9b31cc158\",\"trialKind\":\"intervention\",\"assertionId\":\"balance-correct\",\"passed\":false,\"expected\":\"$40.00\",\"observed\":\"$70.00\"}",
+    "created_at": 1793555743771
+  },
+  {
+    "id": "a314b772-6a12-49dd-8966-66f42a0152d7",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 79,
+    "kind": "screenshot.captured",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"2aacd9f7-8a80-4f7a-9de9-35e9b31cc158\",\"trialKind\":\"intervention\",\"artifactId\":\"2c1fe6d9-4c5e-4089-9c83-120aef0348e5\",\"filename\":\"trial-intervention-2aacd9f7-assertion-failed.png\",\"label\":\"assertion-failed\"}",
+    "created_at": 1793555743842
+  },
+  {
+    "id": "0ac59f17-53f7-4b26-b4de-ff0dbdb60b44",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 80,
+    "kind": "trial.completed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"2aacd9f7-8a80-4f7a-9de9-35e9b31cc158\",\"trialKind\":\"intervention\",\"outcome\":\"violation\"}",
+    "created_at": 1793555743843
+  },
+  {
+    "id": "c78be87b-4c18-4416-b096-ade9d612fdcc",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 81,
+    "kind": "trial.started",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"b9acbb6e-fc55-4e07-86f4-104ecac68317\",\"trialKind\":\"baseline\",\"planId\":\"bank-stale-race-1\",\"startUrl\":\"http://127.0.0.1:4110/\",\"attempt\":2}",
+    "created_at": 1793555743875
+  },
+  {
+    "id": "1185e66a-c193-4186-8d45-c9fc9404812e",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 82,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"b9acbb6e-fc55-4e07-86f4-104ecac68317\",\"trialKind\":\"baseline\",\"actionId\":\"amt1\",\"kind\":\"fill\",\"testId\":\"amount-input\"}",
+    "created_at": 1793555743904
+  },
+  {
+    "id": "de03cdc4-a31f-4d0a-86dc-62ce147bee95",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 83,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"b9acbb6e-fc55-4e07-86f4-104ecac68317\",\"trialKind\":\"baseline\",\"actionId\":\"to1\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555743907
+  },
+  {
+    "id": "f6cce801-53f1-46d8-bd0e-15d65e7973d0",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 84,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"b9acbb6e-fc55-4e07-86f4-104ecac68317\",\"trialKind\":\"baseline\",\"requestId\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4110/api/transfer\"}",
+    "created_at": 1793555743930
+  },
+  {
+    "id": "75faeb14-3a33-4c36-b2ba-718d9c94b0ce",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 85,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"b9acbb6e-fc55-4e07-86f4-104ecac68317\",\"trialKind\":\"baseline\",\"actionId\":\"xfer1\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555743931
+  },
+  {
+    "id": "f00a2637-3154-4ecc-8227-20e5da6a8d6c",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 86,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"b9acbb6e-fc55-4e07-86f4-104ecac68317\",\"trialKind\":\"baseline\",\"actionId\":\"to2\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555743934
+  },
+  {
+    "id": "cb0de639-1c18-437b-aee1-b2ecc326b62d",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 87,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"b9acbb6e-fc55-4e07-86f4-104ecac68317\",\"trialKind\":\"baseline\",\"requestId\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4110/api/transfer\"}",
+    "created_at": 1793555743966
+  },
+  {
+    "id": "05bf57de-c629-4d65-8985-baad32ee5b34",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 88,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"b9acbb6e-fc55-4e07-86f4-104ecac68317\",\"trialKind\":\"baseline\",\"actionId\":\"xfer2\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555743967
+  },
+  {
+    "id": "54be8950-a689-4930-b22b-fcf92c140a15",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 89,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"b9acbb6e-fc55-4e07-86f4-104ecac68317\",\"trialKind\":\"baseline\",\"requestId\":\"early\",\"status\":200,\"held\":false}",
+    "created_at": 1793555743986
+  },
+  {
+    "id": "62590f59-63ab-4e7d-b522-d457c18c2381",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 90,
+    "kind": "screenshot.captured",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"b9acbb6e-fc55-4e07-86f4-104ecac68317\",\"trialKind\":\"baseline\",\"artifactId\":\"8fe82b6c-f133-4ce3-a1d2-ab73ed1d3cce\",\"filename\":\"trial-baseline-b9acbb6e-after-actions.png\",\"label\":\"after-actions\"}",
+    "created_at": 1793555744014
+  },
+  {
+    "id": "9afff392-88b6-42ff-aa84-3846592cdf7f",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 91,
+    "kind": "values.captured",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"b9acbb6e-fc55-4e07-86f4-104ecac68317\",\"trialKind\":\"baseline\",\"artifactId\":\"abe36e9c-0778-4cdd-8456-9bb7b4034a08\",\"filename\":\"trial-baseline-b9acbb6e-values.json\",\"values\":{\"balance-amount\":\"$70.00\"}}",
+    "created_at": 1793555744015
+  },
+  {
+    "id": "1cf86115-252b-4adf-8940-9787a5e716f6",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 92,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"b9acbb6e-fc55-4e07-86f4-104ecac68317\",\"trialKind\":\"baseline\",\"requestId\":\"late\",\"status\":200,\"held\":false}",
+    "created_at": 1793555744020
+  },
+  {
+    "id": "716145ee-2906-4179-b125-c7c1102167ff",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 93,
+    "kind": "assertion.evaluated",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"b9acbb6e-fc55-4e07-86f4-104ecac68317\",\"trialKind\":\"baseline\",\"assertionId\":\"balance-correct\",\"passed\":true,\"expected\":\"$40.00\",\"observed\":\"$40.00\"}",
+    "created_at": 1793555744220
+  },
+  {
+    "id": "2efec0a1-ae10-4327-bef1-f76bd6c0e3c4",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 94,
+    "kind": "trial.completed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"b9acbb6e-fc55-4e07-86f4-104ecac68317\",\"trialKind\":\"baseline\",\"outcome\":\"pass\"}",
+    "created_at": 1793555744222
+  },
+  {
+    "id": "c4cb4646-7af2-455e-abe5-d499c78ac366",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 95,
+    "kind": "trial.started",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"d6f2eca6-0c0e-4abf-9148-bda77ec73922\",\"trialKind\":\"intervention\",\"planId\":\"bank-stale-race-1\",\"startUrl\":\"http://127.0.0.1:4110/\",\"attempt\":2}",
+    "created_at": 1793555744266
+  },
+  {
+    "id": "448bca47-9080-4ee9-bf8a-c274de7d5f62",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 96,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"d6f2eca6-0c0e-4abf-9148-bda77ec73922\",\"trialKind\":\"intervention\",\"actionId\":\"amt1\",\"kind\":\"fill\",\"testId\":\"amount-input\"}",
+    "created_at": 1793555744297
+  },
+  {
+    "id": "01b54f3e-86aa-4292-a22a-77d17282dbc9",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 97,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"d6f2eca6-0c0e-4abf-9148-bda77ec73922\",\"trialKind\":\"intervention\",\"actionId\":\"to1\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555744299
+  },
+  {
+    "id": "181bec35-b654-4863-bdb9-c9256a094d49",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 98,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"d6f2eca6-0c0e-4abf-9148-bda77ec73922\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4110/api/transfer\"}",
+    "created_at": 1793555744331
+  },
+  {
+    "id": "c552012e-6732-4850-83bb-b179c7b512aa",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 99,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"d6f2eca6-0c0e-4abf-9148-bda77ec73922\",\"trialKind\":\"intervention\",\"actionId\":\"xfer1\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555744331
+  },
+  {
+    "id": "7d272906-81ca-47c3-b8f6-8c40eb87c76a",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 100,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"d6f2eca6-0c0e-4abf-9148-bda77ec73922\",\"trialKind\":\"intervention\",\"actionId\":\"to2\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555744334
+  },
+  {
+    "id": "8e6ac829-c25c-487e-b325-d0711a453835",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 101,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"d6f2eca6-0c0e-4abf-9148-bda77ec73922\",\"trialKind\":\"intervention\",\"requestId\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4110/api/transfer\"}",
+    "created_at": 1793555744378
+  },
+  {
+    "id": "9f4e3973-59ee-4f1f-9210-a6144b6d9fa0",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 102,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"d6f2eca6-0c0e-4abf-9148-bda77ec73922\",\"trialKind\":\"intervention\",\"actionId\":\"xfer2\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555744378
+  },
+  {
+    "id": "09949ef5-ea5b-435c-adba-cfa44a46e775",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 103,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"d6f2eca6-0c0e-4abf-9148-bda77ec73922\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"status\":200,\"held\":true}",
+    "created_at": 1793555744384
+  },
+  {
+    "id": "b866a39c-93aa-4204-9031-e2c92a9ad06a",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 104,
+    "kind": "request.held",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"d6f2eca6-0c0e-4abf-9148-bda77ec73922\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"status\":200,\"maxHoldMs\":15000}",
+    "created_at": 1793555744384
+  },
+  {
+    "id": "58cce2f9-40a0-405a-8675-60ede74b0898",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 105,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"d6f2eca6-0c0e-4abf-9148-bda77ec73922\",\"trialKind\":\"intervention\",\"requestId\":\"late\",\"status\":200,\"held\":false}",
+    "created_at": 1793555744430
+  },
+  {
+    "id": "2bebe29e-ffb1-4848-b1f0-1f7b54f2aea8",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 106,
+    "kind": "trigger.satisfied",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"d6f2eca6-0c0e-4abf-9148-bda77ec73922\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"afterResponse\":\"late\"}",
+    "created_at": 1793555744481
+  },
+  {
+    "id": "94acc8f2-ae42-4815-8b0d-925e40fed0b5",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 107,
+    "kind": "request.released",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"d6f2eca6-0c0e-4abf-9148-bda77ec73922\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"reason\":\"after-late\"}",
+    "created_at": 1793555744785
+  },
+  {
+    "id": "15bd0261-1175-426b-bbea-b4c04f270477",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 108,
+    "kind": "screenshot.captured",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"d6f2eca6-0c0e-4abf-9148-bda77ec73922\",\"trialKind\":\"intervention\",\"artifactId\":\"4e8786cf-82ca-498e-9541-270736b45ad7\",\"filename\":\"trial-intervention-d6f2eca6-post-release.png\",\"label\":\"post-release\"}",
+    "created_at": 1793555744838
+  },
+  {
+    "id": "b5ad7a0c-ad6b-41ce-a1b1-681af30908a5",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 109,
+    "kind": "values.captured",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"d6f2eca6-0c0e-4abf-9148-bda77ec73922\",\"trialKind\":\"intervention\",\"artifactId\":\"856a321e-b4b8-4ea9-874c-820ee0e3e64a\",\"filename\":\"trial-intervention-d6f2eca6-values.json\",\"values\":{\"balance-amount\":\"$70.00\"}}",
+    "created_at": 1793555744839
+  },
+  {
+    "id": "71ba1d8f-7555-43c3-8d8b-59f92976d8bc",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 110,
+    "kind": "assertion.evaluated",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"d6f2eca6-0c0e-4abf-9148-bda77ec73922\",\"trialKind\":\"intervention\",\"assertionId\":\"balance-correct\",\"passed\":false,\"expected\":\"$40.00\",\"observed\":\"$70.00\"}",
+    "created_at": 1793555754865
+  },
+  {
+    "id": "8234f327-76a2-4224-a954-42bfd9488b32",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 111,
+    "kind": "screenshot.captured",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"d6f2eca6-0c0e-4abf-9148-bda77ec73922\",\"trialKind\":\"intervention\",\"artifactId\":\"5ba4d1f4-247f-4808-90e1-ca678c5d901e\",\"filename\":\"trial-intervention-d6f2eca6-assertion-failed.png\",\"label\":\"assertion-failed\"}",
+    "created_at": 1793555754924
+  },
+  {
+    "id": "293a13ed-f576-47ba-a246-73cded3d5c6c",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 112,
+    "kind": "trial.completed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"d6f2eca6-0c0e-4abf-9148-bda77ec73922\",\"trialKind\":\"intervention\",\"outcome\":\"violation\"}",
+    "created_at": 1793555754925
+  },
+  {
+    "id": "dd3d588d-edc5-4da2-951a-ff79c1ebe63c",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 113,
+    "kind": "trial.started",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"7c9e45c9-7dce-44e6-852f-c6c4b7c44cf5\",\"trialKind\":\"baseline\",\"planId\":\"bank-stale-race-1\",\"startUrl\":\"http://127.0.0.1:4110/\",\"attempt\":3}",
+    "created_at": 1793555754960
+  },
+  {
+    "id": "89c60f01-2036-4867-9f7f-6a433e26d0c6",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 114,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"7c9e45c9-7dce-44e6-852f-c6c4b7c44cf5\",\"trialKind\":\"baseline\",\"actionId\":\"amt1\",\"kind\":\"fill\",\"testId\":\"amount-input\"}",
+    "created_at": 1793555754991
+  },
+  {
+    "id": "cadf5f67-049f-40d6-b5a9-14694fb14487",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 115,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"7c9e45c9-7dce-44e6-852f-c6c4b7c44cf5\",\"trialKind\":\"baseline\",\"actionId\":\"to1\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555754994
+  },
+  {
+    "id": "70d8db3e-141b-418a-b7c9-1415453a33ac",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 116,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"7c9e45c9-7dce-44e6-852f-c6c4b7c44cf5\",\"trialKind\":\"baseline\",\"requestId\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4110/api/transfer\"}",
+    "created_at": 1793555755030
+  },
+  {
+    "id": "d8d2e44a-212b-4cc5-b5eb-8cb01afc6015",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 117,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"7c9e45c9-7dce-44e6-852f-c6c4b7c44cf5\",\"trialKind\":\"baseline\",\"actionId\":\"xfer1\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555755031
+  },
+  {
+    "id": "3e077f9d-f409-438a-a6fa-663f30f38cdb",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 118,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"7c9e45c9-7dce-44e6-852f-c6c4b7c44cf5\",\"trialKind\":\"baseline\",\"actionId\":\"to2\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555755035
+  },
+  {
+    "id": "a5be6420-68f5-4f55-896a-cc82c1110161",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 119,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"7c9e45c9-7dce-44e6-852f-c6c4b7c44cf5\",\"trialKind\":\"baseline\",\"requestId\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4110/api/transfer\"}",
+    "created_at": 1793555755069
+  },
+  {
+    "id": "838dfe7d-3f2d-4b8f-855b-3f87bd0f02ab",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 120,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"7c9e45c9-7dce-44e6-852f-c6c4b7c44cf5\",\"trialKind\":\"baseline\",\"actionId\":\"xfer2\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555755070
+  },
+  {
+    "id": "58abda1a-f35f-4cbd-b351-fd87e0acea9b",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 121,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"7c9e45c9-7dce-44e6-852f-c6c4b7c44cf5\",\"trialKind\":\"baseline\",\"requestId\":\"early\",\"status\":200,\"held\":false}",
+    "created_at": 1793555755087
+  },
+  {
+    "id": "18830657-4223-4f2d-8d0d-73bfd77f1388",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 122,
+    "kind": "screenshot.captured",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"7c9e45c9-7dce-44e6-852f-c6c4b7c44cf5\",\"trialKind\":\"baseline\",\"artifactId\":\"beb9872e-5cf1-4e00-9abb-eb30a5d08029\",\"filename\":\"trial-baseline-7c9e45c9-after-actions.png\",\"label\":\"after-actions\"}",
+    "created_at": 1793555755113
+  },
+  {
+    "id": "cf363bba-01db-475d-a91c-e01a406d9055",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 123,
+    "kind": "values.captured",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"7c9e45c9-7dce-44e6-852f-c6c4b7c44cf5\",\"trialKind\":\"baseline\",\"artifactId\":\"7a1ab97e-8835-4879-9fb6-db1f1fd75813\",\"filename\":\"trial-baseline-7c9e45c9-values.json\",\"values\":{\"balance-amount\":\"$70.00\"}}",
+    "created_at": 1793555755116
+  },
+  {
+    "id": "aed65933-f7f3-449e-9d92-d62bfd112a8c",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 124,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"7c9e45c9-7dce-44e6-852f-c6c4b7c44cf5\",\"trialKind\":\"baseline\",\"requestId\":\"late\",\"status\":200,\"held\":false}",
+    "created_at": 1793555755122
+  },
+  {
+    "id": "4bce59eb-5b5b-424f-8dba-f9d6870c7ae8",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 125,
+    "kind": "assertion.evaluated",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"7c9e45c9-7dce-44e6-852f-c6c4b7c44cf5\",\"trialKind\":\"baseline\",\"assertionId\":\"balance-correct\",\"passed\":true,\"expected\":\"$40.00\",\"observed\":\"$40.00\"}",
+    "created_at": 1793555755320
+  },
+  {
+    "id": "1b139db8-70c9-4bf6-9568-9972d9324aa7",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 126,
+    "kind": "trial.completed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"7c9e45c9-7dce-44e6-852f-c6c4b7c44cf5\",\"trialKind\":\"baseline\",\"outcome\":\"pass\"}",
+    "created_at": 1793555755321
+  },
+  {
+    "id": "3146ac3b-86a2-44fd-a2f2-8152e78ea438",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 127,
+    "kind": "trial.started",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"3cffb0c9-6d3c-4c1b-8095-87b0664a120f\",\"trialKind\":\"intervention\",\"planId\":\"bank-stale-race-1\",\"startUrl\":\"http://127.0.0.1:4110/\",\"attempt\":3}",
+    "created_at": 1793555755361
+  },
+  {
+    "id": "97a869b8-01bc-4000-add8-049e7129f7a7",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 128,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"3cffb0c9-6d3c-4c1b-8095-87b0664a120f\",\"trialKind\":\"intervention\",\"actionId\":\"amt1\",\"kind\":\"fill\",\"testId\":\"amount-input\"}",
+    "created_at": 1793555755394
+  },
+  {
+    "id": "38555247-eccd-4c80-bfe2-a14676765d6d",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 129,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"3cffb0c9-6d3c-4c1b-8095-87b0664a120f\",\"trialKind\":\"intervention\",\"actionId\":\"to1\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555755397
+  },
+  {
+    "id": "637312f5-dbae-45b5-afeb-0ff4a955acc5",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 130,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"3cffb0c9-6d3c-4c1b-8095-87b0664a120f\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4110/api/transfer\"}",
+    "created_at": 1793555755430
+  },
+  {
+    "id": "6dd9cdb2-023d-46bb-ac8b-c8a66a17e1dc",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 131,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"3cffb0c9-6d3c-4c1b-8095-87b0664a120f\",\"trialKind\":\"intervention\",\"actionId\":\"xfer1\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555755430
+  },
+  {
+    "id": "6be88050-787f-41eb-9caf-3bbe8c7e173c",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 132,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"3cffb0c9-6d3c-4c1b-8095-87b0664a120f\",\"trialKind\":\"intervention\",\"actionId\":\"to2\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555755433
+  },
+  {
+    "id": "6c01d49e-7ca8-45f8-b9f3-2f5b76b39237",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 133,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"3cffb0c9-6d3c-4c1b-8095-87b0664a120f\",\"trialKind\":\"intervention\",\"requestId\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4110/api/transfer\"}",
+    "created_at": 1793555755467
+  },
+  {
+    "id": "2c9de47b-8866-4d55-be96-0abc03dbf7eb",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 134,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"3cffb0c9-6d3c-4c1b-8095-87b0664a120f\",\"trialKind\":\"intervention\",\"actionId\":\"xfer2\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555755468
+  },
+  {
+    "id": "9cbff110-44ea-45c6-ae4b-44c3892d393e",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 135,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"3cffb0c9-6d3c-4c1b-8095-87b0664a120f\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"status\":200,\"held\":true}",
+    "created_at": 1793555755483
+  },
+  {
+    "id": "4772433e-e652-48e0-b9bc-342009f6029b",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 136,
+    "kind": "request.held",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"3cffb0c9-6d3c-4c1b-8095-87b0664a120f\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"status\":200,\"maxHoldMs\":15000}",
+    "created_at": 1793555755483
+  },
+  {
+    "id": "203fbc05-e4ce-4d58-bee9-397fa565309f",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 137,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"3cffb0c9-6d3c-4c1b-8095-87b0664a120f\",\"trialKind\":\"intervention\",\"requestId\":\"late\",\"status\":200,\"held\":false}",
+    "created_at": 1793555755521
+  },
+  {
+    "id": "170cd758-34c6-426b-ae5d-2018c32436c3",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 138,
+    "kind": "trigger.satisfied",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"3cffb0c9-6d3c-4c1b-8095-87b0664a120f\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"afterResponse\":\"late\"}",
+    "created_at": 1793555755571
+  },
+  {
+    "id": "b57e4902-691b-434e-b44d-c66653da150c",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 139,
+    "kind": "request.released",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"3cffb0c9-6d3c-4c1b-8095-87b0664a120f\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"reason\":\"after-late\"}",
+    "created_at": 1793555755875
+  },
+  {
+    "id": "673af1ed-6e2f-483f-bdd0-d60ed6a6ac58",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 140,
+    "kind": "screenshot.captured",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"3cffb0c9-6d3c-4c1b-8095-87b0664a120f\",\"trialKind\":\"intervention\",\"artifactId\":\"378e9bcb-c5c7-4d4b-84c0-9aca67f8969a\",\"filename\":\"trial-intervention-3cffb0c9-post-release.png\",\"label\":\"post-release\"}",
+    "created_at": 1793555755938
+  },
+  {
+    "id": "d2358963-63aa-454e-9dc0-457d7c2b7d1c",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 141,
+    "kind": "values.captured",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"3cffb0c9-6d3c-4c1b-8095-87b0664a120f\",\"trialKind\":\"intervention\",\"artifactId\":\"bed72973-9a32-41bd-a69e-d17c66197aae\",\"filename\":\"trial-intervention-3cffb0c9-values.json\",\"values\":{\"balance-amount\":\"$70.00\"}}",
+    "created_at": 1793555755940
+  },
+  {
+    "id": "72cecd81-5e9a-48f5-b659-3d569c799d54",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 142,
+    "kind": "assertion.evaluated",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"3cffb0c9-6d3c-4c1b-8095-87b0664a120f\",\"trialKind\":\"intervention\",\"assertionId\":\"balance-correct\",\"passed\":false,\"expected\":\"$40.00\",\"observed\":\"$70.00\"}",
+    "created_at": 1793555765966
+  },
+  {
+    "id": "b9b6e4f1-bde2-4572-853e-43cc32d910fb",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 143,
+    "kind": "screenshot.captured",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"3cffb0c9-6d3c-4c1b-8095-87b0664a120f\",\"trialKind\":\"intervention\",\"artifactId\":\"0e3ddfc9-4537-48bd-9335-9aa58852bb6e\",\"filename\":\"trial-intervention-3cffb0c9-assertion-failed.png\",\"label\":\"assertion-failed\"}",
+    "created_at": 1793555766025
+  },
+  {
+    "id": "48061cbd-bb36-4df9-a98b-b4757d915159",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 144,
+    "kind": "trial.completed",
+    "payload": "{\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"trialId\":\"3cffb0c9-6d3c-4c1b-8095-87b0664a120f\",\"trialKind\":\"intervention\",\"outcome\":\"violation\"}",
+    "created_at": 1793555766025
+  },
+  {
+    "id": "c95c2d15-186f-4c12-b92a-85478f1670a5",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 145,
+    "kind": "run.log",
+    "payload": "{\"message\":\"agent: finish\"}",
+    "created_at": 1793555779840
+  },
+  {
+    "id": "262001ea-face-481a-a167-47741dfd17a9",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 146,
+    "kind": "finding.recorded",
+    "payload": "{\"findingId\":\"0411b1fe-fe0c-4584-a43d-dcdfec35bf4f\",\"experimentId\":\"1e6e063c-f881-468d-81b0-3d06ec3158c8\",\"title\":\"Stale transfer response overwrites newer balance (lost update)\",\"status\":\"reproduced\",\"count\":\"3 of 3\"}",
+    "created_at": 1793555779848
+  },
+  {
+    "id": "0a12e41e-32a0-4184-bd9f-7fb268c842a3",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 147,
+    "kind": "run.log",
+    "payload": "{\"message\":\"Agent investigation finished (agent finished). Summary: Buggy Bank has stale-overwrite lost update: holding first $30 transfer (rent, balance 7000) until second $30 transfer (savings, balance 4000) completes leaves $70.00 instead of $40.00. Baseline passes, intervention violates, confirmed 3/3. Repair recommended in src/Bank.tsx buggy path with latest-sequence guard; not applied for lack of write capability. Coverage: 2 experiments, 1 workflows tested. Findings: 0411b1fe-fe0c-4584-a43d-dcdfec35bf4f (reproduced). Unresolved: none. Limitations: No file-write tool available in this session, so code repair could not be applied; recommended fix is to apply sequence/age guard to buggy path (ignore stale balance like fixed mode but still append ledger). | Only buggy mode at / tested; fixed control at /fixed not re-tested via timing experiment.\"}",
+    "created_at": 1793555779849
+  },
+  {
+    "id": "f67690fe-f8b1-417a-8ad4-b63ff3fc612d",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 148,
+    "kind": "run.phase",
+    "payload": "{\"phase\":\"repairing\"}",
+    "created_at": 1793555779850
+  },
+  {
+    "id": "e73fd23e-fd24-483c-b5db-ca976b1aa69d",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 149,
+    "kind": "run.log",
+    "payload": "{\"message\":\"Starting isolated repair for finding 0411b1fe-fe0c-4584-a43d-dcdfec35bf4f (Stale transfer response overwrites newer balance (lost update)).\"}",
+    "created_at": 1793555779851
+  },
+  {
+    "id": "20e3e77b-744c-4e3c-b614-8791786e6369",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 150,
+    "kind": "run.log",
+    "payload": "{\"message\":\"Repair workspace ready at /tmp/races-demo-live-bank/workspaces/14490d7a-7072-4626-ab5d-f24cce7bae23 (source git:fe172c4713d5c7a6326f34ab92298fc631ff40a1:subpath-clean+1-untracked).\"}",
+    "created_at": 1793555779933
+  },
+  {
+    "id": "e1019e04-a5bd-47fb-9385-c0a501804313",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 151,
+    "kind": "run.log",
+    "payload": "{\"message\":\"Reproducer frozen (test sha256:98424, plan sha256:7f00d, check sha256:6c8e1).\"}",
+    "created_at": 1793555780649
+  },
+  {
+    "id": "0e6d2812-67bc-48a1-917a-a80d20a84d7d",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 152,
+    "kind": "run.log",
+    "payload": "{\"message\":\"Repair attempt 1: agent editing the isolated package.\"}",
+    "created_at": 1793555795492
+  },
+  {
+    "id": "30fb9fd6-98c4-41d1-bc98-54fb09a905f7",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 153,
+    "kind": "run.log",
+    "payload": "{\"message\":\"repair: listFiles (path=\\\".\\\")\"}",
+    "created_at": 1793555797051
+  },
+  {
+    "id": "d3e488ed-e9d9-4962-9563-6a7086c137ac",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 154,
+    "kind": "run.log",
+    "payload": "{\"message\":\"repair: readFile (path=\\\"src/Bank.tsx\\\")\"}",
+    "created_at": 1793555799516
+  },
+  {
+    "id": "ada1e866-96da-4a03-b2b9-29cd85868620",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 155,
+    "kind": "run.log",
+    "payload": "{\"message\":\"repair: readFile (path=\\\"src/api.ts\\\")\"}",
+    "created_at": 1793555799518
+  },
+  {
+    "id": "72e3cd13-707a-4c68-b708-fa1a8becaece",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 156,
+    "kind": "run.log",
+    "payload": "{\"message\":\"repair: readFile (path=\\\"src/Bank.test.tsx\\\")\"}",
+    "created_at": 1793555799519
+  },
+  {
+    "id": "31cb097e-25d2-41ca-91a9-a067e8148d55",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 157,
+    "kind": "run.log",
+    "payload": "{\"message\":\"repair: readFile (path=\\\"src/App.tsx\\\")\"}",
+    "created_at": 1793555806212
+  },
+  {
+    "id": "434f1020-bbb6-4473-bcb6-35978f70f988",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 158,
+    "kind": "run.log",
+    "payload": "{\"message\":\"repair: readFile (path=\\\"package.json\\\")\"}",
+    "created_at": 1793555806214
+  },
+  {
+    "id": "1cef3541-11e5-4ac1-bbca-ddb3e44a42ae",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 159,
+    "kind": "run.log",
+    "payload": "{\"message\":\"repair: editFile (path=\\\"src/Bank.tsx\\\")\"}",
+    "created_at": 1793555816446
+  },
+  {
+    "id": "bbb3631f-5907-43d3-875b-815a653c8d78",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 160,
+    "kind": "run.log",
+    "payload": "{\"message\":\"repair: runCheck (name=\\\"test\\\")\"}",
+    "created_at": 1793555819844
+  },
+  {
+    "id": "a9bda612-04a1-4e01-9bc2-53f2bc038dff",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 161,
+    "kind": "run.log",
+    "payload": "{\"message\":\"repair: runCheck (name=\\\"typecheck\\\")\"}",
+    "created_at": 1793555823467
+  },
+  {
+    "id": "a05e43cd-4d41-4776-b1c3-7f5d7c4949b6",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 162,
+    "kind": "run.log",
+    "payload": "{\"message\":\"repair: runCheck (name=\\\"build\\\")\"}",
+    "created_at": 1793555824956
+  },
+  {
+    "id": "496c5d45-6f1b-48d2-8b5d-861e59ae990e",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 163,
+    "kind": "run.log",
+    "payload": "{\"message\":\"repair: finishRepair\"}",
+    "created_at": 1793555832622
+  },
+  {
+    "id": "6aef5802-146f-4f93-8884-e5954fe931e3",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 164,
+    "kind": "run.log",
+    "payload": "{\"message\":\"Repair attempt 1 finished: Fixed stale transfer lost-update in src/Bank.tsx: removed the `mode === 'fixed'` gate so the sequence check `sequence !== latestSequence.current` applies on the buggy path too. Stale responses are now ignored for balance (ledger still records every transfer), so late rent ($70) no longer overwrites newer savings ($40). Tests, typecheck, and build pass.\"}",
+    "created_at": 1793555832624
+  },
+  {
+    "id": "8cd0c975-24d2-4a9c-8f47-28dc352bbcc5",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 165,
+    "kind": "experiment.started",
+    "payload": "{\"experimentId\":\"d2f49f27-3e1f-4719-bcb8-79fa01fe95ca\",\"planId\":\"bank-stale-race-1 (verification rep 1)\",\"hypothesis\":\"Buggy Bank applies every transfer response unconditionally, so a slow earlier transfer overwrites the newer balance (lost update). Expectation justified by source behaviour in src/Bank.tsx buggy path plus existing test FAIL_TO_PASS gate; correct final balance after two $30 transfers from $100 must be $40.00.\"}",
+    "created_at": 1793555833953
+  },
+  {
+    "id": "afe0e14d-1467-4ceb-8df7-a6494b421d2c",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 166,
+    "kind": "trial.started",
+    "payload": "{\"experimentId\":\"d2f49f27-3e1f-4719-bcb8-79fa01fe95ca\",\"trialId\":\"5a55821c-978b-4989-8c4e-ad5147a566d2\",\"trialKind\":\"baseline\",\"planId\":\"bank-stale-race-1 (verification rep 1)\",\"startUrl\":\"http://127.0.0.1:4202/\",\"attempt\":0}",
+    "created_at": 1793555834046
+  },
+  {
+    "id": "ab4f82cf-091e-4265-877f-a5a615490b9d",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 167,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"d2f49f27-3e1f-4719-bcb8-79fa01fe95ca\",\"trialId\":\"5a55821c-978b-4989-8c4e-ad5147a566d2\",\"trialKind\":\"baseline\",\"actionId\":\"amt1\",\"kind\":\"fill\",\"testId\":\"amount-input\"}",
+    "created_at": 1793555834104
+  },
+  {
+    "id": "c4e11ab1-fd9c-4163-bbf2-a4ef167c9059",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 168,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"d2f49f27-3e1f-4719-bcb8-79fa01fe95ca\",\"trialId\":\"5a55821c-978b-4989-8c4e-ad5147a566d2\",\"trialKind\":\"baseline\",\"actionId\":\"to1\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555834106
+  },
+  {
+    "id": "74b86bfe-859a-4745-8de0-1e1a98a17ddb",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 169,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"d2f49f27-3e1f-4719-bcb8-79fa01fe95ca\",\"trialId\":\"5a55821c-978b-4989-8c4e-ad5147a566d2\",\"trialKind\":\"baseline\",\"requestId\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\"}",
+    "created_at": 1793555834147
+  },
+  {
+    "id": "bf31581c-2670-4cde-b152-bf189006c704",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 170,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"d2f49f27-3e1f-4719-bcb8-79fa01fe95ca\",\"trialId\":\"5a55821c-978b-4989-8c4e-ad5147a566d2\",\"trialKind\":\"baseline\",\"actionId\":\"xfer1\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555834148
+  },
+  {
+    "id": "7fee9248-1806-414f-8c5b-b2579828a573",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 171,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"d2f49f27-3e1f-4719-bcb8-79fa01fe95ca\",\"trialId\":\"5a55821c-978b-4989-8c4e-ad5147a566d2\",\"trialKind\":\"baseline\",\"actionId\":\"to2\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555834151
+  },
+  {
+    "id": "79074336-669b-43d8-b10c-85a32b918894",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 172,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"d2f49f27-3e1f-4719-bcb8-79fa01fe95ca\",\"trialId\":\"5a55821c-978b-4989-8c4e-ad5147a566d2\",\"trialKind\":\"baseline\",\"requestId\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\"}",
+    "created_at": 1793555834175
+  },
+  {
+    "id": "4087fd72-b667-4962-a574-56f2113126c4",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 173,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"d2f49f27-3e1f-4719-bcb8-79fa01fe95ca\",\"trialId\":\"5a55821c-978b-4989-8c4e-ad5147a566d2\",\"trialKind\":\"baseline\",\"actionId\":\"xfer2\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555834176
+  },
+  {
+    "id": "cf331b6b-bf73-45ba-a55a-1ccbf19ff728",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 174,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"d2f49f27-3e1f-4719-bcb8-79fa01fe95ca\",\"trialId\":\"5a55821c-978b-4989-8c4e-ad5147a566d2\",\"trialKind\":\"baseline\",\"requestId\":\"early\",\"status\":200,\"held\":false}",
+    "created_at": 1793555834202
+  },
+  {
+    "id": "e0fa78de-147b-4266-a5a6-4c08c8e83313",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 175,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"d2f49f27-3e1f-4719-bcb8-79fa01fe95ca\",\"trialId\":\"5a55821c-978b-4989-8c4e-ad5147a566d2\",\"trialKind\":\"baseline\",\"requestId\":\"late\",\"status\":200,\"held\":false}",
+    "created_at": 1793555834229
+  },
+  {
+    "id": "0ed9237e-270d-4d43-80ed-0ea9ef4ab07e",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 176,
+    "kind": "screenshot.captured",
+    "payload": "{\"experimentId\":\"d2f49f27-3e1f-4719-bcb8-79fa01fe95ca\",\"trialId\":\"5a55821c-978b-4989-8c4e-ad5147a566d2\",\"trialKind\":\"baseline\",\"artifactId\":\"e3cc058d-7600-4b62-87dc-cb9f96d063f4\",\"filename\":\"trial-baseline-5a55821c-after-actions.png\",\"label\":\"after-actions\"}",
+    "created_at": 1793555834231
+  },
+  {
+    "id": "1600c39d-ebf3-49bb-b240-232a3f7e0036",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 177,
+    "kind": "values.captured",
+    "payload": "{\"experimentId\":\"d2f49f27-3e1f-4719-bcb8-79fa01fe95ca\",\"trialId\":\"5a55821c-978b-4989-8c4e-ad5147a566d2\",\"trialKind\":\"baseline\",\"artifactId\":\"6a6bc567-b35b-42cd-9d3d-06393c3bc7d4\",\"filename\":\"trial-baseline-5a55821c-values.json\",\"values\":{\"balance-amount\":\"$40.00\"}}",
+    "created_at": 1793555834233
+  },
+  {
+    "id": "f97667f1-c551-489b-ac42-a906bbafed9f",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 178,
+    "kind": "assertion.evaluated",
+    "payload": "{\"experimentId\":\"d2f49f27-3e1f-4719-bcb8-79fa01fe95ca\",\"trialId\":\"5a55821c-978b-4989-8c4e-ad5147a566d2\",\"trialKind\":\"baseline\",\"assertionId\":\"balance-correct\",\"passed\":true,\"expected\":\"$40.00\",\"observed\":\"$40.00\"}",
+    "created_at": 1793555834234
+  },
+  {
+    "id": "708d107d-fbb6-4d51-8546-98d3d7af24ff",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 179,
+    "kind": "trial.completed",
+    "payload": "{\"experimentId\":\"d2f49f27-3e1f-4719-bcb8-79fa01fe95ca\",\"trialId\":\"5a55821c-978b-4989-8c4e-ad5147a566d2\",\"trialKind\":\"baseline\",\"outcome\":\"pass\"}",
+    "created_at": 1793555834235
+  },
+  {
+    "id": "ab64d8ba-afab-4c0d-aa20-2b14699946a8",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 180,
+    "kind": "trial.started",
+    "payload": "{\"experimentId\":\"d2f49f27-3e1f-4719-bcb8-79fa01fe95ca\",\"trialId\":\"6381f89c-fb60-48a3-a020-b174c7b33d76\",\"trialKind\":\"intervention\",\"planId\":\"bank-stale-race-1 (verification rep 1)\",\"startUrl\":\"http://127.0.0.1:4202/\",\"attempt\":0}",
+    "created_at": 1793555834267
+  },
+  {
+    "id": "0475af93-e6c7-4d1d-885b-5be337624b54",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 181,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"d2f49f27-3e1f-4719-bcb8-79fa01fe95ca\",\"trialId\":\"6381f89c-fb60-48a3-a020-b174c7b33d76\",\"trialKind\":\"intervention\",\"actionId\":\"amt1\",\"kind\":\"fill\",\"testId\":\"amount-input\"}",
+    "created_at": 1793555834295
+  },
+  {
+    "id": "85441ca9-2d9c-418c-adb4-c6c95b1ea953",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 182,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"d2f49f27-3e1f-4719-bcb8-79fa01fe95ca\",\"trialId\":\"6381f89c-fb60-48a3-a020-b174c7b33d76\",\"trialKind\":\"intervention\",\"actionId\":\"to1\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555834298
+  },
+  {
+    "id": "62bfc8a9-6509-4ad6-a144-7c6862142d29",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 183,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"d2f49f27-3e1f-4719-bcb8-79fa01fe95ca\",\"trialId\":\"6381f89c-fb60-48a3-a020-b174c7b33d76\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\"}",
+    "created_at": 1793555834325
+  },
+  {
+    "id": "966c1c36-33c8-48d6-8296-79715687bf93",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 184,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"d2f49f27-3e1f-4719-bcb8-79fa01fe95ca\",\"trialId\":\"6381f89c-fb60-48a3-a020-b174c7b33d76\",\"trialKind\":\"intervention\",\"actionId\":\"xfer1\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555834326
+  },
+  {
+    "id": "47712cfe-6816-46ea-a5f5-6b4bf20bcf36",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 185,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"d2f49f27-3e1f-4719-bcb8-79fa01fe95ca\",\"trialId\":\"6381f89c-fb60-48a3-a020-b174c7b33d76\",\"trialKind\":\"intervention\",\"actionId\":\"to2\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555834328
+  },
+  {
+    "id": "e790907b-8f6f-446c-b943-489d4c5417be",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 186,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"d2f49f27-3e1f-4719-bcb8-79fa01fe95ca\",\"trialId\":\"6381f89c-fb60-48a3-a020-b174c7b33d76\",\"trialKind\":\"intervention\",\"requestId\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\"}",
+    "created_at": 1793555834361
+  },
+  {
+    "id": "1ca575bf-8b10-41ca-9fa0-89273f23e726",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 187,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"d2f49f27-3e1f-4719-bcb8-79fa01fe95ca\",\"trialId\":\"6381f89c-fb60-48a3-a020-b174c7b33d76\",\"trialKind\":\"intervention\",\"actionId\":\"xfer2\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555834362
+  },
+  {
+    "id": "18381a45-2317-4a6c-9602-b43a32daf5e7",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 188,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"d2f49f27-3e1f-4719-bcb8-79fa01fe95ca\",\"trialId\":\"6381f89c-fb60-48a3-a020-b174c7b33d76\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"status\":200,\"held\":true}",
+    "created_at": 1793555834379
+  },
+  {
+    "id": "6fe4bad0-cd1b-461a-aa8d-c9e41dc99f3e",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 189,
+    "kind": "request.held",
+    "payload": "{\"experimentId\":\"d2f49f27-3e1f-4719-bcb8-79fa01fe95ca\",\"trialId\":\"6381f89c-fb60-48a3-a020-b174c7b33d76\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"status\":200,\"maxHoldMs\":15000}",
+    "created_at": 1793555834379
+  },
+  {
+    "id": "ba2236fc-57cb-41b1-a95d-16299f9703b4",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 190,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"d2f49f27-3e1f-4719-bcb8-79fa01fe95ca\",\"trialId\":\"6381f89c-fb60-48a3-a020-b174c7b33d76\",\"trialKind\":\"intervention\",\"requestId\":\"late\",\"status\":200,\"held\":false}",
+    "created_at": 1793555834415
+  },
+  {
+    "id": "71756e6d-7225-4924-a365-c23074f4e33d",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 191,
+    "kind": "trigger.satisfied",
+    "payload": "{\"experimentId\":\"d2f49f27-3e1f-4719-bcb8-79fa01fe95ca\",\"trialId\":\"6381f89c-fb60-48a3-a020-b174c7b33d76\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"afterResponse\":\"late\"}",
+    "created_at": 1793555834463
+  },
+  {
+    "id": "73509025-cc22-4789-987b-0228eab13b78",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 192,
+    "kind": "request.released",
+    "payload": "{\"experimentId\":\"d2f49f27-3e1f-4719-bcb8-79fa01fe95ca\",\"trialId\":\"6381f89c-fb60-48a3-a020-b174c7b33d76\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"reason\":\"after-late\"}",
+    "created_at": 1793555834769
+  },
+  {
+    "id": "2a291160-6e96-4884-a987-73fb8dfd99fa",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 193,
+    "kind": "screenshot.captured",
+    "payload": "{\"experimentId\":\"d2f49f27-3e1f-4719-bcb8-79fa01fe95ca\",\"trialId\":\"6381f89c-fb60-48a3-a020-b174c7b33d76\",\"trialKind\":\"intervention\",\"artifactId\":\"8c525f20-3ab5-43f5-af08-37d0eadbf25d\",\"filename\":\"trial-intervention-6381f89c-post-release.png\",\"label\":\"post-release\"}",
+    "created_at": 1793555834842
+  },
+  {
+    "id": "bf0f4fe1-8786-40d6-916c-251f8d01ff2f",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 194,
+    "kind": "values.captured",
+    "payload": "{\"experimentId\":\"d2f49f27-3e1f-4719-bcb8-79fa01fe95ca\",\"trialId\":\"6381f89c-fb60-48a3-a020-b174c7b33d76\",\"trialKind\":\"intervention\",\"artifactId\":\"a7c82427-8fad-40f3-846c-a156545a8af8\",\"filename\":\"trial-intervention-6381f89c-values.json\",\"values\":{\"balance-amount\":\"$40.00\"}}",
+    "created_at": 1793555834845
+  },
+  {
+    "id": "2e1b076c-1dcd-4b25-813e-86eb153ea95c",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 195,
+    "kind": "assertion.evaluated",
+    "payload": "{\"experimentId\":\"d2f49f27-3e1f-4719-bcb8-79fa01fe95ca\",\"trialId\":\"6381f89c-fb60-48a3-a020-b174c7b33d76\",\"trialKind\":\"intervention\",\"assertionId\":\"balance-correct\",\"passed\":true,\"expected\":\"$40.00\",\"observed\":\"$40.00\"}",
+    "created_at": 1793555834846
+  },
+  {
+    "id": "76c9feb5-b63c-411a-ab5e-2eea7937c93c",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 196,
+    "kind": "trial.completed",
+    "payload": "{\"experimentId\":\"d2f49f27-3e1f-4719-bcb8-79fa01fe95ca\",\"trialId\":\"6381f89c-fb60-48a3-a020-b174c7b33d76\",\"trialKind\":\"intervention\",\"outcome\":\"pass\"}",
+    "created_at": 1793555834847
+  },
+  {
+    "id": "9cf41fe3-a95e-4c0c-bbed-d54d8bef7113",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 197,
+    "kind": "experiment.completed",
+    "payload": "{\"experimentId\":\"d2f49f27-3e1f-4719-bcb8-79fa01fe95ca\",\"planId\":\"bank-stale-race-1 (verification rep 1)\",\"status\":\"completed\",\"baseline\":\"pass\",\"intervention\":\"pass\"}",
+    "created_at": 1793555834849
+  },
+  {
+    "id": "a25a2805-ee52-44a2-a12a-bd369d6b5262",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 198,
+    "kind": "experiment.started",
+    "payload": "{\"experimentId\":\"7bc8622a-291b-4b43-ab70-5e4b66702d5c\",\"planId\":\"bank-stale-race-1 (verification rep 2)\",\"hypothesis\":\"Buggy Bank applies every transfer response unconditionally, so a slow earlier transfer overwrites the newer balance (lost update). Expectation justified by source behaviour in src/Bank.tsx buggy path plus existing test FAIL_TO_PASS gate; correct final balance after two $30 transfers from $100 must be $40.00.\"}",
+    "created_at": 1793555834851
+  },
+  {
+    "id": "e6701e71-b3f9-411e-a492-752541f16c58",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 199,
+    "kind": "trial.started",
+    "payload": "{\"experimentId\":\"7bc8622a-291b-4b43-ab70-5e4b66702d5c\",\"trialId\":\"ec9b08f0-2991-4033-bff9-658de223d300\",\"trialKind\":\"baseline\",\"planId\":\"bank-stale-race-1 (verification rep 2)\",\"startUrl\":\"http://127.0.0.1:4202/\",\"attempt\":0}",
+    "created_at": 1793555834879
+  },
+  {
+    "id": "5c36369d-2a6e-4a2f-81fb-1a901f2f09d1",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 200,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"7bc8622a-291b-4b43-ab70-5e4b66702d5c\",\"trialId\":\"ec9b08f0-2991-4033-bff9-658de223d300\",\"trialKind\":\"baseline\",\"actionId\":\"amt1\",\"kind\":\"fill\",\"testId\":\"amount-input\"}",
+    "created_at": 1793555834908
+  },
+  {
+    "id": "1490a2cc-ec3f-425a-9372-0ee3f49ab4cf",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 201,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"7bc8622a-291b-4b43-ab70-5e4b66702d5c\",\"trialId\":\"ec9b08f0-2991-4033-bff9-658de223d300\",\"trialKind\":\"baseline\",\"actionId\":\"to1\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555834910
+  },
+  {
+    "id": "10e83537-5d99-4ffc-a0a9-c416dbeb4bc5",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 202,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"7bc8622a-291b-4b43-ab70-5e4b66702d5c\",\"trialId\":\"ec9b08f0-2991-4033-bff9-658de223d300\",\"trialKind\":\"baseline\",\"requestId\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\"}",
+    "created_at": 1793555834943
+  },
+  {
+    "id": "4866e8aa-70e7-4cef-8aa7-d26ac1ee0b9b",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 203,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"7bc8622a-291b-4b43-ab70-5e4b66702d5c\",\"trialId\":\"ec9b08f0-2991-4033-bff9-658de223d300\",\"trialKind\":\"baseline\",\"actionId\":\"xfer1\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555834943
+  },
+  {
+    "id": "1184572a-167a-42ce-a1fe-779cfd37bb58",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 204,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"7bc8622a-291b-4b43-ab70-5e4b66702d5c\",\"trialId\":\"ec9b08f0-2991-4033-bff9-658de223d300\",\"trialKind\":\"baseline\",\"actionId\":\"to2\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555834945
+  },
+  {
+    "id": "647bdd0c-daea-4aa5-a087-19e84184b296",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 205,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"7bc8622a-291b-4b43-ab70-5e4b66702d5c\",\"trialId\":\"ec9b08f0-2991-4033-bff9-658de223d300\",\"trialKind\":\"baseline\",\"requestId\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\"}",
+    "created_at": 1793555834974
+  },
+  {
+    "id": "5fdf5792-666c-46f3-997e-85ede4db7da7",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 206,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"7bc8622a-291b-4b43-ab70-5e4b66702d5c\",\"trialId\":\"ec9b08f0-2991-4033-bff9-658de223d300\",\"trialKind\":\"baseline\",\"actionId\":\"xfer2\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555834975
+  },
+  {
+    "id": "c8ff77f5-03ad-47ce-83f0-dbbc2c70cd8a",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 207,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"7bc8622a-291b-4b43-ab70-5e4b66702d5c\",\"trialId\":\"ec9b08f0-2991-4033-bff9-658de223d300\",\"trialKind\":\"baseline\",\"requestId\":\"early\",\"status\":200,\"held\":false}",
+    "created_at": 1793555834997
+  },
+  {
+    "id": "9e9f6dd8-e7d2-4203-b805-f8e4e21a9d9b",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 208,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"7bc8622a-291b-4b43-ab70-5e4b66702d5c\",\"trialId\":\"ec9b08f0-2991-4033-bff9-658de223d300\",\"trialKind\":\"baseline\",\"requestId\":\"late\",\"status\":200,\"held\":false}",
+    "created_at": 1793555835028
+  },
+  {
+    "id": "01805b17-63ca-4f2f-8bd7-60818b25aefc",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 209,
+    "kind": "screenshot.captured",
+    "payload": "{\"experimentId\":\"7bc8622a-291b-4b43-ab70-5e4b66702d5c\",\"trialId\":\"ec9b08f0-2991-4033-bff9-658de223d300\",\"trialKind\":\"baseline\",\"artifactId\":\"118679b3-b06e-4293-85e4-93a83bd5e9ed\",\"filename\":\"trial-baseline-ec9b08f0-after-actions.png\",\"label\":\"after-actions\"}",
+    "created_at": 1793555835030
+  },
+  {
+    "id": "c3b90e71-56cc-49f1-93c9-fe4e61e9c786",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 210,
+    "kind": "values.captured",
+    "payload": "{\"experimentId\":\"7bc8622a-291b-4b43-ab70-5e4b66702d5c\",\"trialId\":\"ec9b08f0-2991-4033-bff9-658de223d300\",\"trialKind\":\"baseline\",\"artifactId\":\"e9daae6d-03fd-4d77-8cc6-a899a08f3ed9\",\"filename\":\"trial-baseline-ec9b08f0-values.json\",\"values\":{\"balance-amount\":\"$40.00\"}}",
+    "created_at": 1793555835032
+  },
+  {
+    "id": "446ec0ab-efe3-4c93-a089-70e249ad29c9",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 211,
+    "kind": "assertion.evaluated",
+    "payload": "{\"experimentId\":\"7bc8622a-291b-4b43-ab70-5e4b66702d5c\",\"trialId\":\"ec9b08f0-2991-4033-bff9-658de223d300\",\"trialKind\":\"baseline\",\"assertionId\":\"balance-correct\",\"passed\":true,\"expected\":\"$40.00\",\"observed\":\"$40.00\"}",
+    "created_at": 1793555835033
+  },
+  {
+    "id": "c967368f-d131-44e2-827a-51d58edd7fd1",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 212,
+    "kind": "trial.completed",
+    "payload": "{\"experimentId\":\"7bc8622a-291b-4b43-ab70-5e4b66702d5c\",\"trialId\":\"ec9b08f0-2991-4033-bff9-658de223d300\",\"trialKind\":\"baseline\",\"outcome\":\"pass\"}",
+    "created_at": 1793555835033
+  },
+  {
+    "id": "6ffd577b-4be9-4af5-9281-cd5e79c5ddba",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 213,
+    "kind": "trial.started",
+    "payload": "{\"experimentId\":\"7bc8622a-291b-4b43-ab70-5e4b66702d5c\",\"trialId\":\"a3dccbf2-aa66-4e34-8fc3-e436c1800bf5\",\"trialKind\":\"intervention\",\"planId\":\"bank-stale-race-1 (verification rep 2)\",\"startUrl\":\"http://127.0.0.1:4202/\",\"attempt\":0}",
+    "created_at": 1793555835062
+  },
+  {
+    "id": "784d1a17-cd4f-45d3-bfda-b00c7ce2ab4f",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 214,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"7bc8622a-291b-4b43-ab70-5e4b66702d5c\",\"trialId\":\"a3dccbf2-aa66-4e34-8fc3-e436c1800bf5\",\"trialKind\":\"intervention\",\"actionId\":\"amt1\",\"kind\":\"fill\",\"testId\":\"amount-input\"}",
+    "created_at": 1793555835088
+  },
+  {
+    "id": "f91b37b9-81be-463a-8de4-36a3ed91e23c",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 215,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"7bc8622a-291b-4b43-ab70-5e4b66702d5c\",\"trialId\":\"a3dccbf2-aa66-4e34-8fc3-e436c1800bf5\",\"trialKind\":\"intervention\",\"actionId\":\"to1\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555835091
+  },
+  {
+    "id": "f2f9246a-43c4-40d2-9ec6-3388fc45bec9",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 216,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"7bc8622a-291b-4b43-ab70-5e4b66702d5c\",\"trialId\":\"a3dccbf2-aa66-4e34-8fc3-e436c1800bf5\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\"}",
+    "created_at": 1793555835127
+  },
+  {
+    "id": "66ae3e24-a48f-49e4-a4d7-e35956660e72",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 217,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"7bc8622a-291b-4b43-ab70-5e4b66702d5c\",\"trialId\":\"a3dccbf2-aa66-4e34-8fc3-e436c1800bf5\",\"trialKind\":\"intervention\",\"actionId\":\"xfer1\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555835127
+  },
+  {
+    "id": "5a90b5b0-7f46-44e3-b68d-d4395c264a7e",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 218,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"7bc8622a-291b-4b43-ab70-5e4b66702d5c\",\"trialId\":\"a3dccbf2-aa66-4e34-8fc3-e436c1800bf5\",\"trialKind\":\"intervention\",\"actionId\":\"to2\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555835130
+  },
+  {
+    "id": "4809fd2d-6307-4a3e-93ab-b6bf9eb12a09",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 219,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"7bc8622a-291b-4b43-ab70-5e4b66702d5c\",\"trialId\":\"a3dccbf2-aa66-4e34-8fc3-e436c1800bf5\",\"trialKind\":\"intervention\",\"requestId\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\"}",
+    "created_at": 1793555835160
+  },
+  {
+    "id": "9a3c135e-3c1f-4ff7-8a5c-3b28a53f306a",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 220,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"7bc8622a-291b-4b43-ab70-5e4b66702d5c\",\"trialId\":\"a3dccbf2-aa66-4e34-8fc3-e436c1800bf5\",\"trialKind\":\"intervention\",\"actionId\":\"xfer2\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555835161
+  },
+  {
+    "id": "6031ad82-a39e-4b75-9f5c-3947085362f9",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 221,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"7bc8622a-291b-4b43-ab70-5e4b66702d5c\",\"trialId\":\"a3dccbf2-aa66-4e34-8fc3-e436c1800bf5\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"status\":200,\"held\":true}",
+    "created_at": 1793555835181
+  },
+  {
+    "id": "9d8d4e98-3418-4925-8066-5025d9ec43b9",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 222,
+    "kind": "request.held",
+    "payload": "{\"experimentId\":\"7bc8622a-291b-4b43-ab70-5e4b66702d5c\",\"trialId\":\"a3dccbf2-aa66-4e34-8fc3-e436c1800bf5\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"status\":200,\"maxHoldMs\":15000}",
+    "created_at": 1793555835181
+  },
+  {
+    "id": "0b4c4908-eff4-4dab-bfa4-c7a050afa633",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 223,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"7bc8622a-291b-4b43-ab70-5e4b66702d5c\",\"trialId\":\"a3dccbf2-aa66-4e34-8fc3-e436c1800bf5\",\"trialKind\":\"intervention\",\"requestId\":\"late\",\"status\":200,\"held\":false}",
+    "created_at": 1793555835214
+  },
+  {
+    "id": "7a8466ff-a163-415d-860d-f13025a71ee6",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 224,
+    "kind": "trigger.satisfied",
+    "payload": "{\"experimentId\":\"7bc8622a-291b-4b43-ab70-5e4b66702d5c\",\"trialId\":\"a3dccbf2-aa66-4e34-8fc3-e436c1800bf5\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"afterResponse\":\"late\"}",
+    "created_at": 1793555835262
+  },
+  {
+    "id": "7babc8a4-a11e-4f9c-916f-40d2f8e318dd",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 225,
+    "kind": "request.released",
+    "payload": "{\"experimentId\":\"7bc8622a-291b-4b43-ab70-5e4b66702d5c\",\"trialId\":\"a3dccbf2-aa66-4e34-8fc3-e436c1800bf5\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"reason\":\"after-late\"}",
+    "created_at": 1793555835565
+  },
+  {
+    "id": "197b4926-4adf-4e11-b428-601ce2372dba",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 226,
+    "kind": "screenshot.captured",
+    "payload": "{\"experimentId\":\"7bc8622a-291b-4b43-ab70-5e4b66702d5c\",\"trialId\":\"a3dccbf2-aa66-4e34-8fc3-e436c1800bf5\",\"trialKind\":\"intervention\",\"artifactId\":\"50846eb1-7dd8-4b86-9920-ec0ce0ada650\",\"filename\":\"trial-intervention-a3dccbf2-post-release.png\",\"label\":\"post-release\"}",
+    "created_at": 1793555835628
+  },
+  {
+    "id": "af876680-4a82-49b9-852b-7d4b48c77a16",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 227,
+    "kind": "values.captured",
+    "payload": "{\"experimentId\":\"7bc8622a-291b-4b43-ab70-5e4b66702d5c\",\"trialId\":\"a3dccbf2-aa66-4e34-8fc3-e436c1800bf5\",\"trialKind\":\"intervention\",\"artifactId\":\"56a66943-3f1a-438b-b0f2-45f452cfa428\",\"filename\":\"trial-intervention-a3dccbf2-values.json\",\"values\":{\"balance-amount\":\"$40.00\"}}",
+    "created_at": 1793555835630
+  },
+  {
+    "id": "18c45225-1816-471c-aac5-355b3d61ec55",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 228,
+    "kind": "assertion.evaluated",
+    "payload": "{\"experimentId\":\"7bc8622a-291b-4b43-ab70-5e4b66702d5c\",\"trialId\":\"a3dccbf2-aa66-4e34-8fc3-e436c1800bf5\",\"trialKind\":\"intervention\",\"assertionId\":\"balance-correct\",\"passed\":true,\"expected\":\"$40.00\",\"observed\":\"$40.00\"}",
+    "created_at": 1793555835631
+  },
+  {
+    "id": "66ac8a12-fae1-41e5-9279-c35ef5f524c9",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 229,
+    "kind": "trial.completed",
+    "payload": "{\"experimentId\":\"7bc8622a-291b-4b43-ab70-5e4b66702d5c\",\"trialId\":\"a3dccbf2-aa66-4e34-8fc3-e436c1800bf5\",\"trialKind\":\"intervention\",\"outcome\":\"pass\"}",
+    "created_at": 1793555835632
+  },
+  {
+    "id": "e0a7e575-dda0-4276-b26e-17014f6c077c",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 230,
+    "kind": "experiment.completed",
+    "payload": "{\"experimentId\":\"7bc8622a-291b-4b43-ab70-5e4b66702d5c\",\"planId\":\"bank-stale-race-1 (verification rep 2)\",\"status\":\"completed\",\"baseline\":\"pass\",\"intervention\":\"pass\"}",
+    "created_at": 1793555835635
+  },
+  {
+    "id": "072179ad-bd75-482c-afd2-f5b140931135",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 231,
+    "kind": "experiment.started",
+    "payload": "{\"experimentId\":\"59a25e28-5f4a-4702-99d0-c762e98c0b5e\",\"planId\":\"bank-stale-race-1 (verification rep 3)\",\"hypothesis\":\"Buggy Bank applies every transfer response unconditionally, so a slow earlier transfer overwrites the newer balance (lost update). Expectation justified by source behaviour in src/Bank.tsx buggy path plus existing test FAIL_TO_PASS gate; correct final balance after two $30 transfers from $100 must be $40.00.\"}",
+    "created_at": 1793555835637
+  },
+  {
+    "id": "adf0947a-9487-49b8-9cf5-0baae88ff552",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 232,
+    "kind": "trial.started",
+    "payload": "{\"experimentId\":\"59a25e28-5f4a-4702-99d0-c762e98c0b5e\",\"trialId\":\"8dd4b340-0ca9-40fd-bc96-46bf989a4a9a\",\"trialKind\":\"baseline\",\"planId\":\"bank-stale-race-1 (verification rep 3)\",\"startUrl\":\"http://127.0.0.1:4202/\",\"attempt\":0}",
+    "created_at": 1793555835664
+  },
+  {
+    "id": "210c3f61-2ac6-4b71-a6ad-afed998d6cd4",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 233,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"59a25e28-5f4a-4702-99d0-c762e98c0b5e\",\"trialId\":\"8dd4b340-0ca9-40fd-bc96-46bf989a4a9a\",\"trialKind\":\"baseline\",\"actionId\":\"amt1\",\"kind\":\"fill\",\"testId\":\"amount-input\"}",
+    "created_at": 1793555835692
+  },
+  {
+    "id": "e3704dd1-299e-4a2d-8d54-fc5a7a571d6c",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 234,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"59a25e28-5f4a-4702-99d0-c762e98c0b5e\",\"trialId\":\"8dd4b340-0ca9-40fd-bc96-46bf989a4a9a\",\"trialKind\":\"baseline\",\"actionId\":\"to1\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555835695
+  },
+  {
+    "id": "78a5de97-ca22-45f8-b0da-dd86d9eb59bb",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 235,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"59a25e28-5f4a-4702-99d0-c762e98c0b5e\",\"trialId\":\"8dd4b340-0ca9-40fd-bc96-46bf989a4a9a\",\"trialKind\":\"baseline\",\"requestId\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\"}",
+    "created_at": 1793555835727
+  },
+  {
+    "id": "b3cda9fe-feab-47fe-bc4c-8e3253620c2b",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 236,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"59a25e28-5f4a-4702-99d0-c762e98c0b5e\",\"trialId\":\"8dd4b340-0ca9-40fd-bc96-46bf989a4a9a\",\"trialKind\":\"baseline\",\"actionId\":\"xfer1\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555835727
+  },
+  {
+    "id": "c5160abf-06e9-4c8f-901f-e745a97731d0",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 237,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"59a25e28-5f4a-4702-99d0-c762e98c0b5e\",\"trialId\":\"8dd4b340-0ca9-40fd-bc96-46bf989a4a9a\",\"trialKind\":\"baseline\",\"actionId\":\"to2\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555835729
+  },
+  {
+    "id": "fea9d955-96fa-456e-8bb7-26e4d4df3c90",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 238,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"59a25e28-5f4a-4702-99d0-c762e98c0b5e\",\"trialId\":\"8dd4b340-0ca9-40fd-bc96-46bf989a4a9a\",\"trialKind\":\"baseline\",\"requestId\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\"}",
+    "created_at": 1793555835760
+  },
+  {
+    "id": "bc4c2235-e74b-4ab0-8f01-53e7f1d7c7a9",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 239,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"59a25e28-5f4a-4702-99d0-c762e98c0b5e\",\"trialId\":\"8dd4b340-0ca9-40fd-bc96-46bf989a4a9a\",\"trialKind\":\"baseline\",\"actionId\":\"xfer2\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555835761
+  },
+  {
+    "id": "0e9340c2-cf1a-47ac-98be-af2c98a80887",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 240,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"59a25e28-5f4a-4702-99d0-c762e98c0b5e\",\"trialId\":\"8dd4b340-0ca9-40fd-bc96-46bf989a4a9a\",\"trialKind\":\"baseline\",\"requestId\":\"early\",\"status\":200,\"held\":false}",
+    "created_at": 1793555835781
+  },
+  {
+    "id": "eaf34c99-118f-4d34-bad9-ee9d1ffd11b3",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 241,
+    "kind": "screenshot.captured",
+    "payload": "{\"experimentId\":\"59a25e28-5f4a-4702-99d0-c762e98c0b5e\",\"trialId\":\"8dd4b340-0ca9-40fd-bc96-46bf989a4a9a\",\"trialKind\":\"baseline\",\"artifactId\":\"aebc8350-dc34-45e4-a3c1-b2185d5477e9\",\"filename\":\"trial-baseline-8dd4b340-after-actions.png\",\"label\":\"after-actions\"}",
+    "created_at": 1793555835810
+  },
+  {
+    "id": "dc7d608f-5be4-4ae1-b33d-a5923c744f49",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 242,
+    "kind": "values.captured",
+    "payload": "{\"experimentId\":\"59a25e28-5f4a-4702-99d0-c762e98c0b5e\",\"trialId\":\"8dd4b340-0ca9-40fd-bc96-46bf989a4a9a\",\"trialKind\":\"baseline\",\"artifactId\":\"f84d9a17-1eb9-4861-920e-58b1986f8ff7\",\"filename\":\"trial-baseline-8dd4b340-values.json\",\"values\":{\"balance-amount\":\"$100.00\"}}",
+    "created_at": 1793555835812
+  },
+  {
+    "id": "08f3095e-f29e-414a-8bde-bcfef43ddac3",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 243,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"59a25e28-5f4a-4702-99d0-c762e98c0b5e\",\"trialId\":\"8dd4b340-0ca9-40fd-bc96-46bf989a4a9a\",\"trialKind\":\"baseline\",\"requestId\":\"late\",\"status\":200,\"held\":false}",
+    "created_at": 1793555835814
+  },
+  {
+    "id": "1c31d63d-4744-4952-b1d2-f74a6aa41bd6",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 244,
+    "kind": "assertion.evaluated",
+    "payload": "{\"experimentId\":\"59a25e28-5f4a-4702-99d0-c762e98c0b5e\",\"trialId\":\"8dd4b340-0ca9-40fd-bc96-46bf989a4a9a\",\"trialKind\":\"baseline\",\"assertionId\":\"balance-correct\",\"passed\":true,\"expected\":\"$40.00\",\"observed\":\"$40.00\"}",
+    "created_at": 1793555836018
+  },
+  {
+    "id": "c528abea-0436-40af-8f49-783a0dbf51de",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 245,
+    "kind": "trial.completed",
+    "payload": "{\"experimentId\":\"59a25e28-5f4a-4702-99d0-c762e98c0b5e\",\"trialId\":\"8dd4b340-0ca9-40fd-bc96-46bf989a4a9a\",\"trialKind\":\"baseline\",\"outcome\":\"pass\"}",
+    "created_at": 1793555836019
+  },
+  {
+    "id": "4e0adc94-2eb3-4b3a-853a-221a333ab5ec",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 246,
+    "kind": "trial.started",
+    "payload": "{\"experimentId\":\"59a25e28-5f4a-4702-99d0-c762e98c0b5e\",\"trialId\":\"21999402-4310-452e-92ce-06b9a891c101\",\"trialKind\":\"intervention\",\"planId\":\"bank-stale-race-1 (verification rep 3)\",\"startUrl\":\"http://127.0.0.1:4202/\",\"attempt\":0}",
+    "created_at": 1793555836055
+  },
+  {
+    "id": "ad133ff3-b459-4909-937e-f67df0bc9003",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 247,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"59a25e28-5f4a-4702-99d0-c762e98c0b5e\",\"trialId\":\"21999402-4310-452e-92ce-06b9a891c101\",\"trialKind\":\"intervention\",\"actionId\":\"amt1\",\"kind\":\"fill\",\"testId\":\"amount-input\"}",
+    "created_at": 1793555836085
+  },
+  {
+    "id": "eb0b4b6f-f91b-400a-b01f-86925a9b5a85",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 248,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"59a25e28-5f4a-4702-99d0-c762e98c0b5e\",\"trialId\":\"21999402-4310-452e-92ce-06b9a891c101\",\"trialKind\":\"intervention\",\"actionId\":\"to1\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555836087
+  },
+  {
+    "id": "8904c24e-6255-4308-877e-f5c32671bc4c",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 249,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"59a25e28-5f4a-4702-99d0-c762e98c0b5e\",\"trialId\":\"21999402-4310-452e-92ce-06b9a891c101\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\"}",
+    "created_at": 1793555836127
+  },
+  {
+    "id": "d9ae3822-abc1-4cf9-b44c-da2f40d11b10",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 250,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"59a25e28-5f4a-4702-99d0-c762e98c0b5e\",\"trialId\":\"21999402-4310-452e-92ce-06b9a891c101\",\"trialKind\":\"intervention\",\"actionId\":\"xfer1\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555836127
+  },
+  {
+    "id": "8dd84a7a-1b0b-42d8-9fd0-4f7c4bdad880",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 251,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"59a25e28-5f4a-4702-99d0-c762e98c0b5e\",\"trialId\":\"21999402-4310-452e-92ce-06b9a891c101\",\"trialKind\":\"intervention\",\"actionId\":\"to2\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555836129
+  },
+  {
+    "id": "efe50093-377e-421f-87ee-f75f168589f9",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 252,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"59a25e28-5f4a-4702-99d0-c762e98c0b5e\",\"trialId\":\"21999402-4310-452e-92ce-06b9a891c101\",\"trialKind\":\"intervention\",\"requestId\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\"}",
+    "created_at": 1793555836161
+  },
+  {
+    "id": "928a79fa-5b26-421b-8a08-4be1c8f11c80",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 253,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"59a25e28-5f4a-4702-99d0-c762e98c0b5e\",\"trialId\":\"21999402-4310-452e-92ce-06b9a891c101\",\"trialKind\":\"intervention\",\"actionId\":\"xfer2\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555836161
+  },
+  {
+    "id": "72e9387b-f1bd-4534-81b0-8c02a004e1e8",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 254,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"59a25e28-5f4a-4702-99d0-c762e98c0b5e\",\"trialId\":\"21999402-4310-452e-92ce-06b9a891c101\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"status\":200,\"held\":true}",
+    "created_at": 1793555836180
+  },
+  {
+    "id": "6396e2ef-5110-4e21-950b-a9a97862a004",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 255,
+    "kind": "request.held",
+    "payload": "{\"experimentId\":\"59a25e28-5f4a-4702-99d0-c762e98c0b5e\",\"trialId\":\"21999402-4310-452e-92ce-06b9a891c101\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"status\":200,\"maxHoldMs\":15000}",
+    "created_at": 1793555836181
+  },
+  {
+    "id": "52337b2f-9216-4247-8cfb-37d0e121165a",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 256,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"59a25e28-5f4a-4702-99d0-c762e98c0b5e\",\"trialId\":\"21999402-4310-452e-92ce-06b9a891c101\",\"trialKind\":\"intervention\",\"requestId\":\"late\",\"status\":200,\"held\":false}",
+    "created_at": 1793555836214
+  },
+  {
+    "id": "0c357a14-31f3-4f46-be12-2a195c0c6849",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 257,
+    "kind": "trigger.satisfied",
+    "payload": "{\"experimentId\":\"59a25e28-5f4a-4702-99d0-c762e98c0b5e\",\"trialId\":\"21999402-4310-452e-92ce-06b9a891c101\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"afterResponse\":\"late\"}",
+    "created_at": 1793555836263
+  },
+  {
+    "id": "a9ec404e-9570-450c-a738-332e703ed37f",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 258,
+    "kind": "request.released",
+    "payload": "{\"experimentId\":\"59a25e28-5f4a-4702-99d0-c762e98c0b5e\",\"trialId\":\"21999402-4310-452e-92ce-06b9a891c101\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"reason\":\"after-late\"}",
+    "created_at": 1793555836568
+  },
+  {
+    "id": "1fcf9f83-0157-4ea8-81b5-026169d6e8d5",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 259,
+    "kind": "screenshot.captured",
+    "payload": "{\"experimentId\":\"59a25e28-5f4a-4702-99d0-c762e98c0b5e\",\"trialId\":\"21999402-4310-452e-92ce-06b9a891c101\",\"trialKind\":\"intervention\",\"artifactId\":\"05f6dbfc-6d93-4dca-9272-c6611d99c0ab\",\"filename\":\"trial-intervention-21999402-post-release.png\",\"label\":\"post-release\"}",
+    "created_at": 1793555836645
+  },
+  {
+    "id": "b7fa0df4-2b2b-49d5-a55a-7321beb5ca88",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 260,
+    "kind": "values.captured",
+    "payload": "{\"experimentId\":\"59a25e28-5f4a-4702-99d0-c762e98c0b5e\",\"trialId\":\"21999402-4310-452e-92ce-06b9a891c101\",\"trialKind\":\"intervention\",\"artifactId\":\"a28a700d-b438-4b13-843b-2d719d340a9b\",\"filename\":\"trial-intervention-21999402-values.json\",\"values\":{\"balance-amount\":\"$40.00\"}}",
+    "created_at": 1793555836647
+  },
+  {
+    "id": "ffff5172-bd55-462f-8ec0-50b6ffdd972d",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 261,
+    "kind": "assertion.evaluated",
+    "payload": "{\"experimentId\":\"59a25e28-5f4a-4702-99d0-c762e98c0b5e\",\"trialId\":\"21999402-4310-452e-92ce-06b9a891c101\",\"trialKind\":\"intervention\",\"assertionId\":\"balance-correct\",\"passed\":true,\"expected\":\"$40.00\",\"observed\":\"$40.00\"}",
+    "created_at": 1793555836649
+  },
+  {
+    "id": "2c8a5c0a-7425-4034-be66-79c2e8e18ab2",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 262,
+    "kind": "trial.completed",
+    "payload": "{\"experimentId\":\"59a25e28-5f4a-4702-99d0-c762e98c0b5e\",\"trialId\":\"21999402-4310-452e-92ce-06b9a891c101\",\"trialKind\":\"intervention\",\"outcome\":\"pass\"}",
+    "created_at": 1793555836649
+  },
+  {
+    "id": "3890c53b-0905-48ed-b172-3ece783e5a14",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 263,
+    "kind": "experiment.completed",
+    "payload": "{\"experimentId\":\"59a25e28-5f4a-4702-99d0-c762e98c0b5e\",\"planId\":\"bank-stale-race-1 (verification rep 3)\",\"status\":\"completed\",\"baseline\":\"pass\",\"intervention\":\"pass\"}",
+    "created_at": 1793555836652
+  },
+  {
+    "id": "776fd835-8c85-475a-95aa-dac107bbf2c6",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 264,
+    "kind": "experiment.started",
+    "payload": "{\"experimentId\":\"5b56407b-7e16-469b-a251-2edeadf33321\",\"planId\":\"bank-stale-race-1 (natural workflow)\",\"hypothesis\":\"Buggy Bank applies every transfer response unconditionally, so a slow earlier transfer overwrites the newer balance (lost update). Expectation justified by source behaviour in src/Bank.tsx buggy path plus existing test FAIL_TO_PASS gate; correct final balance after two $30 transfers from $100 must be $40.00.\"}",
+    "created_at": 1793555836653
+  },
+  {
+    "id": "adc0cc6e-7ca9-4e71-8ebc-4e766ab1c6f7",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 265,
+    "kind": "trial.started",
+    "payload": "{\"experimentId\":\"5b56407b-7e16-469b-a251-2edeadf33321\",\"trialId\":\"4e04f556-b07f-4d3a-9f97-db666d903226\",\"trialKind\":\"baseline\",\"planId\":\"bank-stale-race-1 (natural workflow)\",\"startUrl\":\"http://127.0.0.1:4202/\",\"attempt\":0}",
+    "created_at": 1793555836683
+  },
+  {
+    "id": "5e28fc07-7ac6-468d-a397-c58252744845",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 266,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"5b56407b-7e16-469b-a251-2edeadf33321\",\"trialId\":\"4e04f556-b07f-4d3a-9f97-db666d903226\",\"trialKind\":\"baseline\",\"actionId\":\"amt1\",\"kind\":\"fill\",\"testId\":\"amount-input\"}",
+    "created_at": 1793555836713
+  },
+  {
+    "id": "bdf58331-8f18-416a-81bb-8f5ae25bd00b",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 267,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"5b56407b-7e16-469b-a251-2edeadf33321\",\"trialId\":\"4e04f556-b07f-4d3a-9f97-db666d903226\",\"trialKind\":\"baseline\",\"actionId\":\"to1\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555836716
+  },
+  {
+    "id": "41d91ee2-0b0d-4aa6-bf36-4213d43cfba5",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 268,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"5b56407b-7e16-469b-a251-2edeadf33321\",\"trialId\":\"4e04f556-b07f-4d3a-9f97-db666d903226\",\"trialKind\":\"baseline\",\"requestId\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\"}",
+    "created_at": 1793555836744
+  },
+  {
+    "id": "53e99d56-59ef-4b6a-8e0f-853e8c9117b3",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 269,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"5b56407b-7e16-469b-a251-2edeadf33321\",\"trialId\":\"4e04f556-b07f-4d3a-9f97-db666d903226\",\"trialKind\":\"baseline\",\"actionId\":\"xfer1\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555836744
+  },
+  {
+    "id": "6410fe78-a738-4f2d-b55e-b42ad6a8954c",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 270,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"5b56407b-7e16-469b-a251-2edeadf33321\",\"trialId\":\"4e04f556-b07f-4d3a-9f97-db666d903226\",\"trialKind\":\"baseline\",\"actionId\":\"to2\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555836747
+  },
+  {
+    "id": "8dd81384-99dc-41a6-8a61-cf718d0db6e6",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 271,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"5b56407b-7e16-469b-a251-2edeadf33321\",\"trialId\":\"4e04f556-b07f-4d3a-9f97-db666d903226\",\"trialKind\":\"baseline\",\"requestId\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\"}",
+    "created_at": 1793555836776
+  },
+  {
+    "id": "35bfd539-6aa1-4c25-bc66-9035f3c72062",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 272,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"5b56407b-7e16-469b-a251-2edeadf33321\",\"trialId\":\"4e04f556-b07f-4d3a-9f97-db666d903226\",\"trialKind\":\"baseline\",\"actionId\":\"xfer2\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555836776
+  },
+  {
+    "id": "52023e90-5205-4036-8555-5a4d764eeb77",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 273,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"5b56407b-7e16-469b-a251-2edeadf33321\",\"trialId\":\"4e04f556-b07f-4d3a-9f97-db666d903226\",\"trialKind\":\"baseline\",\"requestId\":\"early\",\"status\":200,\"held\":false}",
+    "created_at": 1793555836797
+  },
+  {
+    "id": "b89f7ab7-e2b4-476f-88b7-8370676285a7",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 274,
+    "kind": "screenshot.captured",
+    "payload": "{\"experimentId\":\"5b56407b-7e16-469b-a251-2edeadf33321\",\"trialId\":\"4e04f556-b07f-4d3a-9f97-db666d903226\",\"trialKind\":\"baseline\",\"artifactId\":\"cb446442-604a-4a02-8e3b-5b4325b2349b\",\"filename\":\"trial-baseline-4e04f556-after-actions.png\",\"label\":\"after-actions\"}",
+    "created_at": 1793555836827
+  },
+  {
+    "id": "52acfdc1-a0a1-4a65-b18e-9f51d8078f47",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 275,
+    "kind": "values.captured",
+    "payload": "{\"experimentId\":\"5b56407b-7e16-469b-a251-2edeadf33321\",\"trialId\":\"4e04f556-b07f-4d3a-9f97-db666d903226\",\"trialKind\":\"baseline\",\"artifactId\":\"88e9ada1-886d-4254-928c-d8b14efca340\",\"filename\":\"trial-baseline-4e04f556-values.json\",\"values\":{\"balance-amount\":\"$100.00\"}}",
+    "created_at": 1793555836828
+  },
+  {
+    "id": "97a8209b-da87-432e-a883-9cb7728a6858",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 276,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"5b56407b-7e16-469b-a251-2edeadf33321\",\"trialId\":\"4e04f556-b07f-4d3a-9f97-db666d903226\",\"trialKind\":\"baseline\",\"requestId\":\"late\",\"status\":200,\"held\":false}",
+    "created_at": 1793555836829
+  },
+  {
+    "id": "e737d97a-7512-434b-a04c-7adc50f961b2",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 277,
+    "kind": "assertion.evaluated",
+    "payload": "{\"experimentId\":\"5b56407b-7e16-469b-a251-2edeadf33321\",\"trialId\":\"4e04f556-b07f-4d3a-9f97-db666d903226\",\"trialKind\":\"baseline\",\"assertionId\":\"balance-correct\",\"passed\":true,\"expected\":\"$40.00\",\"observed\":\"$40.00\"}",
+    "created_at": 1793555837030
+  },
+  {
+    "id": "35885a9a-da58-49a4-993b-3915cba90fb7",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 278,
+    "kind": "trial.completed",
+    "payload": "{\"experimentId\":\"5b56407b-7e16-469b-a251-2edeadf33321\",\"trialId\":\"4e04f556-b07f-4d3a-9f97-db666d903226\",\"trialKind\":\"baseline\",\"outcome\":\"pass\"}",
+    "created_at": 1793555837031
+  },
+  {
+    "id": "8025b3ed-72f8-4853-ad11-09d87c29aa8f",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 279,
+    "kind": "trial.started",
+    "payload": "{\"experimentId\":\"5b56407b-7e16-469b-a251-2edeadf33321\",\"trialId\":\"dd8737df-ff70-4373-9ce2-19991c7274d5\",\"trialKind\":\"intervention\",\"planId\":\"bank-stale-race-1 (natural workflow)\",\"startUrl\":\"http://127.0.0.1:4202/\",\"attempt\":0}",
+    "created_at": 1793555837061
+  },
+  {
+    "id": "b9b4ce4d-c8c1-4c56-91f2-fe083cbaa40d",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 280,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"5b56407b-7e16-469b-a251-2edeadf33321\",\"trialId\":\"dd8737df-ff70-4373-9ce2-19991c7274d5\",\"trialKind\":\"intervention\",\"actionId\":\"amt1\",\"kind\":\"fill\",\"testId\":\"amount-input\"}",
+    "created_at": 1793555837089
+  },
+  {
+    "id": "6185895b-a69b-41e1-8dc2-e8a7bc7377fe",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 281,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"5b56407b-7e16-469b-a251-2edeadf33321\",\"trialId\":\"dd8737df-ff70-4373-9ce2-19991c7274d5\",\"trialKind\":\"intervention\",\"actionId\":\"to1\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555837091
+  },
+  {
+    "id": "e8cf77b3-e67d-4faa-abda-c13d18be3485",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 282,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"5b56407b-7e16-469b-a251-2edeadf33321\",\"trialId\":\"dd8737df-ff70-4373-9ce2-19991c7274d5\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\"}",
+    "created_at": 1793555837126
+  },
+  {
+    "id": "beb13ee7-99a3-4da1-9e00-7ca3581ec6d8",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 283,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"5b56407b-7e16-469b-a251-2edeadf33321\",\"trialId\":\"dd8737df-ff70-4373-9ce2-19991c7274d5\",\"trialKind\":\"intervention\",\"actionId\":\"xfer1\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555837126
+  },
+  {
+    "id": "32ca88a3-585b-4b74-89f6-ca2db174ab79",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 284,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"5b56407b-7e16-469b-a251-2edeadf33321\",\"trialId\":\"dd8737df-ff70-4373-9ce2-19991c7274d5\",\"trialKind\":\"intervention\",\"actionId\":\"to2\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555837128
+  },
+  {
+    "id": "5e9e34f3-552b-4a0e-b743-492ca5f4ac86",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 285,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"5b56407b-7e16-469b-a251-2edeadf33321\",\"trialId\":\"dd8737df-ff70-4373-9ce2-19991c7274d5\",\"trialKind\":\"intervention\",\"requestId\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\"}",
+    "created_at": 1793555837160
+  },
+  {
+    "id": "9d754080-c827-4c7f-894e-1e2a109da6d3",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 286,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"5b56407b-7e16-469b-a251-2edeadf33321\",\"trialId\":\"dd8737df-ff70-4373-9ce2-19991c7274d5\",\"trialKind\":\"intervention\",\"actionId\":\"xfer2\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555837161
+  },
+  {
+    "id": "fc053d77-2e44-4105-92b4-cd8653f2c389",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 287,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"5b56407b-7e16-469b-a251-2edeadf33321\",\"trialId\":\"dd8737df-ff70-4373-9ce2-19991c7274d5\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"status\":200,\"held\":false}",
+    "created_at": 1793555837179
+  },
+  {
+    "id": "0d94004e-4bf9-4b91-88f8-f97737d7e9c3",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 288,
+    "kind": "screenshot.captured",
+    "payload": "{\"experimentId\":\"5b56407b-7e16-469b-a251-2edeadf33321\",\"trialId\":\"dd8737df-ff70-4373-9ce2-19991c7274d5\",\"trialKind\":\"intervention\",\"artifactId\":\"a8b923c9-2de9-402c-82c0-88d29114a81f\",\"filename\":\"trial-intervention-dd8737df-post-release.png\",\"label\":\"post-release\"}",
+    "created_at": 1793555837209
+  },
+  {
+    "id": "fd85e7ae-e3b4-4c90-aa84-77ed74b6a6ef",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 289,
+    "kind": "values.captured",
+    "payload": "{\"experimentId\":\"5b56407b-7e16-469b-a251-2edeadf33321\",\"trialId\":\"dd8737df-ff70-4373-9ce2-19991c7274d5\",\"trialKind\":\"intervention\",\"artifactId\":\"4dae7124-ba83-49c1-919f-285b7dac2b57\",\"filename\":\"trial-intervention-dd8737df-values.json\",\"values\":{\"balance-amount\":\"$100.00\"}}",
+    "created_at": 1793555837211
+  },
+  {
+    "id": "6d5b9ea1-0f79-4054-b98e-c889cd50efd3",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 290,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"5b56407b-7e16-469b-a251-2edeadf33321\",\"trialId\":\"dd8737df-ff70-4373-9ce2-19991c7274d5\",\"trialKind\":\"intervention\",\"requestId\":\"late\",\"status\":200,\"held\":false}",
+    "created_at": 1793555837212
+  },
+  {
+    "id": "358433c8-b4f6-4d11-bc13-22c692dc5da2",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 291,
+    "kind": "assertion.evaluated",
+    "payload": "{\"experimentId\":\"5b56407b-7e16-469b-a251-2edeadf33321\",\"trialId\":\"dd8737df-ff70-4373-9ce2-19991c7274d5\",\"trialKind\":\"intervention\",\"assertionId\":\"balance-correct\",\"passed\":true,\"expected\":\"$40.00\",\"observed\":\"$40.00\"}",
+    "created_at": 1793555837415
+  },
+  {
+    "id": "6026ea42-421d-4b55-888d-e62586efcde2",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 292,
+    "kind": "trial.completed",
+    "payload": "{\"experimentId\":\"5b56407b-7e16-469b-a251-2edeadf33321\",\"trialId\":\"dd8737df-ff70-4373-9ce2-19991c7274d5\",\"trialKind\":\"intervention\",\"outcome\":\"pass\"}",
+    "created_at": 1793555837417
+  },
+  {
+    "id": "c7e29ea1-3a70-46e4-a70e-eef2558c579e",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 293,
+    "kind": "experiment.completed",
+    "payload": "{\"experimentId\":\"5b56407b-7e16-469b-a251-2edeadf33321\",\"planId\":\"bank-stale-race-1 (natural workflow)\",\"status\":\"completed\",\"baseline\":\"pass\",\"intervention\":\"pass\"}",
+    "created_at": 1793555837423
+  },
+  {
+    "id": "c640e9cd-71b5-4b7e-b2e4-0dd432eed850",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 294,
+    "kind": "experiment.started",
+    "payload": "{\"experimentId\":\"d9ba5e65-8ca6-4d1e-b293-a00d45b87b7e\",\"planId\":\"bank-stale-race-1 (variation-early-delivery)\",\"hypothesis\":\"Buggy Bank applies every transfer response unconditionally, so a slow earlier transfer overwrites the newer balance (lost update). Expectation justified by source behaviour in src/Bank.tsx buggy path plus existing test FAIL_TO_PASS gate; correct final balance after two $30 transfers from $100 must be $40.00.\"}",
+    "created_at": 1793555837426
+  },
+  {
+    "id": "166fdf98-cfdc-4d07-8a1d-9c433e4dba7b",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 295,
+    "kind": "trial.started",
+    "payload": "{\"experimentId\":\"d9ba5e65-8ca6-4d1e-b293-a00d45b87b7e\",\"trialId\":\"905f424d-f862-4e21-a998-52752e716ce9\",\"trialKind\":\"baseline\",\"planId\":\"bank-stale-race-1 (variation-early-delivery)\",\"startUrl\":\"http://127.0.0.1:4202/\",\"attempt\":0}",
+    "created_at": 1793555837461
+  },
+  {
+    "id": "b1db043a-1d3d-4876-9e26-73ddb0e31a30",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 296,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"d9ba5e65-8ca6-4d1e-b293-a00d45b87b7e\",\"trialId\":\"905f424d-f862-4e21-a998-52752e716ce9\",\"trialKind\":\"baseline\",\"actionId\":\"amt1\",\"kind\":\"fill\",\"testId\":\"amount-input\"}",
+    "created_at": 1793555837491
+  },
+  {
+    "id": "1e99bd2c-f2db-4341-960c-3a23d44542f8",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 297,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"d9ba5e65-8ca6-4d1e-b293-a00d45b87b7e\",\"trialId\":\"905f424d-f862-4e21-a998-52752e716ce9\",\"trialKind\":\"baseline\",\"actionId\":\"to1\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555837494
+  },
+  {
+    "id": "1f565ab9-898d-483a-acb5-6b7d7ef7786a",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 298,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"d9ba5e65-8ca6-4d1e-b293-a00d45b87b7e\",\"trialId\":\"905f424d-f862-4e21-a998-52752e716ce9\",\"trialKind\":\"baseline\",\"requestId\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\"}",
+    "created_at": 1793555837527
+  },
+  {
+    "id": "d5283c5f-9c27-4ced-82f9-1344f85fecae",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 299,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"d9ba5e65-8ca6-4d1e-b293-a00d45b87b7e\",\"trialId\":\"905f424d-f862-4e21-a998-52752e716ce9\",\"trialKind\":\"baseline\",\"actionId\":\"xfer1\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555837527
+  },
+  {
+    "id": "40316c50-ce92-4636-a9c2-b51ea5d2295b",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 300,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"d9ba5e65-8ca6-4d1e-b293-a00d45b87b7e\",\"trialId\":\"905f424d-f862-4e21-a998-52752e716ce9\",\"trialKind\":\"baseline\",\"actionId\":\"to2\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555837529
+  },
+  {
+    "id": "e9c27977-43a6-40b0-a662-63ae7db5e0b8",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 301,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"d9ba5e65-8ca6-4d1e-b293-a00d45b87b7e\",\"trialId\":\"905f424d-f862-4e21-a998-52752e716ce9\",\"trialKind\":\"baseline\",\"requestId\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\"}",
+    "created_at": 1793555837560
+  },
+  {
+    "id": "1767d8eb-7b63-4ce5-bc00-121f67117919",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 302,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"d9ba5e65-8ca6-4d1e-b293-a00d45b87b7e\",\"trialId\":\"905f424d-f862-4e21-a998-52752e716ce9\",\"trialKind\":\"baseline\",\"actionId\":\"xfer2\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555837561
+  },
+  {
+    "id": "8adea683-1557-42d6-afa0-45beb355c14e",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 303,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"d9ba5e65-8ca6-4d1e-b293-a00d45b87b7e\",\"trialId\":\"905f424d-f862-4e21-a998-52752e716ce9\",\"trialKind\":\"baseline\",\"requestId\":\"early\",\"status\":200,\"held\":false}",
+    "created_at": 1793555837581
+  },
+  {
+    "id": "dd75558a-5f5c-4a1d-9ce7-09de2d191d9f",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 304,
+    "kind": "screenshot.captured",
+    "payload": "{\"experimentId\":\"d9ba5e65-8ca6-4d1e-b293-a00d45b87b7e\",\"trialId\":\"905f424d-f862-4e21-a998-52752e716ce9\",\"trialKind\":\"baseline\",\"artifactId\":\"30d50b80-9faf-4d65-a2ad-484766d9cb63\",\"filename\":\"trial-baseline-905f424d-after-actions.png\",\"label\":\"after-actions\"}",
+    "created_at": 1793555837610
+  },
+  {
+    "id": "c26e2e98-6b96-48c3-bf66-0700e2a28dba",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 305,
+    "kind": "values.captured",
+    "payload": "{\"experimentId\":\"d9ba5e65-8ca6-4d1e-b293-a00d45b87b7e\",\"trialId\":\"905f424d-f862-4e21-a998-52752e716ce9\",\"trialKind\":\"baseline\",\"artifactId\":\"6b19dc1a-d8c2-497f-b169-384c2a1d0635\",\"filename\":\"trial-baseline-905f424d-values.json\",\"values\":{\"balance-amount\":\"$100.00\"}}",
+    "created_at": 1793555837612
+  },
+  {
+    "id": "e87376d0-96cd-48eb-922c-83a0f47d19fb",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 306,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"d9ba5e65-8ca6-4d1e-b293-a00d45b87b7e\",\"trialId\":\"905f424d-f862-4e21-a998-52752e716ce9\",\"trialKind\":\"baseline\",\"requestId\":\"late\",\"status\":200,\"held\":false}",
+    "created_at": 1793555837613
+  },
+  {
+    "id": "9404cb2e-2c37-4777-bbd0-f67d5828bb46",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 307,
+    "kind": "assertion.evaluated",
+    "payload": "{\"experimentId\":\"d9ba5e65-8ca6-4d1e-b293-a00d45b87b7e\",\"trialId\":\"905f424d-f862-4e21-a998-52752e716ce9\",\"trialKind\":\"baseline\",\"assertionId\":\"balance-correct\",\"passed\":true,\"expected\":\"$40.00\",\"observed\":\"$40.00\"}",
+    "created_at": 1793555837820
+  },
+  {
+    "id": "b5b6179d-0cc2-4057-835a-49a409df21ae",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 308,
+    "kind": "trial.completed",
+    "payload": "{\"experimentId\":\"d9ba5e65-8ca6-4d1e-b293-a00d45b87b7e\",\"trialId\":\"905f424d-f862-4e21-a998-52752e716ce9\",\"trialKind\":\"baseline\",\"outcome\":\"pass\"}",
+    "created_at": 1793555837822
+  },
+  {
+    "id": "2989caee-8e8f-40e4-a73b-39696852c580",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 309,
+    "kind": "trial.started",
+    "payload": "{\"experimentId\":\"d9ba5e65-8ca6-4d1e-b293-a00d45b87b7e\",\"trialId\":\"cb250fbc-f4b7-4855-9efe-ff7206c708b8\",\"trialKind\":\"intervention\",\"planId\":\"bank-stale-race-1 (variation-early-delivery)\",\"startUrl\":\"http://127.0.0.1:4202/\",\"attempt\":0}",
+    "created_at": 1793555837869
+  },
+  {
+    "id": "70049cef-e688-49be-a7d2-2c9c5601429e",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 310,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"d9ba5e65-8ca6-4d1e-b293-a00d45b87b7e\",\"trialId\":\"cb250fbc-f4b7-4855-9efe-ff7206c708b8\",\"trialKind\":\"intervention\",\"actionId\":\"amt1\",\"kind\":\"fill\",\"testId\":\"amount-input\"}",
+    "created_at": 1793555837899
+  },
+  {
+    "id": "3a755a4a-3062-4b19-b001-d9dd7a42e116",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 311,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"d9ba5e65-8ca6-4d1e-b293-a00d45b87b7e\",\"trialId\":\"cb250fbc-f4b7-4855-9efe-ff7206c708b8\",\"trialKind\":\"intervention\",\"actionId\":\"to1\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555837901
+  },
+  {
+    "id": "f849851c-9130-4bd3-b061-dbdc34266159",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 312,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"d9ba5e65-8ca6-4d1e-b293-a00d45b87b7e\",\"trialId\":\"cb250fbc-f4b7-4855-9efe-ff7206c708b8\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\"}",
+    "created_at": 1793555837926
+  },
+  {
+    "id": "edf2a256-a18f-4064-a680-7a4935f91386",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 313,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"d9ba5e65-8ca6-4d1e-b293-a00d45b87b7e\",\"trialId\":\"cb250fbc-f4b7-4855-9efe-ff7206c708b8\",\"trialKind\":\"intervention\",\"actionId\":\"xfer1\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555837927
+  },
+  {
+    "id": "d8c293ba-92bc-4ee8-bbf3-18f25e574773",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 314,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"d9ba5e65-8ca6-4d1e-b293-a00d45b87b7e\",\"trialId\":\"cb250fbc-f4b7-4855-9efe-ff7206c708b8\",\"trialKind\":\"intervention\",\"actionId\":\"to2\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555837929
+  },
+  {
+    "id": "c6968526-6913-42de-aa6b-e0a2564dca6e",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 315,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"d9ba5e65-8ca6-4d1e-b293-a00d45b87b7e\",\"trialId\":\"cb250fbc-f4b7-4855-9efe-ff7206c708b8\",\"trialKind\":\"intervention\",\"requestId\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\"}",
+    "created_at": 1793555837958
+  },
+  {
+    "id": "02dfb1f8-05b9-4258-aee5-0933dbfa22f2",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 316,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"d9ba5e65-8ca6-4d1e-b293-a00d45b87b7e\",\"trialId\":\"cb250fbc-f4b7-4855-9efe-ff7206c708b8\",\"trialKind\":\"intervention\",\"actionId\":\"xfer2\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555837959
+  },
+  {
+    "id": "26856885-10d2-4da2-b729-d84de3b54428",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 317,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"d9ba5e65-8ca6-4d1e-b293-a00d45b87b7e\",\"trialId\":\"cb250fbc-f4b7-4855-9efe-ff7206c708b8\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"status\":200,\"held\":true}",
+    "created_at": 1793555837980
+  },
+  {
+    "id": "d4b9ea62-eea9-4703-8f8a-6fa0bd4bea2f",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 318,
+    "kind": "request.held",
+    "payload": "{\"experimentId\":\"d9ba5e65-8ca6-4d1e-b293-a00d45b87b7e\",\"trialId\":\"cb250fbc-f4b7-4855-9efe-ff7206c708b8\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"status\":200,\"maxHoldMs\":15000}",
+    "created_at": 1793555837980
+  },
+  {
+    "id": "8a6218ac-c09a-4426-bf8a-c539a7213724",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 319,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"d9ba5e65-8ca6-4d1e-b293-a00d45b87b7e\",\"trialId\":\"cb250fbc-f4b7-4855-9efe-ff7206c708b8\",\"trialKind\":\"intervention\",\"requestId\":\"late\",\"status\":200,\"held\":false}",
+    "created_at": 1793555838013
+  },
+  {
+    "id": "e47ae8de-1519-4f79-825d-7121e615937b",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 320,
+    "kind": "trigger.satisfied",
+    "payload": "{\"experimentId\":\"d9ba5e65-8ca6-4d1e-b293-a00d45b87b7e\",\"trialId\":\"cb250fbc-f4b7-4855-9efe-ff7206c708b8\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"afterResponse\":\"late\"}",
+    "created_at": 1793555838063
+  },
+  {
+    "id": "56f53c93-4ce7-4eb7-83f0-1598435c80b8",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 321,
+    "kind": "request.released",
+    "payload": "{\"experimentId\":\"d9ba5e65-8ca6-4d1e-b293-a00d45b87b7e\",\"trialId\":\"cb250fbc-f4b7-4855-9efe-ff7206c708b8\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"reason\":\"after-late\"}",
+    "created_at": 1793555838064
+  },
+  {
+    "id": "176a46b7-9841-4d59-ad8f-78d1d8dc87e9",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 322,
+    "kind": "screenshot.captured",
+    "payload": "{\"experimentId\":\"d9ba5e65-8ca6-4d1e-b293-a00d45b87b7e\",\"trialId\":\"cb250fbc-f4b7-4855-9efe-ff7206c708b8\",\"trialKind\":\"intervention\",\"artifactId\":\"e89fa827-999a-48d8-8c1a-a3c7a34684c3\",\"filename\":\"trial-intervention-cb250fbc-post-release.png\",\"label\":\"post-release\"}",
+    "created_at": 1793555838115
+  },
+  {
+    "id": "ce333ae1-7ad9-41ca-95b1-41b51ebea53e",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 323,
+    "kind": "values.captured",
+    "payload": "{\"experimentId\":\"d9ba5e65-8ca6-4d1e-b293-a00d45b87b7e\",\"trialId\":\"cb250fbc-f4b7-4855-9efe-ff7206c708b8\",\"trialKind\":\"intervention\",\"artifactId\":\"12785f6d-4e4c-4c84-b03e-b4f5839b37a7\",\"filename\":\"trial-intervention-cb250fbc-values.json\",\"values\":{\"balance-amount\":\"$40.00\"}}",
+    "created_at": 1793555838116
+  },
+  {
+    "id": "0b5e00be-1c90-40fd-a2fd-c9253b748c6e",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 324,
+    "kind": "assertion.evaluated",
+    "payload": "{\"experimentId\":\"d9ba5e65-8ca6-4d1e-b293-a00d45b87b7e\",\"trialId\":\"cb250fbc-f4b7-4855-9efe-ff7206c708b8\",\"trialKind\":\"intervention\",\"assertionId\":\"balance-correct\",\"passed\":true,\"expected\":\"$40.00\",\"observed\":\"$40.00\"}",
+    "created_at": 1793555838117
+  },
+  {
+    "id": "08373033-4365-4f3e-bc05-ae44b6431a75",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 325,
+    "kind": "trial.completed",
+    "payload": "{\"experimentId\":\"d9ba5e65-8ca6-4d1e-b293-a00d45b87b7e\",\"trialId\":\"cb250fbc-f4b7-4855-9efe-ff7206c708b8\",\"trialKind\":\"intervention\",\"outcome\":\"pass\"}",
+    "created_at": 1793555838118
+  },
+  {
+    "id": "c8851aba-ae73-4533-ad44-891f8cb121e8",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 326,
+    "kind": "experiment.completed",
+    "payload": "{\"experimentId\":\"d9ba5e65-8ca6-4d1e-b293-a00d45b87b7e\",\"planId\":\"bank-stale-race-1 (variation-early-delivery)\",\"status\":\"completed\",\"baseline\":\"pass\",\"intervention\":\"pass\"}",
+    "created_at": 1793555838120
+  },
+  {
+    "id": "6782a861-7d89-4013-bbea-76e46f93d22e",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 327,
+    "kind": "experiment.started",
+    "payload": "{\"experimentId\":\"7ea4e40e-1c52-4ad5-a75b-1e17434057f1\",\"planId\":\"bank-stale-race-1 (variation-late-delivery)\",\"hypothesis\":\"Buggy Bank applies every transfer response unconditionally, so a slow earlier transfer overwrites the newer balance (lost update). Expectation justified by source behaviour in src/Bank.tsx buggy path plus existing test FAIL_TO_PASS gate; correct final balance after two $30 transfers from $100 must be $40.00.\"}",
+    "created_at": 1793555838121
+  },
+  {
+    "id": "64f2ff21-8d88-43d7-9cb7-72eab61c195e",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 328,
+    "kind": "trial.started",
+    "payload": "{\"experimentId\":\"7ea4e40e-1c52-4ad5-a75b-1e17434057f1\",\"trialId\":\"89ae8f0f-f6a0-4836-bb3f-8ecdf3e91df3\",\"trialKind\":\"baseline\",\"planId\":\"bank-stale-race-1 (variation-late-delivery)\",\"startUrl\":\"http://127.0.0.1:4202/\",\"attempt\":0}",
+    "created_at": 1793555838147
+  },
+  {
+    "id": "3ffc1587-4477-4bfb-be3a-937212a0fe90",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 329,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"7ea4e40e-1c52-4ad5-a75b-1e17434057f1\",\"trialId\":\"89ae8f0f-f6a0-4836-bb3f-8ecdf3e91df3\",\"trialKind\":\"baseline\",\"actionId\":\"amt1\",\"kind\":\"fill\",\"testId\":\"amount-input\"}",
+    "created_at": 1793555838174
+  },
+  {
+    "id": "091a0baf-39fa-44ae-94b4-ef16715491a4",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 330,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"7ea4e40e-1c52-4ad5-a75b-1e17434057f1\",\"trialId\":\"89ae8f0f-f6a0-4836-bb3f-8ecdf3e91df3\",\"trialKind\":\"baseline\",\"actionId\":\"to1\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555838177
+  },
+  {
+    "id": "987d8f5f-d215-438c-a152-ca874453e993",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 331,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"7ea4e40e-1c52-4ad5-a75b-1e17434057f1\",\"trialId\":\"89ae8f0f-f6a0-4836-bb3f-8ecdf3e91df3\",\"trialKind\":\"baseline\",\"requestId\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\"}",
+    "created_at": 1793555838210
+  },
+  {
+    "id": "06090501-3fdc-4830-8dea-310b00ba065a",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 332,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"7ea4e40e-1c52-4ad5-a75b-1e17434057f1\",\"trialId\":\"89ae8f0f-f6a0-4836-bb3f-8ecdf3e91df3\",\"trialKind\":\"baseline\",\"actionId\":\"xfer1\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555838210
+  },
+  {
+    "id": "7b676941-4e61-4967-a8e9-6ffeac89596b",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 333,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"7ea4e40e-1c52-4ad5-a75b-1e17434057f1\",\"trialId\":\"89ae8f0f-f6a0-4836-bb3f-8ecdf3e91df3\",\"trialKind\":\"baseline\",\"actionId\":\"to2\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555838212
+  },
+  {
+    "id": "2bfdecc7-acac-4342-8c10-48c29011c4c2",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 334,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"7ea4e40e-1c52-4ad5-a75b-1e17434057f1\",\"trialId\":\"89ae8f0f-f6a0-4836-bb3f-8ecdf3e91df3\",\"trialKind\":\"baseline\",\"requestId\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\"}",
+    "created_at": 1793555838242
+  },
+  {
+    "id": "3af2a4fd-0176-46fa-8790-14b10d4a6a6f",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 335,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"7ea4e40e-1c52-4ad5-a75b-1e17434057f1\",\"trialId\":\"89ae8f0f-f6a0-4836-bb3f-8ecdf3e91df3\",\"trialKind\":\"baseline\",\"actionId\":\"xfer2\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555838242
+  },
+  {
+    "id": "c5c9b0f9-3e23-46c9-905b-17b8fc87c232",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 336,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"7ea4e40e-1c52-4ad5-a75b-1e17434057f1\",\"trialId\":\"89ae8f0f-f6a0-4836-bb3f-8ecdf3e91df3\",\"trialKind\":\"baseline\",\"requestId\":\"early\",\"status\":200,\"held\":false}",
+    "created_at": 1793555838264
+  },
+  {
+    "id": "01104164-8280-441e-9429-bd476d87f8c2",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 337,
+    "kind": "screenshot.captured",
+    "payload": "{\"experimentId\":\"7ea4e40e-1c52-4ad5-a75b-1e17434057f1\",\"trialId\":\"89ae8f0f-f6a0-4836-bb3f-8ecdf3e91df3\",\"trialKind\":\"baseline\",\"artifactId\":\"7e74a982-5aa9-404c-9a36-209e15ba988f\",\"filename\":\"trial-baseline-89ae8f0f-after-actions.png\",\"label\":\"after-actions\"}",
+    "created_at": 1793555838293
+  },
+  {
+    "id": "0f4debcd-97c5-4857-8781-d1b72ec28de9",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 338,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"7ea4e40e-1c52-4ad5-a75b-1e17434057f1\",\"trialId\":\"89ae8f0f-f6a0-4836-bb3f-8ecdf3e91df3\",\"trialKind\":\"baseline\",\"requestId\":\"late\",\"status\":200,\"held\":false}",
+    "created_at": 1793555838295
+  },
+  {
+    "id": "a7a691cd-4dd7-42bf-a317-e3a609cf4978",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 339,
+    "kind": "values.captured",
+    "payload": "{\"experimentId\":\"7ea4e40e-1c52-4ad5-a75b-1e17434057f1\",\"trialId\":\"89ae8f0f-f6a0-4836-bb3f-8ecdf3e91df3\",\"trialKind\":\"baseline\",\"artifactId\":\"4b356e01-e1b5-47cb-88a7-9697cac2e405\",\"filename\":\"trial-baseline-89ae8f0f-values.json\",\"values\":{\"balance-amount\":\"$100.00\"}}",
+    "created_at": 1793555838295
+  },
+  {
+    "id": "3d7dc934-a985-475c-a1e2-8621fce8fc85",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 340,
+    "kind": "assertion.evaluated",
+    "payload": "{\"experimentId\":\"7ea4e40e-1c52-4ad5-a75b-1e17434057f1\",\"trialId\":\"89ae8f0f-f6a0-4836-bb3f-8ecdf3e91df3\",\"trialKind\":\"baseline\",\"assertionId\":\"balance-correct\",\"passed\":true,\"expected\":\"$40.00\",\"observed\":\"$40.00\"}",
+    "created_at": 1793555838502
+  },
+  {
+    "id": "3564ebcf-798c-4b9c-9b01-19e62a787c3f",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 341,
+    "kind": "trial.completed",
+    "payload": "{\"experimentId\":\"7ea4e40e-1c52-4ad5-a75b-1e17434057f1\",\"trialId\":\"89ae8f0f-f6a0-4836-bb3f-8ecdf3e91df3\",\"trialKind\":\"baseline\",\"outcome\":\"pass\"}",
+    "created_at": 1793555838504
+  },
+  {
+    "id": "a36d9bd4-0098-4a2a-a406-4fcf0ef3f29d",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 342,
+    "kind": "trial.started",
+    "payload": "{\"experimentId\":\"7ea4e40e-1c52-4ad5-a75b-1e17434057f1\",\"trialId\":\"7148a970-1e34-4440-b98f-89ba0bf39720\",\"trialKind\":\"intervention\",\"planId\":\"bank-stale-race-1 (variation-late-delivery)\",\"startUrl\":\"http://127.0.0.1:4202/\",\"attempt\":0}",
+    "created_at": 1793555838551
+  },
+  {
+    "id": "4333467e-7312-40fb-964f-e13757d2666f",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 343,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"7ea4e40e-1c52-4ad5-a75b-1e17434057f1\",\"trialId\":\"7148a970-1e34-4440-b98f-89ba0bf39720\",\"trialKind\":\"intervention\",\"actionId\":\"amt1\",\"kind\":\"fill\",\"testId\":\"amount-input\"}",
+    "created_at": 1793555838581
+  },
+  {
+    "id": "260e234f-c5ab-45d2-a7c9-e6a25482ddc1",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 344,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"7ea4e40e-1c52-4ad5-a75b-1e17434057f1\",\"trialId\":\"7148a970-1e34-4440-b98f-89ba0bf39720\",\"trialKind\":\"intervention\",\"actionId\":\"to1\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555838583
+  },
+  {
+    "id": "ae382bcf-5cb3-4a5c-86fb-c3ee6cc544dc",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 345,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"7ea4e40e-1c52-4ad5-a75b-1e17434057f1\",\"trialId\":\"7148a970-1e34-4440-b98f-89ba0bf39720\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\"}",
+    "created_at": 1793555838610
+  },
+  {
+    "id": "823c8f0e-9758-4f6e-a7c2-747d30f419c2",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 346,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"7ea4e40e-1c52-4ad5-a75b-1e17434057f1\",\"trialId\":\"7148a970-1e34-4440-b98f-89ba0bf39720\",\"trialKind\":\"intervention\",\"actionId\":\"xfer1\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555838610
+  },
+  {
+    "id": "99d4f89c-86f1-4b61-999e-b83a3a309262",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 347,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"7ea4e40e-1c52-4ad5-a75b-1e17434057f1\",\"trialId\":\"7148a970-1e34-4440-b98f-89ba0bf39720\",\"trialKind\":\"intervention\",\"actionId\":\"to2\",\"kind\":\"fill\",\"testId\":\"to-input\"}",
+    "created_at": 1793555838612
+  },
+  {
+    "id": "04210362-b8dc-43e5-981e-a9f38be8a3c6",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 348,
+    "kind": "request.started",
+    "payload": "{\"experimentId\":\"7ea4e40e-1c52-4ad5-a75b-1e17434057f1\",\"trialId\":\"7148a970-1e34-4440-b98f-89ba0bf39720\",\"trialKind\":\"intervention\",\"requestId\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\"}",
+    "created_at": 1793555838643
+  },
+  {
+    "id": "39bbf171-9724-4d6e-b9dc-f51141000393",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 349,
+    "kind": "action.performed",
+    "payload": "{\"experimentId\":\"7ea4e40e-1c52-4ad5-a75b-1e17434057f1\",\"trialId\":\"7148a970-1e34-4440-b98f-89ba0bf39720\",\"trialKind\":\"intervention\",\"actionId\":\"xfer2\",\"kind\":\"click\",\"testId\":\"transfer-button\"}",
+    "created_at": 1793555838644
+  },
+  {
+    "id": "f41159ca-470c-40cf-81a3-63446819d5a1",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 350,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"7ea4e40e-1c52-4ad5-a75b-1e17434057f1\",\"trialId\":\"7148a970-1e34-4440-b98f-89ba0bf39720\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"status\":200,\"held\":true}",
+    "created_at": 1793555838663
+  },
+  {
+    "id": "985ec42d-0874-4068-86ea-c27e749fedbc",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 351,
+    "kind": "request.held",
+    "payload": "{\"experimentId\":\"7ea4e40e-1c52-4ad5-a75b-1e17434057f1\",\"trialId\":\"7148a970-1e34-4440-b98f-89ba0bf39720\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"status\":200,\"maxHoldMs\":15000}",
+    "created_at": 1793555838663
+  },
+  {
+    "id": "c1f76934-66f3-4b2c-847e-9c43be280d7f",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 352,
+    "kind": "request.captured",
+    "payload": "{\"experimentId\":\"7ea4e40e-1c52-4ad5-a75b-1e17434057f1\",\"trialId\":\"7148a970-1e34-4440-b98f-89ba0bf39720\",\"trialKind\":\"intervention\",\"requestId\":\"late\",\"status\":200,\"held\":false}",
+    "created_at": 1793555838697
+  },
+  {
+    "id": "fcf08d0d-1c95-49a3-82cf-10ebc4bb775b",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 353,
+    "kind": "trigger.satisfied",
+    "payload": "{\"experimentId\":\"7ea4e40e-1c52-4ad5-a75b-1e17434057f1\",\"trialId\":\"7148a970-1e34-4440-b98f-89ba0bf39720\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"afterResponse\":\"late\"}",
+    "created_at": 1793555838746
+  },
+  {
+    "id": "9fb2eb4c-7315-4dd0-be9f-6f106d1304e5",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 354,
+    "kind": "request.released",
+    "payload": "{\"experimentId\":\"7ea4e40e-1c52-4ad5-a75b-1e17434057f1\",\"trialId\":\"7148a970-1e34-4440-b98f-89ba0bf39720\",\"trialKind\":\"intervention\",\"requestId\":\"early\",\"reason\":\"after-late\"}",
+    "created_at": 1793555839353
+  },
+  {
+    "id": "9ef62e44-d8b6-40f8-8f10-1d917ce18967",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 355,
+    "kind": "screenshot.captured",
+    "payload": "{\"experimentId\":\"7ea4e40e-1c52-4ad5-a75b-1e17434057f1\",\"trialId\":\"7148a970-1e34-4440-b98f-89ba0bf39720\",\"trialKind\":\"intervention\",\"artifactId\":\"41c51798-f890-4098-a2c8-e9530d946fb8\",\"filename\":\"trial-intervention-7148a970-post-release.png\",\"label\":\"post-release\"}",
+    "created_at": 1793555839420
+  },
+  {
+    "id": "15ac239a-82cb-4cf5-89dd-bdf9d8410a94",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 356,
+    "kind": "values.captured",
+    "payload": "{\"experimentId\":\"7ea4e40e-1c52-4ad5-a75b-1e17434057f1\",\"trialId\":\"7148a970-1e34-4440-b98f-89ba0bf39720\",\"trialKind\":\"intervention\",\"artifactId\":\"8be2991d-39ab-48cf-9071-4ddf5eba8420\",\"filename\":\"trial-intervention-7148a970-values.json\",\"values\":{\"balance-amount\":\"$40.00\"}}",
+    "created_at": 1793555839422
+  },
+  {
+    "id": "987d5811-35e8-47d7-a721-9789bd1a4e59",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 357,
+    "kind": "assertion.evaluated",
+    "payload": "{\"experimentId\":\"7ea4e40e-1c52-4ad5-a75b-1e17434057f1\",\"trialId\":\"7148a970-1e34-4440-b98f-89ba0bf39720\",\"trialKind\":\"intervention\",\"assertionId\":\"balance-correct\",\"passed\":true,\"expected\":\"$40.00\",\"observed\":\"$40.00\"}",
+    "created_at": 1793555839423
+  },
+  {
+    "id": "2b11f721-9312-4a29-bf40-a084e186cd6f",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 358,
+    "kind": "trial.completed",
+    "payload": "{\"experimentId\":\"7ea4e40e-1c52-4ad5-a75b-1e17434057f1\",\"trialId\":\"7148a970-1e34-4440-b98f-89ba0bf39720\",\"trialKind\":\"intervention\",\"outcome\":\"pass\"}",
+    "created_at": 1793555839423
+  },
+  {
+    "id": "f93bc269-5d8d-4e7f-a03f-b6960197fae9",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 359,
+    "kind": "experiment.completed",
+    "payload": "{\"experimentId\":\"7ea4e40e-1c52-4ad5-a75b-1e17434057f1\",\"planId\":\"bank-stale-race-1 (variation-late-delivery)\",\"status\":\"completed\",\"baseline\":\"pass\",\"intervention\":\"pass\"}",
+    "created_at": 1793555839426
+  },
+  {
+    "id": "1c73deab-bc8b-4192-9aa8-9d9409e60b15",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 360,
+    "kind": "run.log",
+    "payload": "{\"message\":\"Verification passed for attempt 1: All required gates passed.\"}",
+    "created_at": 1793555840721
+  },
+  {
+    "id": "6949b0df-c08a-4bf2-b799-25f73e6a1d39",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 361,
+    "kind": "run.log",
+    "payload": "{\"message\":\"Repair: verified patch after 1 attempt(s) for finding 0411b1fe-fe0c-4584-a43d-dcdfec35bf4f. All required gates passed.\"}",
+    "created_at": 1793555841350
+  },
+  {
+    "id": "ef5a6056-e38a-4ad8-a623-3560fcaa921b",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 362,
+    "kind": "run.phase",
+    "payload": "{\"phase\":\"done\"}",
+    "created_at": 1793555841350
+  },
+  {
+    "id": "7cfaa3bb-359e-4bf6-ae13-808e7e062dd4",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 363,
+    "kind": "run.log",
+    "payload": "{\"message\":\"Agent run finished. Repair: verified patch after 1 attempt(s) for finding 0411b1fe-fe0c-4584-a43d-dcdfec35bf4f. Usage: 18 model calls, 125746 input / 9914 output tokens.\"}",
+    "created_at": 1793555841350
+  },
+  {
+    "id": "c7a02f53-5566-4cf0-a9e8-8e1aca69b349",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 364,
+    "kind": "run.log",
+    "payload": "{\"message\":\"Vision (Muse Spark model explanation, not evidence): Screenshot shows \\\"Buggy bank (no stale guard)\\\" with Balance: **$40.00** and two listed results: \\\"$30.00 to savings\\\" and \\\"$30.00 to rent\\\". Inputs show Amount 30, To savings, Response delay 50 with a Transfer button. No stale/error status is shown; the \\\"$30.00 to rent\\\" result does not match the current To=savings field.\"}",
+    "created_at": 1793555850588
+  },
+  {
+    "id": "2a0b4cd4-15af-486e-9ace-30c7f3dbb59d",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "sequence": 365,
+    "kind": "run.completed",
+    "payload": "{}",
+    "created_at": 1793555850592
+  }
+]

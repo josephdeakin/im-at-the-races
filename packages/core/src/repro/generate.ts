@@ -60,16 +60,18 @@ export function generateReproSpec(input: ReproBundleInput): string {
     server.onMessage((frame) => {
       const text = typeof frame === 'string' ? frame : '(binary frame)';
       const candidate = { method: 'WS', url: socketUrl, body: text };
+      // Every matching candidate counts toward every unbound matcher first
+      // (RequestTracker parity); only then does the first matcher whose
+      // occurrence was reached claim the candidate.
       let logical = null;
       for (const m of MATCHERS) {
         if (bound.get(m.id)) continue;
         if (!matchCandidate(m, candidate)) continue;
         const n = (seen.get(m.id) || 0) + 1;
         seen.set(m.id, n);
-        if (n === m.occurrence) {
+        if (logical === null && n >= m.occurrence) {
           bound.set(m.id, true);
           logical = m.id;
-          break;
         }
       }
       if (!logical) {
@@ -144,16 +146,18 @@ test('timing regression ${sanitizeComment(plan.id, 100)}', async ({ page }) => {
       return;
     }
     const candidate = { method: req.method(), url: req.url(), body: req.postData() || null };
+    // Every matching candidate counts toward every unbound matcher first
+    // (RequestTracker parity); only then does the first matcher whose
+    // occurrence was reached claim the candidate.
     let logical = null;
     for (const m of MATCHERS) {
       if (bound.get(m.id)) continue;
       if (!matchCandidate(m, candidate)) continue;
       const n = (seen.get(m.id) || 0) + 1;
       seen.set(m.id, n);
-      if (n === m.occurrence) {
+      if (logical === null && n >= m.occurrence) {
         bound.set(m.id, true);
         logical = m.id;
-        break;
       }
     }
     if (!logical) {

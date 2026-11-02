@@ -1,0 +1,202 @@
+[
+  {
+    "id": "4899d83c-644b-4d08-9973-bf729e99c9dc",
+    "experiment_id": "1e6e063c-f881-468d-81b0-3d06ec3158c8",
+    "kind": "baseline",
+    "outcome": "pass",
+    "detail": "{\"outcome\":\"pass\",\"reason\":null,\"detail\":null,\"assertions\":[{\"id\":\"balance-correct\",\"passed\":true,\"expected\":\"$40.00\",\"observed\":\"$40.00\"}],\"requests\":[{\"id\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4110/api/transfer\",\"matched\":true,\"held\":false,\"released\":false,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":1,\\\"to\\\":\\\"rent\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":7000,\\\"servedAt\\\":\\\"2026-11-01T17:55:19.661Z\\\"}\",\"responseTruncated\":false},{\"id\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4110/api/transfer\",\"matched\":true,\"held\":false,\"released\":false,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":2,\\\"to\\\":\\\"savings\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":4000,\\\"servedAt\\\":\\\"2026-11-01T17:55:19.719Z\\\"}\",\"responseTruncated\":false}]}",
+    "started_at": 1793555719537,
+    "finished_at": 1793555719975,
+    "attempt": 0
+  },
+  {
+    "id": "ce2c346c-0b47-4e83-ad36-bf2f08bda983",
+    "experiment_id": "1e6e063c-f881-468d-81b0-3d06ec3158c8",
+    "kind": "intervention",
+    "outcome": "violation",
+    "detail": "{\"outcome\":\"violation\",\"reason\":null,\"detail\":null,\"assertions\":[{\"id\":\"balance-correct\",\"passed\":false,\"expected\":\"$40.00\",\"observed\":\"$70.00\"}],\"requests\":[{\"id\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4110/api/transfer\",\"matched\":true,\"held\":true,\"released\":true,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":1,\\\"to\\\":\\\"rent\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":7000,\\\"servedAt\\\":\\\"2026-11-01T17:55:20.083Z\\\"}\",\"responseTruncated\":false},{\"id\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4110/api/transfer\",\"matched\":true,\"held\":false,\"released\":false,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":2,\\\"to\\\":\\\"savings\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":4000,\\\"servedAt\\\":\\\"2026-11-01T17:55:20.118Z\\\"}\",\"responseTruncated\":false}]}",
+    "started_at": 1793555719987,
+    "finished_at": 1793555730696,
+    "attempt": 0
+  },
+  {
+    "id": "35156b3b-4c0c-4a41-ac8b-44d4ff9d1d01",
+    "experiment_id": "1e6e063c-f881-468d-81b0-3d06ec3158c8",
+    "kind": "baseline",
+    "outcome": "pass",
+    "detail": "{\"outcome\":\"pass\",\"reason\":null,\"detail\":null,\"assertions\":[{\"id\":\"balance-correct\",\"passed\":true,\"expected\":\"$40.00\",\"observed\":\"$40.00\"}],\"requests\":[{\"id\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4110/api/transfer\",\"matched\":true,\"held\":false,\"released\":false,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":1,\\\"to\\\":\\\"rent\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":7000,\\\"servedAt\\\":\\\"2026-11-01T17:55:32.832Z\\\"}\",\"responseTruncated\":false},{\"id\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4110/api/transfer\",\"matched\":true,\"held\":false,\"released\":false,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":2,\\\"to\\\":\\\"savings\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":4000,\\\"servedAt\\\":\\\"2026-11-01T17:55:32.870Z\\\"}\",\"responseTruncated\":false}]}",
+    "started_at": 1793555732709,
+    "finished_at": 1793555733125,
+    "attempt": 1
+  },
+  {
+    "id": "2aacd9f7-8a80-4f7a-9de9-35e9b31cc158",
+    "experiment_id": "1e6e063c-f881-468d-81b0-3d06ec3158c8",
+    "kind": "intervention",
+    "outcome": "violation",
+    "detail": "{\"outcome\":\"violation\",\"reason\":null,\"detail\":null,\"assertions\":[{\"id\":\"balance-correct\",\"passed\":false,\"expected\":\"$40.00\",\"observed\":\"$70.00\"}],\"requests\":[{\"id\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4110/api/transfer\",\"matched\":true,\"held\":true,\"released\":true,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":1,\\\"to\\\":\\\"rent\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":7000,\\\"servedAt\\\":\\\"2026-11-01T17:55:33.232Z\\\"}\",\"responseTruncated\":false},{\"id\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4110/api/transfer\",\"matched\":true,\"held\":false,\"released\":false,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":2,\\\"to\\\":\\\"savings\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":4000,\\\"servedAt\\\":\\\"2026-11-01T17:55:33.267Z\\\"}\",\"responseTruncated\":false}]}",
+    "started_at": 1793555733129,
+    "finished_at": 1793555743843,
+    "attempt": 1
+  },
+  {
+    "id": "b9acbb6e-fc55-4e07-86f4-104ecac68317",
+    "experiment_id": "1e6e063c-f881-468d-81b0-3d06ec3158c8",
+    "kind": "baseline",
+    "outcome": "pass",
+    "detail": "{\"outcome\":\"pass\",\"reason\":null,\"detail\":null,\"assertions\":[{\"id\":\"balance-correct\",\"passed\":true,\"expected\":\"$40.00\",\"observed\":\"$40.00\"}],\"requests\":[{\"id\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4110/api/transfer\",\"matched\":true,\"held\":false,\"released\":false,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":1,\\\"to\\\":\\\"rent\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":7000,\\\"servedAt\\\":\\\"2026-11-01T17:55:43.933Z\\\"}\",\"responseTruncated\":false},{\"id\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4110/api/transfer\",\"matched\":true,\"held\":false,\"released\":false,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":2,\\\"to\\\":\\\"savings\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":4000,\\\"servedAt\\\":\\\"2026-11-01T17:55:43.968Z\\\"}\",\"responseTruncated\":false}]}",
+    "started_at": 1793555743846,
+    "finished_at": 1793555744221,
+    "attempt": 2
+  },
+  {
+    "id": "d6f2eca6-0c0e-4abf-9148-bda77ec73922",
+    "experiment_id": "1e6e063c-f881-468d-81b0-3d06ec3158c8",
+    "kind": "intervention",
+    "outcome": "violation",
+    "detail": "{\"outcome\":\"violation\",\"reason\":null,\"detail\":null,\"assertions\":[{\"id\":\"balance-correct\",\"passed\":false,\"expected\":\"$40.00\",\"observed\":\"$70.00\"}],\"requests\":[{\"id\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4110/api/transfer\",\"matched\":true,\"held\":true,\"released\":true,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":1,\\\"to\\\":\\\"rent\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":7000,\\\"servedAt\\\":\\\"2026-11-01T17:55:44.332Z\\\"}\",\"responseTruncated\":false},{\"id\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4110/api/transfer\",\"matched\":true,\"held\":false,\"released\":false,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":2,\\\"to\\\":\\\"savings\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":4000,\\\"servedAt\\\":\\\"2026-11-01T17:55:44.379Z\\\"}\",\"responseTruncated\":false}]}",
+    "started_at": 1793555744227,
+    "finished_at": 1793555754925,
+    "attempt": 2
+  },
+  {
+    "id": "7c9e45c9-7dce-44e6-852f-c6c4b7c44cf5",
+    "experiment_id": "1e6e063c-f881-468d-81b0-3d06ec3158c8",
+    "kind": "baseline",
+    "outcome": "pass",
+    "detail": "{\"outcome\":\"pass\",\"reason\":null,\"detail\":null,\"assertions\":[{\"id\":\"balance-correct\",\"passed\":true,\"expected\":\"$40.00\",\"observed\":\"$40.00\"}],\"requests\":[{\"id\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4110/api/transfer\",\"matched\":true,\"held\":false,\"released\":false,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":1,\\\"to\\\":\\\"rent\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":7000,\\\"servedAt\\\":\\\"2026-11-01T17:55:55.032Z\\\"}\",\"responseTruncated\":false},{\"id\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4110/api/transfer\",\"matched\":true,\"held\":false,\"released\":false,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":2,\\\"to\\\":\\\"savings\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":4000,\\\"servedAt\\\":\\\"2026-11-01T17:55:55.071Z\\\"}\",\"responseTruncated\":false}]}",
+    "started_at": 1793555754928,
+    "finished_at": 1793555755320,
+    "attempt": 3
+  },
+  {
+    "id": "3cffb0c9-6d3c-4c1b-8095-87b0664a120f",
+    "experiment_id": "1e6e063c-f881-468d-81b0-3d06ec3158c8",
+    "kind": "intervention",
+    "outcome": "violation",
+    "detail": "{\"outcome\":\"violation\",\"reason\":null,\"detail\":null,\"assertions\":[{\"id\":\"balance-correct\",\"passed\":false,\"expected\":\"$40.00\",\"observed\":\"$70.00\"}],\"requests\":[{\"id\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4110/api/transfer\",\"matched\":true,\"held\":true,\"released\":true,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":1,\\\"to\\\":\\\"rent\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":7000,\\\"servedAt\\\":\\\"2026-11-01T17:55:55.431Z\\\"}\",\"responseTruncated\":false},{\"id\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4110/api/transfer\",\"matched\":true,\"held\":false,\"released\":false,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":2,\\\"to\\\":\\\"savings\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":4000,\\\"servedAt\\\":\\\"2026-11-01T17:55:55.469Z\\\"}\",\"responseTruncated\":false}]}",
+    "started_at": 1793555755325,
+    "finished_at": 1793555766025,
+    "attempt": 3
+  },
+  {
+    "id": "5a55821c-978b-4989-8c4e-ad5147a566d2",
+    "experiment_id": "d2f49f27-3e1f-4719-bcb8-79fa01fe95ca",
+    "kind": "baseline",
+    "outcome": "pass",
+    "detail": "{\"outcome\":\"pass\",\"reason\":null,\"detail\":null,\"assertions\":[{\"id\":\"balance-correct\",\"passed\":true,\"expected\":\"$40.00\",\"observed\":\"$40.00\"}],\"requests\":[{\"id\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\",\"matched\":true,\"held\":false,\"released\":false,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":1,\\\"to\\\":\\\"rent\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":7000,\\\"servedAt\\\":\\\"2026-11-01T17:57:14.149Z\\\"}\",\"responseTruncated\":false},{\"id\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\",\"matched\":true,\"held\":false,\"released\":false,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":2,\\\"to\\\":\\\"savings\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":4000,\\\"servedAt\\\":\\\"2026-11-01T17:57:14.177Z\\\"}\",\"responseTruncated\":false}]}",
+    "started_at": 1793555833957,
+    "finished_at": 1793555834234,
+    "attempt": 0
+  },
+  {
+    "id": "6381f89c-fb60-48a3-a020-b174c7b33d76",
+    "experiment_id": "d2f49f27-3e1f-4719-bcb8-79fa01fe95ca",
+    "kind": "intervention",
+    "outcome": "pass",
+    "detail": "{\"outcome\":\"pass\",\"reason\":null,\"detail\":null,\"assertions\":[{\"id\":\"balance-correct\",\"passed\":true,\"expected\":\"$40.00\",\"observed\":\"$40.00\"}],\"requests\":[{\"id\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\",\"matched\":true,\"held\":true,\"released\":true,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":1,\\\"to\\\":\\\"rent\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":7000,\\\"servedAt\\\":\\\"2026-11-01T17:57:14.327Z\\\"}\",\"responseTruncated\":false},{\"id\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\",\"matched\":true,\"held\":false,\"released\":false,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":2,\\\"to\\\":\\\"savings\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":4000,\\\"servedAt\\\":\\\"2026-11-01T17:57:14.362Z\\\"}\",\"responseTruncated\":false}]}",
+    "started_at": 1793555834241,
+    "finished_at": 1793555834846,
+    "attempt": 0
+  },
+  {
+    "id": "ec9b08f0-2991-4033-bff9-658de223d300",
+    "experiment_id": "7bc8622a-291b-4b43-ab70-5e4b66702d5c",
+    "kind": "baseline",
+    "outcome": "pass",
+    "detail": "{\"outcome\":\"pass\",\"reason\":null,\"detail\":null,\"assertions\":[{\"id\":\"balance-correct\",\"passed\":true,\"expected\":\"$40.00\",\"observed\":\"$40.00\"}],\"requests\":[{\"id\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\",\"matched\":true,\"held\":false,\"released\":false,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":1,\\\"to\\\":\\\"rent\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":7000,\\\"servedAt\\\":\\\"2026-11-01T17:57:14.944Z\\\"}\",\"responseTruncated\":false},{\"id\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\",\"matched\":true,\"held\":false,\"released\":false,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":2,\\\"to\\\":\\\"savings\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":4000,\\\"servedAt\\\":\\\"2026-11-01T17:57:14.975Z\\\"}\",\"responseTruncated\":false}]}",
+    "started_at": 1793555834851,
+    "finished_at": 1793555835033,
+    "attempt": 0
+  },
+  {
+    "id": "a3dccbf2-aa66-4e34-8fc3-e436c1800bf5",
+    "experiment_id": "7bc8622a-291b-4b43-ab70-5e4b66702d5c",
+    "kind": "intervention",
+    "outcome": "pass",
+    "detail": "{\"outcome\":\"pass\",\"reason\":null,\"detail\":null,\"assertions\":[{\"id\":\"balance-correct\",\"passed\":true,\"expected\":\"$40.00\",\"observed\":\"$40.00\"}],\"requests\":[{\"id\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\",\"matched\":true,\"held\":true,\"released\":true,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":1,\\\"to\\\":\\\"rent\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":7000,\\\"servedAt\\\":\\\"2026-11-01T17:57:15.128Z\\\"}\",\"responseTruncated\":false},{\"id\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\",\"matched\":true,\"held\":false,\"released\":false,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":2,\\\"to\\\":\\\"savings\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":4000,\\\"servedAt\\\":\\\"2026-11-01T17:57:15.161Z\\\"}\",\"responseTruncated\":false}]}",
+    "started_at": 1793555835035,
+    "finished_at": 1793555835632,
+    "attempt": 0
+  },
+  {
+    "id": "8dd4b340-0ca9-40fd-bc96-46bf989a4a9a",
+    "experiment_id": "59a25e28-5f4a-4702-99d0-c762e98c0b5e",
+    "kind": "baseline",
+    "outcome": "pass",
+    "detail": "{\"outcome\":\"pass\",\"reason\":null,\"detail\":null,\"assertions\":[{\"id\":\"balance-correct\",\"passed\":true,\"expected\":\"$40.00\",\"observed\":\"$40.00\"}],\"requests\":[{\"id\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\",\"matched\":true,\"held\":false,\"released\":false,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":1,\\\"to\\\":\\\"rent\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":7000,\\\"servedAt\\\":\\\"2026-11-01T17:57:15.728Z\\\"}\",\"responseTruncated\":false},{\"id\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\",\"matched\":true,\"held\":false,\"released\":false,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":2,\\\"to\\\":\\\"savings\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":4000,\\\"servedAt\\\":\\\"2026-11-01T17:57:15.761Z\\\"}\",\"responseTruncated\":false}]}",
+    "started_at": 1793555835637,
+    "finished_at": 1793555836019,
+    "attempt": 0
+  },
+  {
+    "id": "21999402-4310-452e-92ce-06b9a891c101",
+    "experiment_id": "59a25e28-5f4a-4702-99d0-c762e98c0b5e",
+    "kind": "intervention",
+    "outcome": "pass",
+    "detail": "{\"outcome\":\"pass\",\"reason\":null,\"detail\":null,\"assertions\":[{\"id\":\"balance-correct\",\"passed\":true,\"expected\":\"$40.00\",\"observed\":\"$40.00\"}],\"requests\":[{\"id\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\",\"matched\":true,\"held\":true,\"released\":true,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":1,\\\"to\\\":\\\"rent\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":7000,\\\"servedAt\\\":\\\"2026-11-01T17:57:16.128Z\\\"}\",\"responseTruncated\":false},{\"id\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\",\"matched\":true,\"held\":false,\"released\":false,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":2,\\\"to\\\":\\\"savings\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":4000,\\\"servedAt\\\":\\\"2026-11-01T17:57:16.162Z\\\"}\",\"responseTruncated\":false}]}",
+    "started_at": 1793555836023,
+    "finished_at": 1793555836649,
+    "attempt": 0
+  },
+  {
+    "id": "4e04f556-b07f-4d3a-9f97-db666d903226",
+    "experiment_id": "5b56407b-7e16-469b-a251-2edeadf33321",
+    "kind": "baseline",
+    "outcome": "pass",
+    "detail": "{\"outcome\":\"pass\",\"reason\":null,\"detail\":null,\"assertions\":[{\"id\":\"balance-correct\",\"passed\":true,\"expected\":\"$40.00\",\"observed\":\"$40.00\"}],\"requests\":[{\"id\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\",\"matched\":true,\"held\":false,\"released\":false,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":1,\\\"to\\\":\\\"rent\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":7000,\\\"servedAt\\\":\\\"2026-11-01T17:57:16.745Z\\\"}\",\"responseTruncated\":false},{\"id\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\",\"matched\":true,\"held\":false,\"released\":false,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":2,\\\"to\\\":\\\"savings\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":4000,\\\"servedAt\\\":\\\"2026-11-01T17:57:16.777Z\\\"}\",\"responseTruncated\":false}]}",
+    "started_at": 1793555836654,
+    "finished_at": 1793555837031,
+    "attempt": 0
+  },
+  {
+    "id": "dd8737df-ff70-4373-9ce2-19991c7274d5",
+    "experiment_id": "5b56407b-7e16-469b-a251-2edeadf33321",
+    "kind": "intervention",
+    "outcome": "pass",
+    "detail": "{\"outcome\":\"pass\",\"reason\":null,\"detail\":null,\"assertions\":[{\"id\":\"balance-correct\",\"passed\":true,\"expected\":\"$40.00\",\"observed\":\"$40.00\"}],\"requests\":[{\"id\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\",\"matched\":true,\"held\":false,\"released\":false,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":1,\\\"to\\\":\\\"rent\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":7000,\\\"servedAt\\\":\\\"2026-11-01T17:57:17.127Z\\\"}\",\"responseTruncated\":false},{\"id\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\",\"matched\":true,\"held\":false,\"released\":false,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":2,\\\"to\\\":\\\"savings\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":4000,\\\"servedAt\\\":\\\"2026-11-01T17:57:17.161Z\\\"}\",\"responseTruncated\":false}]}",
+    "started_at": 1793555837034,
+    "finished_at": 1793555837416,
+    "attempt": 0
+  },
+  {
+    "id": "905f424d-f862-4e21-a998-52752e716ce9",
+    "experiment_id": "d9ba5e65-8ca6-4d1e-b293-a00d45b87b7e",
+    "kind": "baseline",
+    "outcome": "pass",
+    "detail": "{\"outcome\":\"pass\",\"reason\":null,\"detail\":null,\"assertions\":[{\"id\":\"balance-correct\",\"passed\":true,\"expected\":\"$40.00\",\"observed\":\"$40.00\"}],\"requests\":[{\"id\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\",\"matched\":true,\"held\":false,\"released\":false,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":1,\\\"to\\\":\\\"rent\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":7000,\\\"servedAt\\\":\\\"2026-11-01T17:57:17.528Z\\\"}\",\"responseTruncated\":false},{\"id\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\",\"matched\":true,\"held\":false,\"released\":false,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":2,\\\"to\\\":\\\"savings\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":4000,\\\"servedAt\\\":\\\"2026-11-01T17:57:17.562Z\\\"}\",\"responseTruncated\":false}]}",
+    "started_at": 1793555837426,
+    "finished_at": 1793555837820,
+    "attempt": 0
+  },
+  {
+    "id": "cb250fbc-f4b7-4855-9efe-ff7206c708b8",
+    "experiment_id": "d9ba5e65-8ca6-4d1e-b293-a00d45b87b7e",
+    "kind": "intervention",
+    "outcome": "pass",
+    "detail": "{\"outcome\":\"pass\",\"reason\":null,\"detail\":null,\"assertions\":[{\"id\":\"balance-correct\",\"passed\":true,\"expected\":\"$40.00\",\"observed\":\"$40.00\"}],\"requests\":[{\"id\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\",\"matched\":true,\"held\":true,\"released\":true,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":1,\\\"to\\\":\\\"rent\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":7000,\\\"servedAt\\\":\\\"2026-11-01T17:57:17.927Z\\\"}\",\"responseTruncated\":false},{\"id\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\",\"matched\":true,\"held\":false,\"released\":false,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":2,\\\"to\\\":\\\"savings\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":4000,\\\"servedAt\\\":\\\"2026-11-01T17:57:17.960Z\\\"}\",\"responseTruncated\":false}]}",
+    "started_at": 1793555837828,
+    "finished_at": 1793555838117,
+    "attempt": 0
+  },
+  {
+    "id": "89ae8f0f-f6a0-4836-bb3f-8ecdf3e91df3",
+    "experiment_id": "7ea4e40e-1c52-4ad5-a75b-1e17434057f1",
+    "kind": "baseline",
+    "outcome": "pass",
+    "detail": "{\"outcome\":\"pass\",\"reason\":null,\"detail\":null,\"assertions\":[{\"id\":\"balance-correct\",\"passed\":true,\"expected\":\"$40.00\",\"observed\":\"$40.00\"}],\"requests\":[{\"id\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\",\"matched\":true,\"held\":false,\"released\":false,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":1,\\\"to\\\":\\\"rent\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":7000,\\\"servedAt\\\":\\\"2026-11-01T17:57:18.211Z\\\"}\",\"responseTruncated\":false},{\"id\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\",\"matched\":true,\"held\":false,\"released\":false,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":2,\\\"to\\\":\\\"savings\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":4000,\\\"servedAt\\\":\\\"2026-11-01T17:57:18.243Z\\\"}\",\"responseTruncated\":false}]}",
+    "started_at": 1793555838121,
+    "finished_at": 1793555838503,
+    "attempt": 0
+  },
+  {
+    "id": "7148a970-1e34-4440-b98f-89ba0bf39720",
+    "experiment_id": "7ea4e40e-1c52-4ad5-a75b-1e17434057f1",
+    "kind": "intervention",
+    "outcome": "pass",
+    "detail": "{\"outcome\":\"pass\",\"reason\":null,\"detail\":null,\"assertions\":[{\"id\":\"balance-correct\",\"passed\":true,\"expected\":\"$40.00\",\"observed\":\"$40.00\"}],\"requests\":[{\"id\":\"early\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\",\"matched\":true,\"held\":true,\"released\":true,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":1,\\\"to\\\":\\\"rent\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":7000,\\\"servedAt\\\":\\\"2026-11-01T17:57:18.611Z\\\"}\",\"responseTruncated\":false},{\"id\":\"late\",\"method\":\"POST\",\"url\":\"http://127.0.0.1:4202/api/transfer\",\"matched\":true,\"held\":false,\"released\":false,\"status\":200,\"responseExcerpt\":\"{\\\"transferId\\\":2,\\\"to\\\":\\\"savings\\\",\\\"amountCents\\\":3000,\\\"delayMs\\\":50,\\\"balanceCents\\\":4000,\\\"servedAt\\\":\\\"2026-11-01T17:57:18.644Z\\\"}\",\"responseTruncated\":false}]}",
+    "started_at": 1793555838510,
+    "finished_at": 1793555839423,
+    "attempt": 0
+  }
+]

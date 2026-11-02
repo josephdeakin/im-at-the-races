@@ -1,0 +1,152 @@
+[
+  {
+    "id": "9d3decdf-9594-4ee6-a3f5-8ca8fa84ce69",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "reproducer_id": "cf8e5c94-4cff-4342-af7e-d92ad85f1b42",
+    "repair_attempt_id": null,
+    "name": "reproducer-fails-on-original",
+    "status": "pass",
+    "detail": "{\"targetUrl\":\"http://127.0.0.1:4110/\",\"reproStatus\":\"failed-for-check\",\"exitCode\":1,\"outputTail\":\"\\nRunning 1 test using 1 worker\\n\\n\\u001b[1A\\u001b[2K[1/1] repro.spec.ts:24:5 › timing regression bank-stale-race-1\\n\\u001b[1A\\u001b[2K  1) repro.spec.ts:24:5 › timing regression bank-stale-race-1 ──────────────────────────────────────\\n\\n    Error: REPRO-CHECK-FAILED balance-correct\\n    REPRO-ASSERTION balance-correct expected=\\\"$40.00\\\" observed=\\\"$70.00\\\"\\n\\n    \\u001b[2mexpect(\\u001b[22m\\u001b[31mreceived\\u001b[39m\\u001b[2m).\\u001b[22mtoEqual\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m) // deep equality\\u001b[22m\\n\\n    \\u001b[32m- Expected  - 1\\u001b[39m\\n    \\u001b[31m+ Received  + 3\\u001b[39m\\n\\n    \\u001b[32m- Array []\\u001b[39m\\n    \\u001b[31m+ Array [\\u001b[39m\\n    \\u001b[31m+   \\\"balance-correct\\\",\\u001b[39m\\n    \\u001b[31m+ ]\\u001b[39m\\n\\n      183 |       failures.map((f) => f.assertion.id).join(',') +\\n      184 |       (lines.length > 0 ? '\\\\n' + lines.join('\\\\n') : ''),\\n    > 185 |   ).toEqual([]);\\n          |     ^\\n      186 | });\\n      187 |\\n        at /private/tmp/races-demo-live-bank/artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/repro/repro.spec.ts:185:5\\n\\n\\n\\u001b[1A\\u001b[2K  1 failed\\n    repro.spec.ts:24:5 › timing regression bank-stale-race-1 ───────────────────────────────────────\\n\",\"durationMs\":11335}",
+    "created_at": 1793555791985
+  },
+  {
+    "id": "23aa1773-5cc3-44b8-816d-bab7d8103f49",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "reproducer_id": "cf8e5c94-4cff-4342-af7e-d92ad85f1b42",
+    "repair_attempt_id": null,
+    "name": "original-build",
+    "status": "pass",
+    "detail": "{\"exitCode\":0,\"outputTail\":\"\\n> @races/fixture-stale-bank@0.1.0 build /private/tmp/races-demo-live-bank/workspaces/14490d7a-7072-4626-ab5d-f24cce7bae23\\n> vite build\\n\\nvite v7.1.7 building for production...\\ntransforming...\\n✓ 30 modules transformed.\\nrendering chunks...\\ncomputing gzip size...\\ndist/index.html                  0.33 kB │ gzip:  0.24 kB\\ndist/assets/index-C1k4KeSP.js  197.58 kB │ gzip: 62.04 kB\\n✓ built in 304ms\\n\"}",
+    "created_at": 1793555793368
+  },
+  {
+    "id": "eb254abf-449d-4e5d-9b16-1c9266cdc1a7",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "reproducer_id": "cf8e5c94-4cff-4342-af7e-d92ad85f1b42",
+    "repair_attempt_id": null,
+    "name": "original-typecheck",
+    "status": "pass",
+    "detail": "{\"exitCode\":0,\"outputTail\":\"\\n> @races/fixture-stale-bank@0.1.0 typecheck /private/tmp/races-demo-live-bank/workspaces/14490d7a-7072-4626-ab5d-f24cce7bae23\\n> tsc --noEmit -p tsconfig.json\\n\\n\"}",
+    "created_at": 1793555794282
+  },
+  {
+    "id": "a9c8df3f-461d-4295-ba1c-d1bcaca74689",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "reproducer_id": "cf8e5c94-4cff-4342-af7e-d92ad85f1b42",
+    "repair_attempt_id": null,
+    "name": "original-test",
+    "status": "fail",
+    "detail": "{\"exitCode\":1,\"outputTail\":\"m\\u001b[90m/private/tmp/races-demo-live-bank/workspaces/14490d7a-7072-4626-ab5d-f24cce7bae23\\u001b[39m\\n\\n \\u001b[31m❯\\u001b[39m src/Bank.test.tsx \\u001b[2m(\\u001b[22m\\u001b[2m4 tests\\u001b[22m\\u001b[2m | \\u001b[22m\\u001b[31m1 failed\\u001b[39m\\u001b[2m)\\u001b[22m\\u001b[32m 65\\u001b[2mms\\u001b[22m\\u001b[39m\\n   \\u001b[31m❯\\u001b[39m stale balance \\u001b[2m(4)\\u001b[22m\\n\\u001b[31m     \\u001b[31m×\\u001b[31m FAIL_TO_PASS (expected red on vulnerable code): late earlier transfer never overwrites a newer balance, in either mode\\u001b[39m\\u001b[32m 27\\u001b[2mms\\u001b[22m\\u001b[39m\\n     \\u001b[32m✓\\u001b[39m fixed mode: late earlier transfer is ignored but still booked\\u001b[32m 7\\u001b[2mms\\u001b[22m\\u001b[39m\\n     \\u001b[32m✓\\u001b[39m in-order delivery shows the latest balance in both modes\\u001b[32m 11\\u001b[2mms\\u001b[22m\\u001b[39m\\n     \\u001b[32m✓\\u001b[39m insufficient funds surfaces an error and keeps the balance\\u001b[32m 20\\u001b[2mms\\u001b[22m\\u001b[39m\\n\\n\\u001b[31m⎯⎯⎯⎯⎯⎯⎯\\u001b[39m\\u001b[1m\\u001b[41m Failed Tests 1 \\u001b[49m\\u001b[22m\\u001b[31m⎯⎯⎯⎯⎯⎯⎯\\u001b[39m\\n\\n\\u001b[41m\\u001b[1m FAIL \\u001b[22m\\u001b[49m src/Bank.test.tsx\\u001b[2m > \\u001b[22mstale balance\\u001b[2m > \\u001b[22mFAIL_TO_PASS (expected red on vulnerable code): late earlier transfer never overwrites a newer balance, in either mode\\n\\u001b[31m\\u001b[1mAssertionError\\u001b[22m: expected '$70.00' to be '$40.00' // Object.is equality\\u001b[39m\\n\\nExpected: \\u001b[32m\\\"$\\u001b[7m4\\u001b[27m0.00\\\"\\u001b[39m\\nReceived: \\u001b[31m\\\"$\\u001b[7m7\\u001b[27m0.00\\\"\\u001b[39m\\n\\n\\u001b[36m \\u001b[2m❯\\u001b[22m src/Bank.test.tsx:\\u001b[2m109:64\\u001b[22m\\u001b[39m\\n    \\u001b[90m107|\\u001b[39m\\n    \\u001b[90m108|\\u001b[39m       await net.deliver('rent');\\n    \\u001b[90m109|\\u001b[39m       expect(screen.getByTestId('balance-amount').textContent).toBe('$…\\n    \\u001b[90m   |\\u001b[39m                                                                \\u001b[31m^\\u001b[39m\\n    \\u001b[90m110|\\u001b[39m       expect(screen.getAllByTestId('ledger-item')).toHaveLength(2);\\n    \\u001b[90m111|\\u001b[39m       unmount();\\n\\n\\u001b[31m\\u001b[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\\u001b[22m\\u001b[39m\\n\\n\\n\\u001b[2m Test Files \\u001b[22m \\u001b[1m\\u001b[31m1 failed\\u001b[39m\\u001b[22m\\u001b[90m (1)\\u001b[39m\\n\\u001b[2m      Tests \\u001b[22m \\u001b[1m\\u001b[31m1 failed\\u001b[39m\\u001b[22m\\u001b[2m | \\u001b[22m\\u001b[1m\\u001b[32m3 passed\\u001b[39m\\u001b[22m\\u001b[90m (4)\\u001b[39m\\n\\u001b[2m   Start at \\u001b[22m 17:56:35\\n\\u001b[2m   Duration \\u001b[22m 430ms\\u001b[2m (environment 58%, tests 17%, import 17%, transform 7%)\\u001b[22m\\n\\n ELIFECYCLE  Test failed. See above for more details.\\n\"}",
+    "created_at": 1793555795490
+  },
+  {
+    "id": "12af73cf-cea3-4c16-94d0-feecfefa7aad",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "reproducer_id": "cf8e5c94-4cff-4342-af7e-d92ad85f1b42",
+    "repair_attempt_id": "6e27adba-6ec8-4286-b8ce-748d5367dd96",
+    "name": "reproducer-intact",
+    "status": "pass",
+    "detail": "{\"testHash\":\"sha256:984248bfa762a27ee9cf57b3aa62a8480d5d487568de3e4a98f8771dbcf0df81\",\"planHash\":\"sha256:7f00dc8fa7ce49efa856685ce939b521a2142bd85e52cdb9c4bd6611909b477f\"}",
+    "created_at": 1793555832686
+  },
+  {
+    "id": "9cf053b7-db1f-4e5d-8cd6-dddc6e24dedb",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "reproducer_id": "cf8e5c94-4cff-4342-af7e-d92ad85f1b42",
+    "repair_attempt_id": "6e27adba-6ec8-4286-b8ce-748d5367dd96",
+    "name": "project-build",
+    "status": "pass",
+    "detail": "{\"exitCode\":0,\"outputTail\":\"\\n> @races/fixture-stale-bank@0.1.0 build /private/tmp/races-demo-live-bank/workspaces/14490d7a-7072-4626-ab5d-f24cce7bae23\\n> vite build\\n\\nvite v7.1.7 building for production...\\ntransforming...\\n✓ 30 modules transformed.\\nrendering chunks...\\ncomputing gzip size...\\ndist/index.html                  0.33 kB │ gzip:  0.23 kB\\ndist/assets/index-BHrOh1r4.js  197.57 kB │ gzip: 62.03 kB\\n✓ built in 307ms\\n\",\"baselineExitCode\":0}",
+    "created_at": 1793555833218
+  },
+  {
+    "id": "ed5102e7-914a-418e-a8c5-9c8a78599b7b",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "reproducer_id": "cf8e5c94-4cff-4342-af7e-d92ad85f1b42",
+    "repair_attempt_id": "6e27adba-6ec8-4286-b8ce-748d5367dd96",
+    "name": "patched-app-serves",
+    "status": "pass",
+    "detail": "{\"url\":\"http://127.0.0.1:4202/\",\"pid\":93587,\"port\":4202,\"cwd\":\"/tmp/races-demo-live-bank/workspaces/14490d7a-7072-4626-ab5d-f24cce7bae23\",\"command\":[\"pnpm\",\"--dir\",\"/tmp/races-demo-live-bank/workspaces/14490d7a-7072-4626-ab5d-f24cce7bae23\",\"start\"]}",
+    "created_at": 1793555833733
+  },
+  {
+    "id": "03000897-b658-43b3-bb5e-f50ea2d17ad1",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "reproducer_id": "cf8e5c94-4cff-4342-af7e-d92ad85f1b42",
+    "repair_attempt_id": "6e27adba-6ec8-4286-b8ce-748d5367dd96",
+    "name": "frozen-rep-1",
+    "status": "pass",
+    "detail": "{\"baseline\":\"pass\",\"intervention\":\"pass\",\"experimentId\":\"d2f49f27-3e1f-4719-bcb8-79fa01fe95ca\",\"targetUrl\":\"http://127.0.0.1:4202/\"}",
+    "created_at": 1793555834850
+  },
+  {
+    "id": "c0ddc235-11be-44a0-a697-d64f3d6be0b4",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "reproducer_id": "cf8e5c94-4cff-4342-af7e-d92ad85f1b42",
+    "repair_attempt_id": "6e27adba-6ec8-4286-b8ce-748d5367dd96",
+    "name": "frozen-rep-2",
+    "status": "pass",
+    "detail": "{\"baseline\":\"pass\",\"intervention\":\"pass\",\"experimentId\":\"7bc8622a-291b-4b43-ab70-5e4b66702d5c\",\"targetUrl\":\"http://127.0.0.1:4202/\"}",
+    "created_at": 1793555835636
+  },
+  {
+    "id": "de5a5fcd-eb75-4739-9e18-89625c8b9d12",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "reproducer_id": "cf8e5c94-4cff-4342-af7e-d92ad85f1b42",
+    "repair_attempt_id": "6e27adba-6ec8-4286-b8ce-748d5367dd96",
+    "name": "frozen-rep-3",
+    "status": "pass",
+    "detail": "{\"baseline\":\"pass\",\"intervention\":\"pass\",\"experimentId\":\"59a25e28-5f4a-4702-99d0-c762e98c0b5e\",\"targetUrl\":\"http://127.0.0.1:4202/\"}",
+    "created_at": 1793555836653
+  },
+  {
+    "id": "926e25db-7bd4-4de3-b0f3-a90926a35f60",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "reproducer_id": "cf8e5c94-4cff-4342-af7e-d92ad85f1b42",
+    "repair_attempt_id": "6e27adba-6ec8-4286-b8ce-748d5367dd96",
+    "name": "normal-workflow",
+    "status": "pass",
+    "detail": "{\"baseline\":\"pass\",\"intervention\":\"pass\",\"experimentId\":\"5b56407b-7e16-469b-a251-2edeadf33321\"}",
+    "created_at": 1793555837423
+  },
+  {
+    "id": "544737e4-9ae3-4c9a-8aa9-9db79d83fd27",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "reproducer_id": "cf8e5c94-4cff-4342-af7e-d92ad85f1b42",
+    "repair_attempt_id": "6e27adba-6ec8-4286-b8ce-748d5367dd96",
+    "name": "variation-early-delivery",
+    "status": "pass",
+    "detail": "{\"baseline\":\"pass\",\"intervention\":\"pass\",\"experimentId\":\"d9ba5e65-8ca6-4d1e-b293-a00d45b87b7e\",\"note\":\"settle 0ms (earliest stale delivery)\"}",
+    "created_at": 1793555838120
+  },
+  {
+    "id": "0497c293-fe40-480d-b2de-85989d206923",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "reproducer_id": "cf8e5c94-4cff-4342-af7e-d92ad85f1b42",
+    "repair_attempt_id": "6e27adba-6ec8-4286-b8ce-748d5367dd96",
+    "name": "variation-late-delivery",
+    "status": "pass",
+    "detail": "{\"baseline\":\"pass\",\"intervention\":\"pass\",\"experimentId\":\"7ea4e40e-1c52-4ad5-a75b-1e17434057f1\",\"note\":\"settle doubled (latest stale delivery)\"}",
+    "created_at": 1793555839426
+  },
+  {
+    "id": "9be4a05f-6051-4143-a4a4-d5187c4f20ad",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "reproducer_id": "cf8e5c94-4cff-4342-af7e-d92ad85f1b42",
+    "repair_attempt_id": "6e27adba-6ec8-4286-b8ce-748d5367dd96",
+    "name": "project-typecheck",
+    "status": "pass",
+    "detail": "{\"exitCode\":0,\"outputTail\":\"\\n> @races/fixture-stale-bank@0.1.0 typecheck /private/tmp/races-demo-live-bank/workspaces/14490d7a-7072-4626-ab5d-f24cce7bae23\\n> tsc --noEmit -p tsconfig.json\\n\\n\",\"baselineExitCode\":0}",
+    "created_at": 1793555840041
+  },
+  {
+    "id": "1e64f8d9-9711-44d7-9d9a-917f0aabea93",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "reproducer_id": "cf8e5c94-4cff-4342-af7e-d92ad85f1b42",
+    "repair_attempt_id": "6e27adba-6ec8-4286-b8ce-748d5367dd96",
+    "name": "project-test",
+    "status": "pass",
+    "detail": "{\"exitCode\":0,\"outputTail\":\"\\n> @races/fixture-stale-bank@0.1.0 test /private/tmp/races-demo-live-bank/workspaces/14490d7a-7072-4626-ab5d-f24cce7bae23\\n> vitest run\\n\\n\\n\\u001b[1m\\u001b[30m\\u001b[46m RUN \\u001b[49m\\u001b[39m\\u001b[22m \\u001b[36mv5.0.5 \\u001b[39m\\u001b[90m/private/tmp/races-demo-live-bank/workspaces/14490d7a-7072-4626-ab5d-f24cce7bae23\\u001b[39m\\n\\n \\u001b[32m✓\\u001b[39m src/Bank.test.tsx \\u001b[2m(\\u001b[22m\\u001b[2m4 tests\\u001b[22m\\u001b[2m)\\u001b[22m\\u001b[32m 70\\u001b[2mms\\u001b[22m\\u001b[39m\\n\\n\\u001b[2m Test Files \\u001b[22m \\u001b[1m\\u001b[32m1 passed\\u001b[39m\\u001b[22m\\u001b[90m (1)\\u001b[39m\\n\\u001b[2m      Tests \\u001b[22m \\u001b[1m\\u001b[32m4 passed\\u001b[39m\\u001b[22m\\u001b[90m (4)\\u001b[39m\\n\\u001b[2m   Start at \\u001b[22m 17:57:20\\n\\u001b[2m   Duration \\u001b[22m 405ms\\u001b[2m (environment 61%, tests 20%, import 17%, transform 2%, worker 1%)\\u001b[22m\\n\\n\",\"baselineExitCode\":1}",
+    "created_at": 1793555840721
+  }
+]

@@ -72,7 +72,7 @@ keyboard-navigable event list.
   rules, FI01–FI02 (finding standard, 3 confirmations, "reproduced" = 2 of 3
   violating the same check), OP01 budgets (10 min, 30 model calls, 6 plans).
 - **Surfaces:** `packages/core` (agent orchestrator, tool implementations,
-  Muse API client reading `RACES_MODEL_API_KEY` in worker only),
+  Meta Model API client (Muse Spark, Responses API) reading `RACES_MODEL_API_KEY` in worker only),
   `packages/db` (findings table), `packages/contracts` (tool-arg schemas,
   finding DTOs).
 - **Decisions recorded:** P0-minimum assertion predicates are `textContains` and
@@ -83,7 +83,7 @@ keyboard-navigable event list.
   separate `unresolvedSuspicions`/`limitations` lists. `runExperiment` has
   explore/confirm modes (one tool, not two). Model provider is configurable:
   `anthropic` (Messages API) or `openai-responses` (Responses API via
-  `RACES_MODEL_BASE_URL`); Responses transcripts interleave call/output pairs
+  `RACES_MODEL_BASE_URL`, default `https://api.meta.ai/v1`); Responses transcripts interleave call/output pairs
   because the Meta endpoint rejects adjacent same-type function items.
 - **Out of scope:** repair, patch UI (findings readable via existing run page
   + API).

@@ -1,0 +1,14 @@
+[
+  {
+    "id": "6e27adba-6ec8-4286-b8ce-748d5367dd96",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "reproducer_id": "cf8e5c94-4cff-4342-af7e-d92ad85f1b42",
+    "attempt": 1,
+    "workspace_path": "/tmp/races-demo-live-bank/workspaces/14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "source_identity": "git:fe172c4713d5c7a6326f34ab92298fc631ff40a1:subpath-clean+1-untracked",
+    "diff": "diff --git a/src/Bank.tsx b/src/Bank.tsx\nindex de2fb68..c12c098 100644\n--- a/src/Bank.tsx\n+++ b/src/Bank.tsx\n@@ -83,7 +83,7 @@ export function Bank({ mode }: { mode: BankMode }) {\n             amountCents: response.amountCents,\n           },\n         ]);\n-        if (mode === 'fixed' && sequence !== latestSequence.current) {\n+        if (sequence !== latestSequence.current) {\n           return; // stale response: books keep the newer balance\n         }\n         setBalanceCents(response.balanceCents);",
+    "status": "completed",
+    "created_at": 1793555795491,
+    "finished_at": 1793555832685
+  }
+]

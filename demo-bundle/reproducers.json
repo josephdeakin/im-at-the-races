@@ -1,0 +1,14 @@
+[
+  {
+    "id": "cf8e5c94-4cff-4342-af7e-d92ad85f1b42",
+    "run_id": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+    "finding_id": "0411b1fe-fe0c-4584-a43d-dcdfec35bf4f",
+    "experiment_id": "1e6e063c-f881-468d-81b0-3d06ec3158c8",
+    "bundle_path": "artifacts/14490d7a-7072-4626-ab5d-f24cce7bae23/repro",
+    "test_hash": "sha256:984248bfa762a27ee9cf57b3aa62a8480d5d487568de3e4a98f8771dbcf0df81",
+    "plan_hash": "sha256:7f00dc8fa7ce49efa856685ce939b521a2142bd85e52cdb9c4bd6611909b477f",
+    "check_hash": "sha256:6c8e133abed31f9fac549011bf41126636ad11fe0927dea9cd8efab2ec2504f0",
+    "check_id": "balance-correct",
+    "created_at": 1793555780649
+  }
+]

@@ -35,7 +35,10 @@ export const runs = sqliteTable(
     errorCode: text('error_code'),
     errorMessage: text('error_message'),
   },
-  (t) => [index('runs_project_id_idx').on(t.projectId)],
+  (t) => [
+    index('runs_project_id_idx').on(t.projectId),
+    index('runs_status_created_idx').on(t.status, t.createdAt),
+  ],
 );
 
 export const runEvents = sqliteTable(

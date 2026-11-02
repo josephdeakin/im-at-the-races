@@ -1,0 +1,25 @@
+{
+  "bundleVersion": 1,
+  "exportedAt": "2026-11-01T17:58:44.081Z",
+  "runId": "14490d7a-7072-4626-ab5d-f24cce7bae23",
+  "sourceIdentity": "git:fe172c4713d5c7a6326f34ab92298fc631ff40a1:dirty",
+  "artifactSizeAccounting": true,
+  "counts": {
+    "run": 1,
+    "project": 1,
+    "events": 366,
+    "artifacts": 49,
+    "experiments": 7,
+    "trials": 20,
+    "findings": 1,
+    "reproducers": 1,
+    "repairAttempts": 1,
+    "verificationChecks": 15
+  },
+  "filesCopied": 49,
+  "missingFiles": [],
+  "toolVersions": {
+    "node": "v22.19.0",
+    "imAtTheRaces": "0.1.0"
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "id": "bank-stale-race-1",
+  "hypothesis": "Buggy Bank applies every transfer response unconditionally, so a slow earlier transfer overwrites the newer balance (lost update). Expectation justified by source behaviour in src/Bank.tsx buggy path plus existing test FAIL_TO_PASS gate; correct final balance after two $30 transfers from $100 must be $40.00.",
+  "startUrl": "http://127.0.0.1:4110/",
+  "actions": [
+    {
+      "id": "amt1",
+      "kind": "fill",
+      "testId": "amount-input",
+      "value": "30"
+    },
+    {
+      "id": "to1",
+      "kind": "fill",
+      "testId": "to-input",
+      "value": "rent"
+    },
+    {
+      "id": "xfer1",
+      "kind": "click",
+      "testId": "transfer-button"
+    },
+    {
+      "id": "to2",
+      "kind": "fill",
+      "testId": "to-input",
+      "value": "savings"
+    },
+    {
+      "id": "xfer2",
+      "kind": "click",
+      "testId": "transfer-button"
+    }
+  ],
+  "requests": [
+    {
+      "id": "early",
+      "method": "POST",
+      "urlPattern": ".*/api/transfer.*",
+      "bodyContains": "rent",
+      "occurrence": 1,
+      "afterAction": "xfer1"
+    },
+    {
+      "id": "late",
+      "method": "POST",
+      "urlPattern": ".*/api/transfer.*",
+      "bodyContains": "savings",
+      "occurrence": 1,
+      "afterAction": "xfer2"
+    }
+  ],
+  "schedule": {
+    "hold": [
+      "early"
+    ],
+    "releases": [
+      {
+        "request": "early",
+        "afterResponse": "late",
+        "settleMs": 300,
+        "timeoutMs": 10000
+      }
+    ]
+  },
+  "assertions": [
+    {
+      "id": "balance-correct",
+      "description": "After two $30 transfers (rent then savings) balance shows latest $40.00",
+      "type": "textEquals",
+      "testId": "balance-amount",
+      "expected": "$40.00"
+    }
+  ],
+  "timeouts": {
+    "actionMs": 10000,
+    "observationMs": 10000,
+    "trialMs": 120000,
+    "maxHoldMs": 15000
+  },
+  "requiredCapabilities": [
+    "http-hold-release"
+  ]
+}

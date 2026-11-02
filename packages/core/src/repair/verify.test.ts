@@ -236,6 +236,36 @@ describe('verifyPatchedApp (VF01 gate set)', () => {
     expect(checks.find((c) => c.name === 'project-test')?.status).toBe('skipped');
   });
 
+  it('runs the exported repro spec against the patched app when provided', async () => {
+    const { input, checks } = makeVerifyInput([PASS, PASS, PASS, PASS], {
+      runExportedSpec: async (url) => ({
+        status: 'passed',
+        checkId: 'check-1',
+        exitCode: 0,
+        output: 'ok',
+        durationMs: 1,
+      }),
+    });
+    const result = await verifyPatchedApp(input);
+    expect(result.verified).toBe(true);
+    expect(checks.find((c) => c.name === 'exported-repro-spec')?.status).toBe('pass');
+  });
+
+  it('fails verification when the exported repro spec still fails for the check', async () => {
+    const { input, checks } = makeVerifyInput([PASS, PASS, PASS, PASS], {
+      runExportedSpec: async () => ({
+        status: 'failed-for-check',
+        checkId: 'check-1',
+        exitCode: 1,
+        output: 'REPRO-CHECK-FAILED check-1',
+        durationMs: 1,
+      }),
+    });
+    const result = await verifyPatchedApp(input);
+    expect(result.verified).toBe(false);
+    expect(checks.find((c) => c.name === 'exported-repro-spec')?.status).toBe('fail');
+  });
+
   it('fails when a project check regresses versus baseline', async () => {
     const { input, checks } = makeVerifyInput([PASS, PASS, PASS, PASS], {
       runCheck: async () => ({ exitCode: 2, output: 'new type error' }),

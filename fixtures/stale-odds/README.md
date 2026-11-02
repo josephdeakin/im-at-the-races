@@ -1,8 +1,9 @@
 # stale-odds fixture
 
-A home-win odds feed pushed over a WebSocket. The client applies every push
-unconditionally, so a slow earlier update overwrites newer odds: a stale
-read over a socket instead of over HTTP.
+A streamed price feed pushed over a WebSocket (synthetic prices, no
+betting or sports data — the name is historical). The client applies every
+push unconditionally, so a slow earlier update overwrites the newer price:
+a stale read over a socket instead of over HTTP.
 
 ## The race
 
@@ -13,7 +14,7 @@ then a rotating ladder) and delays each push by its requested `delay`.
 1. Request an update with delay 800 (slow v1 @ 2.50).
 2. Request an update with delay 0 (fast v2 @ 1.80).
 3. The display shows 1.80, then the late v1 push lands and the display jumps
-   back to 2.50 — stale odds. The feed below books both pushes in arrival
+   back to 2.50 — a stale price. The feed below books both pushes in arrival
    order, proving the server sent v2 first.
 
 `/` is buggy; `/fixed` ignores pushes older than the newest version seen.

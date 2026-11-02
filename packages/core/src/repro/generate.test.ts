@@ -122,6 +122,32 @@ describe('generateReproBundle', () => {
     }
   });
 
+  it('counts every unbound matcher before binding, like RequestTracker', () => {
+    // Two identical matchers (occurrence 1 and 2) must both count the first
+    // candidate; breaking out at the first bind would starve occurrence 2
+    // and the generated spec would report requests-not-matched.
+    const plan = samplePlan();
+    plan.requests = [
+      { id: 'first', method: 'GET', urlPattern: '/api/search', occurrence: 1, afterAction: 'a1' },
+      { id: 'second', method: 'GET', urlPattern: '/api/search', occurrence: 2, afterAction: 'a1' },
+    ];
+    plan.schedule = {
+      hold: ['first'],
+      releases: [{ request: 'first', afterResponse: 'second', settleMs: 100, timeoutMs: 10_000 }],
+    };
+    const bundle = generateReproBundle({
+      plan,
+      checkId: 'final',
+      targetUrl: 'http://127.0.0.1:4100/',
+      findingTitle: 'Identical matchers',
+      sourceIdentity: 'git:abc:clean',
+    });
+    expect(bundle.spec).toContain('counts toward every unbound matcher');
+    // The matcher loops (before the match deadline) must not break while counting.
+    const matcherSection = bundle.spec.split('const matchDeadline')[0] ?? '';
+    expect(matcherSection).not.toContain('break;');
+  });
+
   it('emits socket routing for WS matchers', () => {
     const bundle = generateReproBundle({
       plan: wsPlan(),

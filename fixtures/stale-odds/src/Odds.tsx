@@ -69,7 +69,7 @@ export function Odds({ mode }: { mode: OddsMode }) {
       { requestId: message.requestId, version: message.version, price: message.price },
     ]);
     if (mode === 'fixed' && message.version <= maxVersionRef.current) {
-      return; // stale update: feed keeps it, the display keeps the newer odds
+      return; // stale update: feed keeps it, the display keeps the newer price
     }
     maxVersionRef.current = Math.max(maxVersionRef.current, message.version);
     setPrice(message.price);
@@ -89,9 +89,9 @@ export function Odds({ mode }: { mode: OddsMode }) {
 
   return (
     <section>
-      <p data-testid="mode-badge">{mode === 'fixed' ? 'Fixed control (version guard)' : 'Buggy odds (no version guard)'}</p>
+      <p data-testid="mode-badge">{mode === 'fixed' ? 'Fixed control (version guard)' : 'Buggy price feed (no version guard)'}</p>
       <p>
-        Home win: <strong data-testid="odds-amount">{price ?? '—'}</strong>{' '}
+        Latest price: <strong data-testid="odds-amount">{price ?? '—'}</strong>{' '}
         <span data-testid="connection-badge">{connected ? '(live)' : '(connecting…)'}</span>
       </p>
       <label>
