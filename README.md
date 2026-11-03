@@ -38,6 +38,9 @@ before the patch and did not happen after.
 
 ![Findings: reproduced 3 of 3](docs/assets/findings.png)
 
+Initial plan
+<img width="975" height="730" alt="Screenshot 2026-11-03 at 22 19 11" src="https://github.com/user-attachments/assets/91fb4b7d-d543-4458-9b72-b0223173f18d" />
+
 ## System overview
 
 ```mermaid
